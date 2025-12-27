@@ -73,12 +73,20 @@ export async function proxy(request: NextRequest) {
 
   // If user is authenticated and on signin/signup page
   if (isAuthenticated && (pathname === "/signin" || pathname === "/signup")) {
-    if (userRole === "admins") {
-      // Redirect admins to dashboard
-      return NextResponse.redirect(new URL("/dashboard", request.url));
+    // Check if the user is coming from a logout action
+    const fromLogout = request.nextUrl.searchParams.get("logout");
+
+    if (fromLogout) {
+      // Allow the user to stay on signin page if they just logged out
+      return NextResponse.next();
     } else {
-      // Redirect regular users to home
-      return NextResponse.redirect(new URL("/", request.url));
+      if (userRole === "admins") {
+        // Redirect admins to dashboard
+        return NextResponse.redirect(new URL("/dashboard", request.url));
+      } else {
+        // Redirect regular users to home
+        return NextResponse.redirect(new URL("/", request.url));
+      }
     }
   }
 

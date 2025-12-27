@@ -47,8 +47,7 @@ export async function GET() {
     };
 
     return NextResponse.json({ user: userData }, { status: 200 });
-  } catch (error) {
-    console.error("Get user data error:", error);
+  } catch {
     return NextResponse.json(
       { error: "Failed to get user data. Please try again." },
       { status: 500 }

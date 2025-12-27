@@ -1,16 +1,20 @@
 "use client";
 
-import { Code } from "lucide-react";
+import { Code, Loader2 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+
 import { Button } from "@/components/ui/button";
+
 import {
   Field,
   FieldDescription,
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
+
 import { Input } from "@/components/ui/input";
+
 import Link from "next/link";
 
 import { useAuth } from "@/utils/context/AuthContext";
@@ -64,6 +68,9 @@ export function ForgetPasswordForm({
           </Field>
           <Field>
             <Button type="submit" disabled={forgetPasswordIsLoading}>
+              {forgetPasswordIsLoading && (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              )}
               {forgetPasswordIsLoading ? "Sending..." : "Send Reset Code"}
             </Button>
           </Field>

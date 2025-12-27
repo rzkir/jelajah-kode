@@ -1,25 +1,33 @@
 "use client";
 
 import { Code } from "lucide-react";
+
 import { useEffect } from "react";
+
 import { useRouter, useSearchParams } from "next/navigation";
+
 import { toast } from "sonner";
 
 import { cn } from "@/lib/utils";
+
 import { Button } from "@/components/ui/button";
+
 import {
   Field,
   FieldDescription,
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
+
+import { PasswordInput } from "@/components/ui/password-input";
+
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSeparator,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
+
 import Link from "next/link";
 
 import { useAuth } from "@/utils/context/AuthContext";
@@ -154,9 +162,8 @@ export function ChangePasswordForm({
                 </div>
                 <Field>
                   <FieldLabel htmlFor="newPassword">New Password</FieldLabel>
-                  <Input
+                  <PasswordInput
                     id="newPassword"
-                    type="password"
                     placeholder="Enter new password"
                     value={passwordResetNewPassword}
                     onChange={(e) =>
@@ -173,9 +180,8 @@ export function ChangePasswordForm({
                   <FieldLabel htmlFor="confirmPassword">
                     Confirm Password
                   </FieldLabel>
-                  <Input
+                  <PasswordInput
                     id="confirmPassword"
-                    type="password"
                     placeholder="Confirm new password"
                     value={passwordResetConfirmPassword}
                     onChange={(e) =>

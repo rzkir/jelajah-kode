@@ -24,7 +24,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [userRole, setUserRole] = useState<UserRole | null>(null);
 
-  // Ref to track user state without triggering re-renders in useEffect
   const userRef = useRef(user);
   useEffect(() => {
     userRef.current = user;
@@ -44,6 +43,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
   const [loginIsLoading, setLoginIsLoading] = useState(false);
+  const [githubSignInLoading, setGithubSignInLoading] = useState(false);
+  const [googleSignInLoading, setGoogleSignInLoading] = useState(false);
+  const [githubSignUpLoading, setGithubSignUpLoading] = useState(false);
+  const [googleSignUpLoading, setGoogleSignUpLoading] = useState(false);
   // Forget password form state
   const [forgetPasswordEmail, setForgetPasswordEmail] = useState("");
   const [forgetPasswordIsLoading, setForgetPasswordIsLoading] = useState(false);
@@ -67,9 +70,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           const parsedUser = JSON.parse(storedUser);
           setUser(parsedUser);
           setUserRole(parsedUser.role);
-        } catch (error) {
-          console.error("Error parsing stored user data:", error);
-          // Clear corrupted data
+        } catch {
           localStorage.removeItem("user");
         }
       }
@@ -93,11 +94,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         });
 
         if (userResponse.error || !userResponse.data) {
-          console.error(
-            "Failed to fetch user data:",
-            userResponse.error || "No data returned"
-          );
-          // If API call fails, don't set any user data to avoid default values
           setUser(null);
           setUserRole(null);
           localStorage.removeItem("user");
@@ -119,8 +115,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           const parsedUser = JSON.parse(storedUser);
           setUser(parsedUser);
           setUserRole(parsedUser.role);
-        } catch (error) {
-          console.error("Error parsing stored user data:", error);
+        } catch {
           // Clear corrupted data
           localStorage.removeItem("user");
           setUser(null);
@@ -190,7 +185,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signOut = async () => {
     try {
       // Sign out from NextAuth (for OAuth users)
-      await nextAuthSignOut({ callbackUrl: "/signin" });
+      await nextAuthSignOut({ redirect: false });
+
+      // Also make a request to our custom signout endpoint to clear JWT cookie
+      await fetch(API_ENDPOINTS.auth.signOut, {
+        method: "POST",
+        credentials: "include",
+      });
 
       // Clear local state
       setUser(null);
@@ -200,15 +201,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       toast.success("Logged out successfully!", {
         duration: 2000,
       });
-    } catch (error) {
-      console.error("Sign out error:", error);
-      // Clear local state even if NextAuth sign out fails
+
+      // Redirect manually to signin page with logout parameter
+      router.push("/signin?logout=true");
+    } catch {
+      // Clear local state even if API calls fail
       setUser(null);
       setUserRole(null);
       localStorage.removeItem("user");
+
+      // Clear any potential JWT tokens from cookies by making API call
+      try {
+        await fetch(API_ENDPOINTS.auth.signOut, {
+          method: "POST",
+          credentials: "include",
+        });
+      } catch (err) {
+        console.error("Error during sign out API call:", err);
+      }
+
       toast.success("Logged out successfully!", {
         duration: 2000,
       });
+
+      // Redirect manually to signin page with logout parameter
+      router.push("/signin?logout=true");
     }
   };
 
@@ -219,10 +236,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
 
       if (response.error || !response.data) {
-        console.error(
-          "Failed to refresh user data:",
-          response.error || "No data returned"
-        );
         return null;
       }
 
@@ -232,8 +245,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       localStorage.setItem("user", JSON.stringify(account));
 
       return account;
-    } catch (error) {
-      console.error("Error refreshing user data:", error);
+    } catch {
       return null;
     }
   };
@@ -482,12 +494,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const account = await signIn(loginEmail, loginPassword);
       if (account) {
-        // Reset form after successful login
         resetLoginState();
       }
-    } catch (error) {
-      console.error("Login error:", error);
-      // Error is already handled in the signIn function
+    } catch {
     } finally {
       setLoginIsLoading(false);
     }
@@ -648,19 +657,39 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signInWithGitHub = async (): Promise<void> => {
-    await nextAuthSignIn("github", { callbackUrl: "/" });
+    setGithubSignInLoading(true);
+    try {
+      await nextAuthSignIn("github", { callbackUrl: "/api/auth/callback" });
+    } finally {
+      setGithubSignInLoading(false);
+    }
   };
 
   const signInWithGoogle = async (): Promise<void> => {
-    await nextAuthSignIn("google", { callbackUrl: "/" });
+    setGoogleSignInLoading(true);
+    try {
+      await nextAuthSignIn("google", { callbackUrl: "/api/auth/callback" });
+    } finally {
+      setGoogleSignInLoading(false);
+    }
   };
 
   const signUpWithGitHub = async (): Promise<void> => {
-    await nextAuthSignIn("github", { callbackUrl: "/" });
+    setGithubSignUpLoading(true);
+    try {
+      await nextAuthSignIn("github", { callbackUrl: "/api/auth/callback" });
+    } finally {
+      setGithubSignUpLoading(false);
+    }
   };
 
   const signUpWithGoogle = async (): Promise<void> => {
-    await nextAuthSignIn("google", { callbackUrl: "/" });
+    setGoogleSignUpLoading(true);
+    try {
+      await nextAuthSignIn("google", { callbackUrl: "/api/auth/callback" });
+    } finally {
+      setGoogleSignUpLoading(false);
+    }
   };
 
   const value = {
@@ -675,6 +704,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     signUpWithGitHub,
     signUpWithGoogle,
     refreshUserData, // Added function to refresh user data from database
+    githubSignInLoading,
+    googleSignInLoading,
+    githubSignUpLoading,
+    googleSignUpLoading,
     resetPassword,
     forgetPassword,
     changePassword,

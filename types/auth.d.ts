@@ -58,6 +58,10 @@ interface AuthContextType {
   loginEmail: string;
   loginPassword: string;
   loginIsLoading: boolean;
+  githubSignInLoading: boolean;
+  googleSignInLoading: boolean;
+  githubSignUpLoading: boolean;
+  googleSignUpLoading: boolean;
   // Login form functions
   setLoginStep: (step: "email" | "password") => void;
   setLoginEmail: (email: string) => void;
