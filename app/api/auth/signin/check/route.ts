@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
+
 import { connectToDatabase } from "@/lib/mongodb";
+
 import { Account } from "@/models/Account";
 
-// POST - Check if email exists and return provider
 export async function POST(req: NextRequest) {
   try {
     await connectToDatabase();
@@ -13,14 +14,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Email is required" }, { status: 400 });
     }
 
-    // Find user by email
     const user = await Account.findOne({ email: email.toLowerCase() });
 
     if (!user) {
       return NextResponse.json({ exists: false }, { status: 200 });
     }
 
-    // Return existence and provider info
     return NextResponse.json(
       {
         exists: true,

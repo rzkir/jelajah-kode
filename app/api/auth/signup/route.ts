@@ -6,9 +6,9 @@ import { generateJWT } from "@/utils/auth/token";
 
 import { connectToDatabase } from "@/lib/mongodb";
 
-import nodemailer from "nodemailer";
+import { getEmailService } from "@/lib/email-service";
 
-import { generateVerificationEmailTemplate } from "@/hooks/template-message";
+import { generateOTP } from "@/hooks/genrate-otp";
 
 export const runtime = "nodejs";
 
@@ -18,7 +18,6 @@ export async function POST(request: Request) {
 
     await connectToDatabase();
 
-    // Check if account already exists
     const existingAccount = await Account.findOne({ email });
     if (existingAccount) {
       return NextResponse.json(
@@ -27,10 +26,8 @@ export async function POST(request: Request) {
       );
     }
 
-    // Generate OTP for email verification
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const otp = generateOTP();
 
-    // Create new account with OTP
     const account = new Account({
       email,
       password,
@@ -43,8 +40,6 @@ export async function POST(request: Request) {
 
     const savedAccount = await account.save();
 
-    // Ensure the account was properly saved
-    // Check both the returned saved account and the original account
     if ((!savedAccount || !savedAccount._id) && (!account || !account._id)) {
       return NextResponse.json(
         { error: "Failed to create account" },
@@ -52,35 +47,9 @@ export async function POST(request: Request) {
       );
     }
 
-    // Send OTP to user's email
-    const emailService = process.env.EMAIL_SERVICE;
-    const emailUser = process.env.EMAIL_ADMIN;
-    const emailPass = process.env.EMAIL_PASS_ADMIN;
+    const emailService = getEmailService();
 
-    if (!emailUser || !emailPass) {
-      return NextResponse.json(
-        { error: "Email service not configured" },
-        { status: 500 }
-      );
-    }
-
-    const transporter = nodemailer.createTransport({
-      service: emailService,
-      auth: {
-        user: emailUser,
-        pass: emailPass,
-      },
-    });
-
-    const { html, text } = generateVerificationEmailTemplate(otp);
-
-    await transporter.sendMail({
-      from: emailUser,
-      to: account.email,
-      subject: "Welcome to Jelajah Kode! Email Verification Code",
-      html,
-      text,
-    });
+    await emailService.sendVerificationEmail(account.email, otp);
 
     return NextResponse.json(
       {
@@ -117,13 +86,11 @@ export async function PUT(request: Request) {
       );
     }
 
-    // Mark account as verified
     account.isVerified = "true" as const;
     account.verificationToken = undefined;
     account.verificationTokenExpiry = undefined;
     await account.save();
 
-    // Generate JWT token
     const jwtToken = await generateJWT({
       _id: account._id,
       email: account.email,

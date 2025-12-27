@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+
 import {
   BookOpen,
   Bot,
@@ -11,7 +12,8 @@ import {
   PieChart,
   Send,
   Settings2,
-  SquareTerminal,
+  LayoutDashboard,
+  BriefcaseBusiness,
 } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
@@ -33,22 +35,26 @@ import { useAuth } from "@/utils/context/AuthContext";
 const data = {
   navMain: [
     {
-      title: "Playground",
-      url: "#",
-      icon: SquareTerminal,
-      isActive: true,
+      title: "Dashboard",
+      url: "/dashboard",
+      icon: LayoutDashboard,
+    },
+    {
+      title: "Products",
+      icon: BriefcaseBusiness,
+      isActive: false,
       items: [
         {
-          title: "History",
-          url: "#",
+          title: "Products",
+          url: "/dashboard/products/products",
         },
         {
-          title: "Starred",
-          url: "#",
+          title: "Products Category",
+          url: "/dashboard/products/category",
         },
         {
-          title: "Settings",
-          url: "#",
+          title: "Products Framework",
+          url: "/dashboard/products/framework",
         },
       ],
     },

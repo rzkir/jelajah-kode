@@ -1,15 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
+
 import { connectToDatabase } from "@/lib/mongodb";
+
 import { Account } from "@/models/Account";
-import nodemailer from "nodemailer";
-import { generatePasswordResetEmailTemplate } from "@/hooks/template-message";
 
-// Generate 6-digit OTP
-function generateOTP(): string {
-  return Math.floor(100000 + Math.random() * 900000).toString();
-}
+import { getEmailService } from "@/lib/email-service";
 
-// POST - Send reset password OTP
+import { generateOTP } from "@/hooks/genrate-otp";
+
 export async function POST(req: NextRequest) {
   try {
     await connectToDatabase();
@@ -20,7 +18,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Email is required" }, { status: 400 });
     }
 
-    // Find user by email
     const user = await Account.findOne({ email: email.toLowerCase() });
 
     if (!user) {
@@ -30,7 +27,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Check if user signed up with OAuth (Google/GitHub)
     if (user.provider && user.provider !== "email") {
       return NextResponse.json(
         {
@@ -40,32 +36,15 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Generate OTP
     const otp = generateOTP();
 
-    // Save reset token and expiry (10 minutes)
     user.resetToken = otp;
     user.resetTokenExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
     await user.save();
 
-    // Send email with OTP
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.EMAIL_ADMIN,
-        pass: process.env.EMAIL_PASS_ADMIN,
-      },
-    });
+    const emailService = getEmailService();
 
-    const { html, text } = generatePasswordResetEmailTemplate(otp);
-
-    await transporter.sendMail({
-      from: process.env.EMAIL_ADMIN,
-      to: email,
-      subject: "Password Reset Code",
-      text: text,
-      html: html,
-    });
+    await emailService.sendPasswordResetEmail(email, otp);
 
     return NextResponse.json(
       { message: "Password reset code sent to your email" },
@@ -80,7 +59,6 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// PUT - Verify OTP and reset password
 export async function PUT(req: NextRequest) {
   try {
     await connectToDatabase();
@@ -94,7 +72,6 @@ export async function PUT(req: NextRequest) {
       );
     }
 
-    // Validate password
     if (newPassword.length < 8) {
       return NextResponse.json(
         { error: "Password must be at least 8 characters long" },
@@ -102,7 +79,6 @@ export async function PUT(req: NextRequest) {
       );
     }
 
-    // Find user with valid reset token
     const user = await Account.findOne({
       resetToken: token,
       resetTokenExpiry: { $gt: new Date() },
@@ -115,7 +91,6 @@ export async function PUT(req: NextRequest) {
       );
     }
 
-    // Update password
     user.password = newPassword;
     user.resetToken = undefined;
     user.resetTokenExpiry = undefined;

@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
+
 import { getServerSession } from "next-auth/next";
+
 import { authOptions } from "@/lib/auth";
 
 export async function POST() {
-  // Clear the JWT token cookie
   const response = NextResponse.json({ message: "Logged out successfully" });
 
-  // Clear the custom JWT token cookie
   response.cookies.set({
     name: "token",
     value: "",
@@ -17,11 +17,9 @@ export async function POST() {
     path: "/",
   });
 
-  // Try to clear NextAuth session if it exists
   try {
     const session = await getServerSession(authOptions);
     if (session) {
-      // Clear NextAuth session cookie
       response.cookies.set({
         name: "next-auth.session-token",
         value: "",
@@ -32,7 +30,6 @@ export async function POST() {
         path: "/",
       });
 
-      // Also clear the next-auth.csrf-token if it exists
       response.cookies.set({
         name: "next-auth.csrf-token",
         value: "",

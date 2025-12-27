@@ -1,8 +1,13 @@
 import NextAuth, { NextAuthOptions } from "next-auth";
+
 import GitHubProvider from "next-auth/providers/github";
+
 import GoogleProvider from "next-auth/providers/google";
+
 import CredentialsProvider from "next-auth/providers/credentials";
+
 import { Account } from "@/models/Account";
+
 import { connectToDatabase } from "@/lib/mongodb";
 
 export const authOptions: NextAuthOptions = {
@@ -50,12 +55,12 @@ export const authOptions: NextAuthOptions = {
       },
     }),
     GitHubProvider({
-      clientId: process.env.GITHUB_ID || "dummy",
-      clientSecret: process.env.GITHUB_SECRET || "dummy",
+      clientId: process.env.GITHUB_ID as string,
+      clientSecret: process.env.GITHUB_SECRET as string,
     }),
     GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID || "dummy",
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET || "dummy",
+      clientId: process.env.GOOGLE_CLIENT_ID as string,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
     }),
   ],
   session: {
@@ -70,24 +75,20 @@ export const authOptions: NextAuthOptions = {
         try {
           await connectToDatabase();
 
-          // Check if user already exists
           const existingUser = await Account.findOne({ email: user.email });
 
           if (existingUser) {
-            // Update provider if user exists
             existingUser.provider = account.provider;
             await existingUser.save();
           } else {
-            // Create new user
             const newUser = new Account({
               email: user.email,
               name: user.name,
               picture: user.image,
               provider: account.provider,
-              isVerified: true, // OAuth accounts are considered verified
+              isVerified: true,
               status: "active",
               role: "user",
-              // Generate a random password for OAuth users to satisfy schema validation
               password: `${account.provider}_oauth_user_${Date.now()}`,
             });
             await newUser.save();
@@ -104,10 +105,9 @@ export const authOptions: NextAuthOptions = {
         token.accessToken = account.access_token;
         token.id = user.id;
         token.provider = account.provider;
-        token.email = user.email; // Store email in token for later role fetching
+        token.email = user.email;
       }
 
-      // Always fetch the current user role from database to ensure it's up-to-date
       if (token.email) {
         try {
           await connectToDatabase();
@@ -122,7 +122,6 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
     async session({ session, token }) {
-      // Only return session if there's a valid token with id
       if (token.id && session.user) {
         session.user.id = token.id as string;
         session.user.provider = token.provider as string;

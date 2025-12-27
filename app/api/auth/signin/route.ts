@@ -12,7 +12,6 @@ export async function POST(request: Request) {
 
     await connectToDatabase();
 
-    // Find account
     const account = await Account.findOne({ email });
     if (!account) {
       return NextResponse.json(
@@ -21,7 +20,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // Check password
     const isPasswordValid = await account.comparePassword(password);
     if (!isPasswordValid) {
       return NextResponse.json(
@@ -30,14 +28,12 @@ export async function POST(request: Request) {
       );
     }
 
-    // Generate token
     const token = await generateJWT({
       _id: account._id,
       email: account.email,
       role: account.role,
     });
 
-    // Set cookie
     const response = NextResponse.json(
       {
         message: "Sign in successful",
