@@ -156,15 +156,15 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
 
   // Create user object for NavUser component based on authenticated user
   const currentUser = user
     ? {
-        name: user.name,
-        email: user.email,
-        avatar: user.picture || "/avatars/default.jpg", // Use picture if available, otherwise default
-      }
+      name: user.name,
+      email: user.email,
+      picture: user.picture || "/avatars/default.jpg", // Use picture if available, otherwise default
+    }
     : null;
 
   return (
@@ -192,7 +192,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        {currentUser && <NavUser user={currentUser} />}
+        <NavUser user={currentUser} onSignOut={signOut} />
       </SidebarFooter>
     </Sidebar>
   );

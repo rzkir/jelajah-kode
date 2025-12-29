@@ -4,6 +4,8 @@ import type React from "react";
 
 import { toast } from "sonner";
 
+import { generateFrameworkId } from "@/hooks/TextFormatter";
+
 export default function useStateFrameworks() {
   const [frameworks, setFrameworks] = useState<Framework[]>([]);
   const [isEditing, setIsEditing] = useState(false);
@@ -30,10 +32,21 @@ export default function useStateFrameworks() {
   const [isDragging, setIsDragging] = useState(false);
   const dropZoneRef = useRef<HTMLDivElement | null>(null);
 
-  const totalPages = Math.ceil(frameworks.length / itemsPerPage);
+  // View mode state
+  const [viewMode, setViewMode] = useState<"card" | "table">("table");
+  const [searchTerm, setSearchTerm] = useState("");
+
+  // Filter frameworks based on search term
+  const filteredFrameworks = frameworks.filter(
+    (framework) =>
+      framework.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      framework.frameworkId.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const totalPages = Math.ceil(filteredFrameworks.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentFrameworks = frameworks.slice(startIndex, endIndex);
+  const currentFrameworks = filteredFrameworks.slice(startIndex, endIndex);
 
   useEffect(() => {
     void fetchFrameworks();
@@ -42,7 +55,7 @@ export default function useStateFrameworks() {
   const fetchFrameworks = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch("/api/frameworks", {
+      const response = await fetch("/api/products/framework", {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_SECRET}`,
@@ -75,6 +88,7 @@ export default function useStateFrameworks() {
   };
 
   const handleMultipleFileUpload = async (files: File[]) => {
+    setIsUploading(true);
     const uploadPromises = files.map(async (file) => {
       try {
         setUploadProgress((prev) => [
@@ -85,7 +99,7 @@ export default function useStateFrameworks() {
         const form = new FormData();
         form.append("file", file);
 
-        const response = await fetch("/api/frameworks/upload", {
+        const response = await fetch("/api/products/framework/upload", {
           method: "POST",
           body: form,
         });
@@ -132,6 +146,8 @@ export default function useStateFrameworks() {
       );
     } catch {
       toast.error("Some files failed to upload");
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -141,24 +157,29 @@ export default function useStateFrameworks() {
       setIsSubmitting(true);
 
       if (isEditing) {
-        const response = await fetch(`/api/frameworks?id=${formData._id}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            thumbnail: pendingUploads[0].imageUrl,
-            title: pendingUploads[0].title,
-          }),
-        });
+        const response = await fetch(
+          `/api/products/framework?id=${formData._id}`,
+          {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              thumbnail: pendingUploads[0].imageUrl,
+              title: pendingUploads[0].title,
+              frameworkId: generateFrameworkId(pendingUploads[0].title),
+            }),
+          }
+        );
         if (!response.ok) throw new Error("Failed to update framework");
         toast.success("Framework updated successfully");
       } else {
         const savePromises = pendingUploads.map(async (upload) => {
-          const response = await fetch("/api/frameworks", {
+          const response = await fetch("/api/products/framework", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               thumbnail: upload.imageUrl,
               title: upload.title,
+              frameworkId: generateFrameworkId(upload.title),
             }),
           });
           if (!response.ok) throw new Error("Failed to save framework");
@@ -194,7 +215,7 @@ export default function useStateFrameworks() {
   const handleDelete = async (id: string) => {
     try {
       setIsDeleting(true);
-      const response = await fetch(`/api/frameworks?id=${id}`, {
+      const response = await fetch(`/api/products/framework?id=${id}`, {
         method: "DELETE",
       });
       if (!response.ok) throw new Error("Failed to delete framework");
@@ -227,6 +248,11 @@ export default function useStateFrameworks() {
     setIsDeleteDialogOpen(true);
   };
 
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+    setCurrentPage(1); // Reset to first page when searching
+  };
+
   return {
     // state
     frameworks,
@@ -250,6 +276,8 @@ export default function useStateFrameworks() {
     startIndex,
     endIndex,
     currentFrameworks,
+    viewMode,
+    searchTerm,
 
     // setters
     setIsEditing,
@@ -260,9 +288,12 @@ export default function useStateFrameworks() {
     setCurrentPage,
     setPendingUploads,
     setUploadProgress,
+    setViewMode,
+    setSearchTerm,
 
     // handlers
     fetchFrameworks,
+    handleSearchChange,
     handleDragOver,
     handleDragLeave,
     handleDrop,

@@ -21,7 +21,10 @@ export async function GET(request: Request) {
   try {
     await connectMongoDB();
     const db = getDb();
-    const frameworks = await db.collection("frameworks").find({}).toArray();
+    const frameworks = await db
+      .collection(process.env.NEXT_PUBLIC_FRAMEWORKS as string)
+      .find({})
+      .toArray();
     return NextResponse.json(frameworks);
   } catch (error) {
     console.error("Error fetching frameworks:", error);
@@ -38,19 +41,22 @@ export async function POST(request: Request) {
     const db = getDb();
     const body = await request.json();
 
-    if (!body.imageUrl || !body.title) {
+    if (!body.thumbnail || !body.title || !body.frameworkId) {
       return NextResponse.json(
-        { error: "Image URL and title are required" },
+        { error: "Thumbnail, title, and frameworkId are required" },
         { status: 400 }
       );
     }
 
-    const result = await db.collection("frameworks").insertOne({
-      imageUrl: body.imageUrl,
-      title: body.title,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
+    const result = await db
+      .collection(process.env.NEXT_PUBLIC_FRAMEWORKS as string)
+      .insertOne({
+        thumbnail: body.thumbnail,
+        title: body.title,
+        frameworkId: body.frameworkId,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
 
     return NextResponse.json({ _id: result.insertedId, ...body });
   } catch (error) {
@@ -78,23 +84,26 @@ export async function PUT(request: Request) {
 
     const body = await request.json();
 
-    if (!body.imageUrl || !body.title) {
+    if (!body.thumbnail || !body.title || !body.frameworkId) {
       return NextResponse.json(
-        { error: "Image URL and title are required" },
+        { error: "Thumbnail, title, and frameworkId are required" },
         { status: 400 }
       );
     }
 
-    const result = await db.collection("frameworks").updateOne(
-      { _id: new mongoose.Types.ObjectId(id) },
-      {
-        $set: {
-          imageUrl: body.imageUrl,
-          title: body.title,
-          updatedAt: new Date(),
-        },
-      }
-    );
+    const result = await db
+      .collection(process.env.NEXT_PUBLIC_FRAMEWORKS as string)
+      .updateOne(
+        { _id: new mongoose.Types.ObjectId(id) },
+        {
+          $set: {
+            thumbnail: body.thumbnail,
+            title: body.title,
+            frameworkId: body.frameworkId,
+            updatedAt: new Date(),
+          },
+        }
+      );
 
     if (result.matchedCount === 0) {
       return NextResponse.json(
@@ -127,9 +136,11 @@ export async function DELETE(request: Request) {
       );
     }
 
-    const result = await db.collection("frameworks").deleteOne({
-      _id: new mongoose.Types.ObjectId(id),
-    });
+    const result = await db
+      .collection(process.env.NEXT_PUBLIC_FRAMEWORKS as string)
+      .deleteOne({
+        _id: new mongoose.Types.ObjectId(id),
+      });
 
     if (result.deletedCount === 0) {
       return NextResponse.json(

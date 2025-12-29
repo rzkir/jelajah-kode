@@ -40,7 +40,7 @@ export default function FormModalFramework(props: FormModalProjectsFrameworksPro
 
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-      <DialogContent className="sm:max-w-[600px] p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-150 p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
         <DialogHeader className="mb-4 sm:mb-6">
           <DialogTitle className="text-xl sm:text-2xl font-bold">{isEditing ? 'Edit Framework' : 'Create Framework'}</DialogTitle>
         </DialogHeader>
@@ -121,7 +121,7 @@ export default function FormModalFramework(props: FormModalProjectsFrameworksPro
             </div>
 
             {uploadProgress.length > 0 && (
-              <div className="space-y-2 max-h-[120px] sm:max-h-40 overflow-y-auto">
+              <div className="space-y-2 max-h-30 sm:max-h-40 overflow-y-auto">
                 {uploadProgress.map((item: UploadProgress, index: number) => (
                   <div key={index} className="flex items-center gap-2">
                     <div className="flex-1">
@@ -142,7 +142,7 @@ export default function FormModalFramework(props: FormModalProjectsFrameworksPro
             )}
 
             {pendingUploads.length > 0 && (
-              <div className="space-y-2 max-h-[120px] sm:max-h-40 overflow-y-auto">
+              <div className="space-y-2 max-h-30 sm:max-h-40 overflow-y-auto">
                 {pendingUploads.map((upload: PendingUpload, index: number) => (
                   <div key={index} className="flex items-center gap-2">
                     <Input

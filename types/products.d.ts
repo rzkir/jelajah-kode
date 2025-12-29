@@ -15,7 +15,19 @@ interface Products {
   ratingCount?: number;
   reviews?: Productsreview[];
   images?: string[];
+  discount?: {
+    type: "percentage" | "fixed";
+    value: number;
+    until?: string;
+  };
+  author: {
+    _id: string;
+    name: string;
+    picture?: string;
+    role: UserRole;
+  };
   tags?: string[];
+  paymentType: "free" | "paid";
   status: "publish" | "draft";
   created_at?: string;
   updated_at?: string;

@@ -19,6 +19,8 @@ import FormModalProjectsCategories from "@/components/dashboard/products/Categor
 
 import DeleteModalProjectsCategories from "@/components/dashboard/products/Categories/modal/DeleteModalProductsCategories";
 
+import useFormatDate from "@/hooks/FormatDate";
+
 export default function CategoriesLayout() {
   const {
     // data
@@ -47,11 +49,13 @@ export default function CategoriesLayout() {
     resetForm,
   } = useStateProjectsCategories();
 
+  const { formatDate, formatUpdatedAt } = useFormatDate();
+
   return (
-    <section className="p-6 bg-muted/30 rounded-2xl">
-      <div className="flex justify-between items-center p-6 border rounded-2xl border-border bg-card shadow-sm mb-6">
+    <section className="flex flex-col gap-6">
+      <div className="flex justify-between items-center p-6 border rounded-2xl border-border bg-card shadow-sm">
         <div className="flex flex-col gap-3">
-          <h3 className="text-3xl font-bold bg-linear-to-r from-primary to-accent bg-clip-text text-transparent">
+          <h3 className="text-3xl font-bold">
             Categories
           </h3>
 
@@ -117,17 +121,19 @@ export default function CategoriesLayout() {
             <TableHeader>
               <TableRow>
                 <TableHead>Name</TableHead>
+                <TableHead>Category ID</TableHead>
                 <TableHead>Created At</TableHead>
+                <TableHead>Updated At</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {categories.map((category) => (
                 <TableRow key={category._id}>
-                  <TableCell>{category.title}</TableCell>
-                  <TableCell>
-                    {new Date(category.createdAt).toLocaleDateString()}
-                  </TableCell>
+                  <TableCell className="pl-4">{category.title}</TableCell>
+                  <TableCell>{category.categoryId}</TableCell>
+                  <TableCell>{formatDate(category.createdAt)}</TableCell>
+                  <TableCell>{formatUpdatedAt(category.updatedAt)}</TableCell>
                   <TableCell className="text-right">
                     <Button
                       variant="ghost"

@@ -51,35 +51,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     // Check for existing JWT token and fetch user data
     const initializeAuth = async () => {
-      const token = document.cookie
-        .split(';')
-        .find(cookie => cookie.trim().startsWith('token='))
-        ?.split('=')[1];
+      // Since the cookie is httpOnly, we can't read it directly
+      // Instead, we'll make an API call to check if the user is authenticated
+      try {
+        const userResponse = await apiCall<Accounts>(API_ENDPOINTS.auth.me, {
+          method: "GET",
+        });
 
-      if (token) {
-        try {
-          // Fetch the complete user data from the API
-          const userResponse = await apiCall<Accounts>(API_ENDPOINTS.auth.me, {
-            method: "GET",
-          });
-
-          if (userResponse.error || !userResponse.data) {
-            // Token exists but user data is invalid, clear the cookie
-            document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-            setUser(null);
-            setUserRole(null);
-          } else {
-            const account = userResponse.data;
-            setUser(account);
-            setUserRole(account.role);
-          }
-        } catch (error) {
-          console.error('Auth initialization error:', error);
-          // Error occurred while fetching user data, clear the cookie
-          document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        if (userResponse.error || !userResponse.data) {
+          // User is not authenticated
           setUser(null);
           setUserRole(null);
+        } else {
+          const account = userResponse.data;
+          setUser(account);
+          setUserRole(account.role);
         }
+      } catch (error) {
+        console.error('Auth initialization error:', error);
+        // Error occurred while fetching user data
+        setUser(null);
+        setUserRole(null);
       }
 
       setLoading(false);
@@ -148,9 +140,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         credentials: "include",
       });
 
-      // Clear JWT token cookie
-      document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-
       // Clear local state
       setUser(null);
       setUserRole(null);
@@ -166,10 +155,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(null);
       setUserRole(null);
 
-      // Clear JWT token cookie
-      document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-
-      // Clear any potential JWT tokens from cookies by making API call
+      // Make API call to ensure server-side logout
       try {
         await fetch(API_ENDPOINTS.auth.signOut, {
           method: "POST",

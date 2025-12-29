@@ -1,6 +1,25 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { verifyJWT } from "@/hooks/jwt";
+
+// Simple JWT decoding function that works in edge runtime
+function decodeJWT(token: string) {
+  try {
+    const parts = token.split(".");
+    if (parts.length !== 3) {
+      throw new Error("Invalid token format");
+    }
+
+    // Decode the payload (the middle part)
+    const payload = parts[1];
+    // Add padding if needed
+    const paddedPayload = payload + "=".repeat((4 - (payload.length % 4)) % 4);
+    const decodedPayload = atob(paddedPayload);
+    return JSON.parse(decodedPayload);
+  } catch (error) {
+    console.error("JWT decoding error:", error);
+    throw new Error("Invalid token");
+  }
+}
 
 // Define public paths that don't require authentication
 const publicPaths = [
@@ -15,11 +34,11 @@ const publicPaths = [
 // Define admin-only paths
 const adminPaths = ["/dashboard"];
 
-export async function proxy(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const token = request.cookies.get("token")?.value;
   const { pathname } = request.nextUrl;
 
-  // Allow all NextAuth API routes without proxy check
+  // Allow all auth API routes without proxy check
   if (pathname.startsWith("/api/auth")) {
     return NextResponse.next();
   }
@@ -31,18 +50,26 @@ export async function proxy(request: NextRequest) {
   // Check if the path is admin-only
   const isAdminPath = adminPaths.some((path) => pathname.startsWith(path));
 
-  // Determine user role from custom JWT token
+  // Determine user role from JWT token (decode only, no verification)
   let userRole: string | null = null;
   let isAuthenticated = false;
 
-  // Check custom JWT token
+  // Check JWT token only if it exists
   if (token) {
     try {
-      const payload = await verifyJWT(token);
-      userRole = payload.role as string;
+      const decoded = decodeJWT(token);
+
+      // Check if token is expired
+      const currentTime = Math.floor(Date.now() / 1000);
+      if (decoded.exp && decoded.exp < currentTime) {
+        throw new Error("Token expired");
+      }
+
+      userRole = decoded.role as string;
       isAuthenticated = true;
-    } catch {
-      // If token is invalid, remove it
+    } catch (error) {
+      console.error("Token decoding error:", error);
+      // If token is invalid or expired, remove it
       const response = NextResponse.next();
       response.cookies.delete("token");
       if (!isPublicPath) {
@@ -81,11 +108,19 @@ export async function proxy(request: NextRequest) {
   }
 
   // If user is on an admin path, verify their role
-  if (isAdminPath && isAuthenticated) {
+  if (isAdminPath) {
+    if (!isAuthenticated) {
+      // If not authenticated at all, redirect to signin
+      const signinUrl = new URL("/signin", request.url);
+      signinUrl.searchParams.set("from", pathname);
+      return NextResponse.redirect(signinUrl);
+    }
+
     if (userRole !== "admins") {
       // If not admin, redirect to home
       return NextResponse.redirect(new URL("/", request.url));
     }
+
     // If admin role is verified, allow access
     return NextResponse.next();
   }

@@ -12,7 +12,7 @@ import {
 export default function DeleteModalFramework({ isOpen, onOpenChange, onCancel, onConfirm, isDeleting }: DeleteModalProjectsFrameworksProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px] p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-106.25 p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
         <DialogHeader className="mb-4">
           <DialogTitle className="text-lg sm:text-xl font-bold">Confirm Delete</DialogTitle>
         </DialogHeader>
