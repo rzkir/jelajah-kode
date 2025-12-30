@@ -18,6 +18,10 @@ interface Product {
     title: string;
     categoryId: string;
   }>;
+  tags?: Array<{
+    title: string;
+    tagsId: string;
+  }>;
   rating?: number;
   paymentType: "free" | "paid";
   status: "publish" | "draft";

@@ -15,7 +15,7 @@ export default function useStateProjectsCategories() {
     null
   );
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
-  const [formData, setFormData] = useState<FormDataState>({
+  const [formData, setFormData] = useState<CategoryFormDataState>({
     title: "",
     categoryId: "",
   });

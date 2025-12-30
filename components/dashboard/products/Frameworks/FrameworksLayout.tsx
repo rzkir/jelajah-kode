@@ -1,22 +1,30 @@
-"use client"
+"use client";
 
-import { Button } from '@/components/ui/button'
+import { Button } from "@/components/ui/button";
 
-import { Card, CardContent, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
 
-import useFormatDate from '@/hooks/FormatDate'
+import useFormatDate from "@/hooks/FormatDate";
 
-import { ChevronRight, Grid3X3, List, Pencil, Trash2 } from "lucide-react"
+import { ChevronRight, Grid3X3, List, Pencil, Trash2 } from "lucide-react";
 
-import Image from 'next/image'
+import Image from "next/image";
 
-import { Skeleton } from '@/components/ui/skeleton'
+import { Skeleton } from "@/components/ui/skeleton";
 
-import FormModalFramework from '@/components/dashboard/products/Frameworks/modal/FormModalProductsFrameworks'
+import FormModalFramework from "@/components/dashboard/products/Frameworks/modal/FormModalProductsFrameworks";
 
-import DeleteModalFramework from '@/components/dashboard/products/Frameworks/modal/DeleteModalProductsFrameworks'
+import DeleteModalFramework from "@/components/dashboard/products/Frameworks/modal/DeleteModalProductsFrameworks";
 
-import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationPrevious, PaginationNext, PaginationEllipsis } from '@/components/ui/pagination'
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationPrevious,
+  PaginationNext,
+  PaginationEllipsis,
+} from "@/components/ui/pagination";
 
 import {
   Table,
@@ -27,9 +35,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import { Input } from '@/components/ui/input';
+import { Input } from "@/components/ui/input";
 
-import useStateFrameworks from '@/components/dashboard/products/Frameworks/lib/useStateProductsFrameworks'
+import useStateFrameworks from "@/components/dashboard/products/Frameworks/lib/useStateProductsFrameworks";
 
 export default function FrameworkLayout() {
   const {
@@ -155,20 +163,18 @@ export default function FrameworkLayout() {
   };
 
   return (
-    <section className='flex flex-col gap-6'>
+    <section className="flex flex-col gap-6">
       {/* Header Section */}
-      <div className='flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 px-6 py-6 border rounded-2xl'>
-        <div className='flex flex-col gap-4'>
-          <CardTitle className='text-3xl sm:text-4xl'>
-            Framework
-          </CardTitle>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 px-6 py-6 border rounded-2xl">
+        <div className="flex flex-col gap-4">
+          <CardTitle className="text-3xl sm:text-4xl">Framework</CardTitle>
 
-          <ol className='flex flex-wrap gap-2 items-center text-sm text-muted-foreground'>
-            <li className='flex items-center hover:text-primary transition-colors'>
+          <ol className="flex flex-wrap gap-2 items-center text-sm text-muted-foreground">
+            <li className="flex items-center hover:text-primary transition-colors">
               <span>Dashboard</span>
               <ChevronRight className="w-4 h-4 mx-1 text-muted-foreground" />
             </li>
-            <li className='flex items-center text-primary font-medium'>
+            <li className="flex items-center text-primary font-medium">
               <span>Framework</span>
             </li>
           </ol>
@@ -198,17 +204,17 @@ export default function FrameworkLayout() {
           </div>
           <div className="flex items-center border rounded-md p-1">
             <Button
-              variant={viewMode === 'card' ? 'default' : 'ghost'}
+              variant={viewMode === "card" ? "default" : "ghost"}
               size="sm"
-              onClick={() => setViewMode('card')}
+              onClick={() => setViewMode("card")}
               className="h-8 px-2"
             >
               <Grid3X3 className="w-4 h-4" />
             </Button>
             <Button
-              variant={viewMode === 'table' ? 'default' : 'ghost'}
+              variant={viewMode === "table" ? "default" : "ghost"}
               size="sm"
-              onClick={() => setViewMode('table')}
+              onClick={() => setViewMode("table")}
               className="h-8 px-2"
             >
               <List className="w-4 h-4" />
@@ -228,7 +234,7 @@ export default function FrameworkLayout() {
       </div>
 
       {/* Content Section */}
-      {viewMode === 'card' ? (
+      {viewMode === "card" ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
           {isLoading ? (
             Array.from({ length: 3 }).map((_, index) => (
@@ -270,7 +276,9 @@ export default function FrameworkLayout() {
                   <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
                 </svg>
                 <h3 className="text-xl font-semibold text-muted-foreground mb-2">
-                  {searchTerm ? 'No Matching Frameworks Found' : 'No Frameworks Found'}
+                  {searchTerm
+                    ? "No Matching Frameworks Found"
+                    : "No Frameworks Found"}
                 </h3>
                 <p className="text-muted-foreground">
                   {searchTerm
@@ -293,15 +301,23 @@ export default function FrameworkLayout() {
                       />
                     ) : (
                       <div className="w-full h-full bg-muted rounded-xl flex items-center justify-center border-2 border-dashed border-border">
-                        <span className="text-muted-foreground text-sm">No image</span>
+                        <span className="text-muted-foreground text-sm">
+                          No image
+                        </span>
                       </div>
                     )}
                   </div>
                   <div className="flex-1">
                     <div className="flex flex-col justify-between items-start gap-4">
                       <div className="space-y-2 w-full">
-                        <h4 className="text-lg sm:text-xl font-bold">{framework.title}</h4>
-                        <p className="text-sm text-muted-foreground">{formatDate(framework.createdAt)}</p>
+                        <h4 className="text-lg sm:text-xl font-bold">
+                          {framework.title}
+                        </h4>
+                        <p className="text-sm text-muted-foreground">
+                          {framework.createdAt
+                            ? formatDate(framework.createdAt)
+                            : "N/A"}
+                        </p>
                       </div>
                       <div className="flex gap-3 w-full">
                         <Button
@@ -318,7 +334,9 @@ export default function FrameworkLayout() {
                         <Button
                           variant="destructive"
                           size="lg"
-                          onClick={() => framework._id && openDeleteDialog(framework._id)}
+                          onClick={() =>
+                            framework._id && openDeleteDialog(framework._id)
+                          }
                           className="flex-1"
                         >
                           Delete
@@ -336,13 +354,24 @@ export default function FrameworkLayout() {
           {isLoading ? (
             <div className="p-8 text-center">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-              <p className="mt-4 text-muted-foreground">Loading frameworks...</p>
+              <p className="mt-4 text-muted-foreground">
+                Loading frameworks...
+              </p>
             </div>
           ) : frameworks.length === 0 || currentFrameworks.length === 0 ? (
             <div className="p-8 text-center">
               <div className="flex flex-col items-center justify-center space-y-4">
                 <div className="p-4 rounded-full bg-primary/10">
-                  <svg className="w-12 h-12 text-primary" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg
+                    className="w-12 h-12 text-primary"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
                     <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
                     <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
                     <path d="M4 22h16" />
@@ -353,7 +382,9 @@ export default function FrameworkLayout() {
                 </div>
                 <div className="space-y-2 max-w-sm mx-auto">
                   <h3 className="text-xl font-semibold">
-                    {searchTerm ? 'No Matching Frameworks Found' : 'No Frameworks Found'}
+                    {searchTerm
+                      ? "No Matching Frameworks Found"
+                      : "No Frameworks Found"}
                   </h3>
                   <p className="text-sm text-muted-foreground">
                     {searchTerm
@@ -377,7 +408,7 @@ export default function FrameworkLayout() {
               <TableBody>
                 {currentFrameworks.map((framework) => (
                   <TableRow key={framework._id}>
-                    <TableCell className='px-4'>
+                    <TableCell className="px-4">
                       {framework.thumbnail ? (
                         <div className="w-16 h-16 rounded-md overflow-hidden">
                           <Image
@@ -390,13 +421,21 @@ export default function FrameworkLayout() {
                         </div>
                       ) : (
                         <div className="w-16 h-16 bg-muted rounded-md flex items-center justify-center">
-                          <span className="text-xs text-muted-foreground">No image</span>
+                          <span className="text-xs text-muted-foreground">
+                            No image
+                          </span>
                         </div>
                       )}
                     </TableCell>
-                    <TableCell className="font-medium">{framework.title}</TableCell>
+                    <TableCell className="font-medium">
+                      {framework.title}
+                    </TableCell>
                     <TableCell>{framework.frameworkId}</TableCell>
-                    <TableCell>{formatDate(framework.createdAt)}</TableCell>
+                    <TableCell>
+                      {framework.createdAt
+                        ? formatDate(framework.createdAt)
+                        : "N/A"}
+                    </TableCell>
                     <TableCell className="text-right">
                       <Button
                         variant="ghost"
@@ -412,7 +451,9 @@ export default function FrameworkLayout() {
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => framework._id && openDeleteDialog(framework._id)}
+                        onClick={() =>
+                          framework._id && openDeleteDialog(framework._id)
+                        }
                         disabled={isSubmitting || isDeleting}
                       >
                         <Trash2 className="w-4 h-4" />
@@ -436,9 +477,13 @@ export default function FrameworkLayout() {
                   href="#"
                   onClick={(e) => {
                     e.preventDefault();
-                    setCurrentPage(prev => Math.max(prev - 1, 1));
+                    setCurrentPage((prev) => Math.max(prev - 1, 1));
                   }}
-                  className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                  className={
+                    currentPage === 1
+                      ? "pointer-events-none opacity-50"
+                      : "cursor-pointer"
+                  }
                 />
               </PaginationItem>
 
@@ -450,9 +495,13 @@ export default function FrameworkLayout() {
                   href="#"
                   onClick={(e) => {
                     e.preventDefault();
-                    setCurrentPage(prev => Math.min(prev + 1, totalPages));
+                    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
                   }}
-                  className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                  className={
+                    currentPage === totalPages
+                      ? "pointer-events-none opacity-50"
+                      : "cursor-pointer"
+                  }
                 />
               </PaginationItem>
             </PaginationContent>
@@ -483,10 +532,15 @@ export default function FrameworkLayout() {
       <DeleteModalFramework
         isOpen={isDeleteDialogOpen}
         onOpenChange={setIsDeleteDialogOpen}
-        onCancel={() => { setIsDeleteDialogOpen(false); setDeleteId(null); }}
-        onConfirm={() => { if (deleteId) handleDelete(deleteId); }}
+        onCancel={() => {
+          setIsDeleteDialogOpen(false);
+          setDeleteId(null);
+        }}
+        onConfirm={() => {
+          if (deleteId) handleDelete(deleteId);
+        }}
         isDeleting={isDeleting}
       />
     </section>
-  )
+  );
 }

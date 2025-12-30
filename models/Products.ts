@@ -32,36 +32,6 @@ const productsCategorySchema = new mongoose.Schema(
   { _id: false }
 );
 
-const reviewSchema = new mongoose.Schema(
-  {
-    _id: {
-      type: String,
-      required: true,
-    },
-    name: {
-      type: String,
-      required: true,
-    },
-    date: {
-      type: String,
-      required: true,
-    },
-    picture: {
-      type: String,
-      required: true,
-    },
-    rating: {
-      type: Number,
-      required: true,
-    },
-    comment: {
-      type: String,
-      required: true,
-    },
-  },
-  { _id: false }
-);
-
 const discountSchema = new mongoose.Schema(
   {
     type: {
@@ -150,10 +120,6 @@ const productsSchema = new mongoose.Schema(
     },
     ratingCount: {
       type: Number,
-    },
-    reviews: {
-      type: [reviewSchema],
-      default: [],
     },
     images: {
       type: [String],

@@ -14,7 +14,6 @@ interface Products {
   rating?: number;
   views?: number;
   ratingCount?: number;
-  reviews?: Productsreview[];
   images?: string[];
   discount?: {
     type: "percentage" | "fixed";
@@ -27,7 +26,7 @@ interface Products {
     picture?: string;
     role: UserRole;
   };
-  tags?: string[];
+  tags?: ProductsTags[];
   paymentType: "free" | "paid";
   status: "publish" | "draft";
   created_at?: string;
@@ -45,13 +44,90 @@ interface ProductsCategory {
   categoryId: string;
 }
 
-interface Productsreview {
+interface ProductsTags {
+  title: string;
+  tagsId: string;
+}
+
+interface ProductsReview {
   _id: string;
-  name: string;
-  date: string;
-  picture: string;
+  productsId: string;
+  author: {
+    _id: string;
+    name: string;
+    picture: string;
+  };
   rating: number;
   comment: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface Category {
+  _id: string;
+  title: string;
+  categoryId: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+interface Framework {
+  _id: string;
+  title: string;
+  frameworkId: string;
+  thumbnail: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+interface Tag {
+  _id: string;
+  title: string;
+  tagsId: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+interface CreateFormData {
+  title: string;
+  productsId: string;
+  thumbnail: string;
+  description: string;
+  faqs: string;
+  price: number;
+  stock: number;
+  category: string;
+  frameworks: string[];
+  tags: string[];
+  paymentType: "free" | "paid";
+  status: "publish" | "draft";
+  images: string[];
+  discount?: {
+    type: "percentage" | "fixed";
+    value: number;
+    until?: string;
+  };
+}
+
+interface EditFormData {
+  title: string;
+  productsId: string;
+  thumbnail: string;
+  description: string;
+  faqs: string;
+  price: number;
+  stock: number;
+  category: string;
+  frameworks: string[];
+  tags: string[];
+  paymentType: "free" | "paid";
+  status: "publish" | "draft";
+  images: string[];
+  discount?: {
+    type: "percentage" | "fixed";
+    value: number;
+    until?: string;
+  };
 }
 
 //====================== Category ======================//
@@ -63,7 +139,7 @@ interface Category {
   updatedAt: string;
 }
 
-interface FormDataState {
+interface CategoryFormDataState {
   title: string;
   categoryId: string;
 }
@@ -81,8 +157,8 @@ type FormModalProjectsCategoryProps = {
   isDialogOpen: boolean;
   setIsDialogOpen: (open: boolean) => void;
   editingCategory: Category | null;
-  formData: { title: string; categoryId: string };
-  setFormData: (v: { title: string; categoryId: string }) => void;
+  formData: CategoryFormDataState;
+  setFormData: React.Dispatch<React.SetStateAction<CategoryFormDataState>>;
   isSubmitting: boolean;
   handleSubmit: (e: React.FormEvent) => Promise<void> | void;
   resetForm: () => void;
@@ -99,9 +175,9 @@ interface Framework {
   updatedAt: string;
 }
 
-interface FormDataState {
+interface FrameworkFormDataState {
   title: string;
-  categoryId: string;
+  frameworkId: string;
 }
 
 type ProjectsFrameworkProps = {
@@ -166,3 +242,38 @@ interface DeleteModalProjectsFrameworksProps {
   onConfirm: () => void;
   isDeleting: boolean;
 }
+
+//====================== Tags ======================//
+interface Tags {
+  _id: string;
+  title: string;
+  tagsId: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface TagsFormDataState {
+  title: string;
+  tagsId: string;
+}
+
+type ProjectsTagsProps = {
+  isOpen: boolean;
+  onOpenChange: (open: boolean) => void;
+  onCancel: () => void;
+  onConfirm: () => void;
+  isDeleting: boolean;
+  itemTitle?: string;
+};
+
+type FormModalProjectsTagsProps = {
+  isDialogOpen: boolean;
+  setIsDialogOpen: (open: boolean) => void;
+  editingTags: Tags | null;
+  formData: { title: string; tagsId: string };
+  setFormData: (v: { title: string; tagsId: string }) => void;
+  isSubmitting: boolean;
+  handleSubmit: (e: React.FormEvent) => Promise<void> | void;
+  resetForm: () => void;
+  useTriggerButton?: boolean;
+};
