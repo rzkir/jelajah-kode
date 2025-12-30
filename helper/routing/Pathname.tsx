@@ -2,26 +2,26 @@
 
 import React from "react";
 
-import { usePathname } from "next/navigation";
+// import { usePathname } from "next/navigation";
 
-import Header from "@/components/layout/Header";
+// import Header from "@/components/layout/Header";
 
-import Footer from "@/components/layout/Footer";
+// import Footer from "@/components/layout/Footer";
 
 import { Toaster } from "sonner";
 
 const Pathname = ({ children }: { children: React.ReactNode }) => {
-  const pathname = usePathname();
+  // const pathname = usePathname();
 
-  const isRoute =
-    pathname?.includes("/signin") ||
-    pathname?.includes("/signup") ||
-    pathname?.includes("/forgot-password") ||
-    pathname?.includes("/verification") ||
-    pathname?.includes("/change-password") ||
-    pathname?.includes("/reset-password") ||
-    pathname?.includes("/dashboard") ||
-    false;
+  // const isRoute =
+  //   pathname?.includes("/signin") ||
+  //   pathname?.includes("/signup") ||
+  //   pathname?.includes("/forgot-password") ||
+  //   pathname?.includes("/verification") ||
+  //   pathname?.includes("/change-password") ||
+  //   pathname?.includes("/reset-password") ||
+  //   pathname?.includes("/dashboard") ||
+  //   false;
 
   return (
     <main>
@@ -34,9 +34,9 @@ const Pathname = ({ children }: { children: React.ReactNode }) => {
         }}
       />
       <div>
-        {!isRoute && <Header />}
+        {/* {!isRoute && <Header />} */}
         {children}
-        {!isRoute && <Footer />}
+        {/* {!isRoute && <Footer />} */}
       </div>
     </main>
   );

@@ -125,6 +125,24 @@ export function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // Allow access to product detail pages only for authenticated admins
+  if (pathname.startsWith("/dashboard/products/products/")) {
+    if (!isAuthenticated) {
+      // If not authenticated, redirect to signin
+      const signinUrl = new URL("/signin", request.url);
+      signinUrl.searchParams.set("from", pathname);
+      return NextResponse.redirect(signinUrl);
+    }
+
+    if (userRole !== "admins") {
+      // If not admin, redirect to home
+      return NextResponse.redirect(new URL("/", request.url));
+    }
+
+    // If admin role is verified, allow access to product pages
+    return NextResponse.next();
+  }
+
   // For all other cases, allow the request to proceed
   return NextResponse.next();
 }

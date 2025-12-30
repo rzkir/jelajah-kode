@@ -19,7 +19,6 @@ export async function GET(request: Request) {
     const categories = await getAllCategories();
 
     if (!Array.isArray(categories)) {
-      console.error("Categories is not an array:", categories);
       return NextResponse.json([], { status: 500 });
     }
 
@@ -31,8 +30,7 @@ export async function GET(request: Request) {
       updatedAt: category.updatedAt,
     }));
     return NextResponse.json(formattedCategories);
-  } catch (error) {
-    console.error("Error in GET /api/categories", error);
+  } catch {
     return NextResponse.json(
       { error: "Failed to fetch categories" },
       { status: 500 }
@@ -58,8 +56,7 @@ export async function POST(request: Request) {
       updatedAt: category.updatedAt,
     };
     return NextResponse.json(formattedCategory, { status: 201 });
-  } catch (error) {
-    console.error("Error in POST /api/products/categories", error);
+  } catch {
     return NextResponse.json(
       { error: "Failed to create category" },
       { status: 500 }
@@ -94,8 +91,7 @@ export async function PUT(request: Request) {
       updatedAt: category.updatedAt,
     };
     return NextResponse.json(formattedCategory);
-  } catch (error) {
-    console.error("Error in PUT /api/products/categories", error);
+  } catch {
     return NextResponse.json(
       { error: "Failed to update category" },
       { status: 500 }
@@ -120,8 +116,7 @@ export async function DELETE(request: Request) {
       );
     }
     return NextResponse.json({ message: "Category deleted successfully" });
-  } catch (error) {
-    console.error("Error in DELETE /api/products/categories", error);
+  } catch {
     return NextResponse.json(
       { error: "Failed to delete category" },
       { status: 500 }

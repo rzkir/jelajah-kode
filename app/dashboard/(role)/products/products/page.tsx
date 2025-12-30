@@ -1,5 +1,9 @@
-import React from "react";
+import ProductsLayout from "@/components/dashboard/products/products/ProductsLayout";
 
-export default function page() {
-  return <div>page</div>;
-}
+import { ProductsPageMetadata } from "@/helper/meta/Metadata";
+
+export const metadata = ProductsPageMetadata;
+
+export default function Page() {
+  return <ProductsLayout />;
+} 

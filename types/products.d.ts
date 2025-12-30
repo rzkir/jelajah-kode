@@ -2,6 +2,7 @@
 interface Products {
   _id: string;
   title: string;
+  productsId: string;
   thumbnail: string;
   frameworks: Productsframeworks[];
   description: string;
@@ -36,6 +37,7 @@ interface Products {
 interface Productsframeworks {
   title: string;
   frameworkId: string;
+  thumbnail: string;
 }
 
 interface ProductsCategory {
