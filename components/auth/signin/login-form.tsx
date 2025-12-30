@@ -40,11 +40,14 @@ export function LoginForm({
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    
+    return false; // Explicitly return false to prevent submission
+  };
+
+  const handleButtonClick = async () => {
     if (loginIsLoading) {
       return;
     }
-    
+
     try {
       if (loginStep === "email") {
         await handleEmailSubmit();
@@ -57,9 +60,16 @@ export function LoginForm({
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && !loginIsLoading) {
+      e.preventDefault();
+      handleButtonClick();
+    }
+  };
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <form onSubmit={handleSubmit} action="#" method="post">
+      <form onSubmit={handleSubmit} noValidate>
         <FieldGroup>
           <div className="flex flex-col items-center gap-2 text-center">
             <a
@@ -90,12 +100,17 @@ export function LoginForm({
                   placeholder="m@example.com"
                   value={loginEmail}
                   onChange={(e) => setLoginEmail(e.target.value)}
+                  onKeyDown={handleKeyDown}
                   required
                   autoFocus
                 />
               </Field>
               <Field>
-                <Button type="submit" disabled={loginIsLoading}>
+                <Button
+                  type="button"
+                  onClick={handleButtonClick}
+                  disabled={loginIsLoading}
+                >
                   {loginIsLoading && (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   )}
@@ -139,12 +154,17 @@ export function LoginForm({
                   placeholder="Enter your password"
                   value={loginPassword}
                   onChange={(e) => setLoginPassword(e.target.value)}
+                  onKeyDown={handleKeyDown}
                   required
                   autoFocus
                 />
               </Field>
               <Field>
-                <Button type="submit" disabled={loginIsLoading}>
+                <Button
+                  type="button"
+                  onClick={handleButtonClick}
+                  disabled={loginIsLoading}
+                >
                   {loginIsLoading && (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   )}
@@ -153,7 +173,6 @@ export function LoginForm({
               </Field>
             </>
           )}
-
         </FieldGroup>
       </form>
 
