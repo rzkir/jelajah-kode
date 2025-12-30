@@ -32,7 +32,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     useState("");
   const [passwordResetIsLoading, setPasswordResetIsLoading] = useState(false);
   // Login form state
-  const [loginStep, setLoginStep] = useState<"email" | "password">("email");
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
   const [loginIsLoading, setLoginIsLoading] = useState(false);
@@ -68,7 +67,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setUserRole(account.role);
         }
       } catch (error) {
-        console.error('Auth initialization error:', error);
+        console.error("Auth initialization error:", error);
         // Error occurred while fetching user data
         setUser(null);
         setUserRole(null);
@@ -79,8 +78,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     initializeAuth();
   }, []);
-
-
 
   const signIn = async (email: string, password: string) => {
     try {
@@ -383,43 +380,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   // Login form functions
-  const handleEmailSubmit = async () => {
-    if (!loginEmail) {
-      return;
-    }
-
-    setLoginIsLoading(true);
-
-    try {
-      // Check if account exists
-      const result = await apiCall<{
-        exists: boolean;
-      }>(`${API_ENDPOINTS.auth.signIn}/check`, {
-        method: "POST",
-        body: JSON.stringify({ email: loginEmail }),
-      });
-
-      if (result.error || !result.data) {
-        throw new Error(result.error || "Failed to check email");
-      }
-
-      if (!result.data.exists) {
-        throw new Error("No account found with this email");
-      }
-
-
-      // Email account found, show password field
-      setLoginStep("password");
-    } catch (error: unknown) {
-      const errorMessage =
-        error instanceof Error ? error.message : "An error occurred";
-      toast.error(errorMessage);
-    } finally {
-      setLoginIsLoading(false);
-    }
-  };
-
-  const handlePasswordSubmit = async () => {
+  const handleLoginSubmit = async () => {
     if (!loginEmail || !loginPassword) {
       toast.error("Please enter both email and password");
       return;
@@ -438,13 +399,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const handleBackToEmail = () => {
-    setLoginStep("email");
-    setLoginPassword("");
-  };
-
   const resetLoginState = () => {
-    setLoginStep("email");
     setLoginEmail("");
     setLoginPassword("");
     setLoginIsLoading(false);
@@ -590,8 +545,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-
-
   const value = {
     user,
     loading,
@@ -624,18 +577,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     handleResetPasswordWithOtp,
     resetPasswordFlowState,
     // Login form state
-    loginStep,
     loginEmail,
     loginPassword,
     loginIsLoading,
     // Login form functions
-    setLoginStep,
     setLoginEmail,
     setLoginPassword,
     setLoginIsLoading,
-    handleEmailSubmit,
-    handlePasswordSubmit,
-    handleBackToEmail,
+    handleLoginSubmit,
     resetLoginState,
     // Forget password form state
     forgetPasswordEmail,

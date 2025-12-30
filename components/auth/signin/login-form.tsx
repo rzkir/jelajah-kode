@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from "react";
 import { Code, Loader2 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -26,21 +27,18 @@ export function LoginForm({
   ...props
 }: React.ComponentProps<"div">) {
   const {
-    loginStep,
     loginEmail,
     loginPassword,
     loginIsLoading,
     setLoginEmail,
     setLoginPassword,
-    handleEmailSubmit,
-    handlePasswordSubmit,
-    handleBackToEmail,
+    handleLoginSubmit,
   } = useAuth();
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    return false; // Explicitly return false to prevent submission
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setLoginEmail(e.target.value);
+    // Reset email validation when email changes
+    // Email will be checked only when submit button is clicked
   };
 
   const handleButtonClick = async () => {
@@ -49,11 +47,7 @@ export function LoginForm({
     }
 
     try {
-      if (loginStep === "email") {
-        await handleEmailSubmit();
-      } else {
-        await handlePasswordSubmit();
-      }
+      await handleLoginSubmit();
     } catch (error) {
       // Error is already handled in the auth context
       console.error("Form submission error:", error);
@@ -63,13 +57,22 @@ export function LoginForm({
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && !loginIsLoading) {
       e.preventDefault();
+      e.stopPropagation();
       handleButtonClick();
     }
   };
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <form onSubmit={handleSubmit} noValidate>
+      <div
+        onKeyDown={(e) => {
+          // Prevent form submission on Enter key
+          if (e.key === "Enter" && e.target instanceof HTMLInputElement) {
+            e.preventDefault();
+            e.stopPropagation();
+          }
+        }}
+      >
         <FieldGroup>
           <div className="flex flex-col items-center gap-2 text-center">
             <a
@@ -90,91 +93,52 @@ export function LoginForm({
             </FieldDescription>
           </div>
 
-          {loginStep === "email" && (
-            <>
-              <Field>
-                <FieldLabel htmlFor="email">Email</FieldLabel>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="m@example.com"
-                  value={loginEmail}
-                  onChange={(e) => setLoginEmail(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                  required
-                  autoFocus
-                />
-              </Field>
-              <Field>
-                <Button
-                  type="button"
-                  onClick={handleButtonClick}
-                  disabled={loginIsLoading}
-                >
-                  {loginIsLoading && (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  )}
-                  {loginIsLoading ? "Checking..." : "Continue"}
-                </Button>
-              </Field>
-            </>
-          )}
-
-          {loginStep === "password" && (
-            <>
-              <Field>
-                <FieldLabel htmlFor="email">Email</FieldLabel>
-                <Input
-                  id="email"
-                  type="email"
-                  value={loginEmail}
-                  disabled
-                  className="bg-muted"
-                />
-                <button
-                  type="button"
-                  onClick={handleBackToEmail}
-                  className="text-sm text-blue-600 hover:underline text-left"
-                >
-                  Change email
-                </button>
-              </Field>
-              <Field>
-                <div className="flex items-center justify-between">
-                  <FieldLabel htmlFor="password">Password</FieldLabel>
-                  <Link
-                    href="/forget-password"
-                    className="text-sm text-blue-600 hover:underline"
-                  >
-                    Forgot password?
-                  </Link>
-                </div>
-                <PasswordInput
-                  id="password"
-                  placeholder="Enter your password"
-                  value={loginPassword}
-                  onChange={(e) => setLoginPassword(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                  required
-                  autoFocus
-                />
-              </Field>
-              <Field>
-                <Button
-                  type="button"
-                  onClick={handleButtonClick}
-                  disabled={loginIsLoading}
-                >
-                  {loginIsLoading && (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  )}
-                  {loginIsLoading ? "Signing in..." : "Sign in"}
-                </Button>
-              </Field>
-            </>
-          )}
+          <Field>
+            <FieldLabel htmlFor="email">Email</FieldLabel>
+            <Input
+              id="email"
+              type="email"
+              placeholder="m@example.com"
+              value={loginEmail}
+              onChange={handleEmailChange}
+              onKeyDown={handleKeyDown}
+              required
+              autoFocus
+            />
+          </Field>
+          <Field>
+            <div className="flex items-center justify-between">
+              <FieldLabel htmlFor="password">Password</FieldLabel>
+              <Link
+                href="/forget-password"
+                className="text-sm text-blue-600 hover:underline"
+              >
+                Forgot password?
+              </Link>
+            </div>
+            <PasswordInput
+              id="password"
+              placeholder="Enter your password"
+              value={loginPassword}
+              onChange={(e) => setLoginPassword(e.target.value)}
+              onKeyDown={handleKeyDown}
+              required
+            />
+          </Field>
+          <Field>
+            <Button
+              type="button"
+              onClick={handleButtonClick}
+              disabled={loginIsLoading || !loginEmail || !loginPassword}
+            >
+              {loginIsLoading && (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              )}
+              {loginIsLoading ? "Signing in..." : "Sign in"}
+            </Button>
+          </Field>
         </FieldGroup>
-      </form>
+      </div>
 
       <FieldDescription className="px-6 text-center">
         By clicking continue, you agree to our <a href="#">Terms of Service</a>{" "}

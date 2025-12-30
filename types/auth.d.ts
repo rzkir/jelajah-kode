@@ -50,19 +50,15 @@ interface AuthContextType {
   handleResetPasswordWithOtp: () => Promise<void>;
   resetPasswordFlowState: () => void;
   // Login form state
-  loginStep: "email" | "password";
   loginEmail: string;
   loginPassword: string;
   loginIsLoading: boolean;
 
   // Login form functions
-  setLoginStep: (step: "email" | "password") => void;
   setLoginEmail: (email: string) => void;
   setLoginPassword: (password: string) => void;
   setLoginIsLoading: (loading: boolean) => void;
-  handleEmailSubmit: () => Promise<void>;
-  handlePasswordSubmit: () => Promise<void>;
-  handleBackToEmail: () => void;
+  handleLoginSubmit: () => Promise<void>;
   resetLoginState: () => void;
   // Forget password form state
   forgetPasswordEmail: string;
