@@ -39,6 +39,13 @@ export async function apiCall<T>(
   options: RequestInit = {}
 ): Promise<{ data: T; error?: never } | { data?: never; error: string }> {
   try {
+    // Ensure URL is valid
+    if (!url || url === "undefined" || url.includes("undefined")) {
+      return {
+        error: "Invalid API endpoint URL. Please check your configuration.",
+      };
+    }
+
     const response = await fetch(url, {
       ...options,
       headers: {
@@ -47,7 +54,22 @@ export async function apiCall<T>(
       },
     });
 
-    const data = await response.json();
+    // Check if response is JSON before parsing
+    const contentType = response.headers.get("content-type");
+    let data;
+
+    if (contentType && contentType.includes("application/json")) {
+      data = await response.json();
+    } else {
+      // If not JSON, read as text for error messages
+      const text = await response.text();
+      return {
+        error: `Request failed with status ${response.status}: ${text.substring(
+          0,
+          100
+        )}`,
+      };
+    }
 
     if (!response.ok) {
       return {

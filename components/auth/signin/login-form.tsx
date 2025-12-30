@@ -39,16 +39,27 @@ export function LoginForm({
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (loginStep === "email") {
-      await handleEmailSubmit();
-    } else {
-      await handlePasswordSubmit();
+    e.stopPropagation();
+    
+    if (loginIsLoading) {
+      return;
+    }
+    
+    try {
+      if (loginStep === "email") {
+        await handleEmailSubmit();
+      } else {
+        await handlePasswordSubmit();
+      }
+    } catch (error) {
+      // Error is already handled in the auth context
+      console.error("Form submission error:", error);
     }
   };
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} action="#" method="post">
         <FieldGroup>
           <div className="flex flex-col items-center gap-2 text-center">
             <a
