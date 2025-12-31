@@ -34,19 +34,21 @@ const publicPaths = [
 // Define admin-only paths
 const adminPaths = ["/dashboard"];
 
-export default function middleware(request: NextRequest) {
+export default function proxy(request: NextRequest) {
   const token = request.cookies.get("token")?.value;
   const { pathname } = request.nextUrl;
   const method = request.method;
 
   // CRITICAL: Always allow all API routes to pass through without any checks
   // This prevents redirects on POST/PUT/DELETE requests to API endpoints
-  if (pathname.startsWith("/api/")) {
+  // Check both /api/ and /api to handle all API routes
+  if (pathname.startsWith("/api/") || pathname === "/api") {
     return NextResponse.next();
   }
 
-  // Only handle GET requests for page routes
-  // Never redirect POST/PUT/DELETE/PATCH requests
+  // CRITICAL: Only handle GET requests for page routes
+  // Never redirect POST/PUT/DELETE/PATCH requests - let them pass through
+  // This prevents 405 errors when API calls are mistakenly routed to pages
   if (method !== "GET") {
     return NextResponse.next();
   }
@@ -159,12 +161,14 @@ export const config = {
   matcher: [
     /*
      * Match all request paths except for the ones starting with:
-     * - api (API routes)
+     * - api/ (API routes) - CRITICAL: Must exclude to prevent 405 errors on POST/PUT/DELETE
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
-     * - public folder
+     *
+     * This ensures API routes are NEVER processed by the proxy,
+     * preventing redirects that cause 405 Method Not Allowed errors
      */
-    "/((?!api|_next/static|_next/image|favicon.ico).*)",
+    "/((?!api/|_next/static|_next/image|favicon.ico|.*\\.).*)",
   ],
 };
