@@ -43,6 +43,10 @@ export default function proxy(request: NextRequest) {
   // This prevents redirects on POST/PUT/DELETE requests to API endpoints
   // Check both /api/ and /api to handle all API routes
   if (pathname.startsWith("/api/") || pathname === "/api") {
+    // Log in development for debugging
+    if (process.env.NODE_ENV === "development") {
+      console.log(`[PROXY] Allowing API route: ${method} ${pathname}`);
+    }
     return NextResponse.next();
   }
 
@@ -161,14 +165,21 @@ export const config = {
   matcher: [
     /*
      * Match all request paths except for the ones starting with:
-     * - api/ (API routes) - CRITICAL: Must exclude to prevent 405 errors on POST/PUT/DELETE
+     * - /api (API routes) - CRITICAL: Must exclude to prevent 405 errors on POST/PUT/DELETE
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
+     * - files with extensions (images, fonts, etc.)
      *
      * This ensures API routes are NEVER processed by the proxy,
      * preventing redirects that cause 405 Method Not Allowed errors
+     *
+     * Pattern explanation:
+     * - ^/ = must start with /
+     * - (?!api) = negative lookahead - don't match if starts with "api"
+     * - (?!_next) = negative lookahead - don't match if starts with "_next"
+     * - .* = match everything else
      */
-    "/((?!api/|_next/static|_next/image|favicon.ico|.*\\.).*)",
+    "/((?!api|_next|favicon\\.ico).*)",
   ],
 };

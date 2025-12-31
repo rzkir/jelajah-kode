@@ -7,13 +7,6 @@ const getBaseUrl = () => {
     return process.env.NEXT_PUBLIC_BASE_URL.replace(/\/$/, "");
   }
 
-  // In production, use the Vercel deployment URL
-  if (process.env.NODE_ENV === "production") {
-    return "https://jelajahkode.vercel.app";
-  }
-
-  // In development, use relative paths (same-origin)
-  // This works better for local development
   return "";
 };
 
