@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { toast } from "sonner";
 import useFormatDate from "@/hooks/FormatDate";
 import { useRouter } from "next/navigation";
@@ -38,25 +38,64 @@ export default function useStateProduct() {
   const [deleteItemTitle, setDeleteItemTitle] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [selectedStatus, setSelectedStatus] = useState<string>("all");
   const [viewMode, setViewMode] = useState<"card" | "table">("table");
+  const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
   const itemsPerPage = 10;
 
   const router = useRouter();
 
   const { formatDate } = useFormatDate();
 
-  // Filter products based on search term
-  const filteredProducts = products.filter(
-    (product) =>
+  // Filter products based on search term, category, and status
+  const filteredProducts = products.filter((product) => {
+    // Search filter
+    const matchesSearch =
       product.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       product.productsId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.description.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+      product.description.toLowerCase().includes(searchTerm.toLowerCase());
+
+    // Category filter
+    const matchesCategory =
+      selectedCategory === "all" ||
+      product.category.some(
+        (cat) =>
+          cat.categoryId === selectedCategory || cat.title === selectedCategory
+      );
+
+    // Status filter
+    const matchesStatus =
+      selectedStatus === "all" || product.status === selectedStatus;
+
+    return matchesSearch && matchesCategory && matchesStatus;
+  });
 
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const currentProducts = filteredProducts.slice(startIndex, endIndex);
+
+  // Extract unique categories from products
+  const categories = useMemo(() => {
+    const categoryMap = new Map<
+      string,
+      { title: string; categoryId: string }
+    >();
+
+    products.forEach((product) => {
+      product.category?.forEach((cat) => {
+        if (!categoryMap.has(cat.categoryId)) {
+          categoryMap.set(cat.categoryId, {
+            title: cat.title,
+            categoryId: cat.categoryId,
+          });
+        }
+      });
+    });
+
+    return Array.from(categoryMap.values());
+  }, [products]);
 
   useEffect(() => {
     fetchProducts();
@@ -127,9 +166,20 @@ export default function useStateProduct() {
     setCurrentPage(1); // Reset to first page when searching
   };
 
+  const handleCategoryChange = (value: string) => {
+    setSelectedCategory(value);
+    setCurrentPage(1); // Reset to first page when filtering
+  };
+
+  const handleStatusChange = (value: string) => {
+    setSelectedStatus(value);
+    setCurrentPage(1); // Reset to first page when filtering
+  };
+
   return {
     // Data
     products,
+    categories,
     currentProducts,
     filteredProducts,
 
@@ -154,13 +204,21 @@ export default function useStateProduct() {
 
     // Search and view states
     searchTerm,
+    selectedCategory,
+    selectedStatus,
     viewMode,
     setViewMode,
+
+    // Filter sheet state
+    isFilterSheetOpen,
+    setIsFilterSheetOpen,
 
     // Functions
     handleDelete,
     confirmDelete,
     handleSearchChange,
+    handleCategoryChange,
+    handleStatusChange,
     formatDate,
     router,
   };

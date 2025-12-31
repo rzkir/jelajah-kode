@@ -56,8 +56,8 @@ export async function GET(
       tags: product.tags,
       paymentType: product.paymentType,
       status: product.status,
-      created_at: product.created_at,
-      updated_at: product.updated_at,
+      created_at: product.createdAt,
+      updated_at: product.updatedAt,
     };
 
     return NextResponse.json(formattedProduct);

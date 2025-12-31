@@ -1,8 +1,9 @@
 "use client";
 
-import React from "react";
 import { Button } from "@/components/ui/button";
+
 import { Input } from "@/components/ui/input";
+
 import {
   Table,
   TableBody,
@@ -11,18 +12,29 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
 import { Badge } from "@/components/ui/badge";
-import { Search, Plus, Pencil, Trash2, Eye, Grid3X3, List } from "lucide-react";
+
+
+import BottomSheet from "@/helper/bottomsheets/BottomShets";
+
+import { Search, Plus, Pencil, Trash2, Eye, Grid3X3, List, Filter } from "lucide-react";
+
 import Image from "next/image";
 
 import DeleteModalProducts from "@/components/dashboard/products/products/modal/DeleteModalProducts";
+
 import useStateProduct from "./lib/useStateProduct";
+
+import { formatIDR } from "@/hooks/FormatPrice";
 
 export default function ProductsLayout() {
   const {
     // Data
     products,
+    categories,
     currentProducts,
 
     // Loading states
@@ -45,13 +57,21 @@ export default function ProductsLayout() {
 
     // Search and view states
     searchTerm,
+    selectedCategory,
+    selectedStatus,
     viewMode,
     setViewMode,
+
+    // Filter sheet state
+    isFilterSheetOpen,
+    setIsFilterSheetOpen,
 
     // Functions
     handleDelete,
     confirmDelete,
     handleSearchChange,
+    handleCategoryChange,
+    handleStatusChange,
     formatDate,
     router,
   } = useStateProduct();
@@ -96,42 +116,129 @@ export default function ProductsLayout() {
           </ol>
         </div>
 
-        <div className="flex items-center gap-3">
-          <div className="relative">
-            <Input
-              placeholder="Search products..."
-              value={searchTerm}
-              onChange={handleSearchChange}
-              className="w-64 pl-9"
-            />
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          </div>
-          <div className="flex items-center border rounded-md p-1">
-            <Button
-              variant={viewMode === "card" ? "default" : "ghost"}
-              size="sm"
-              onClick={() => setViewMode("card")}
-              className="h-8 px-2"
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full">
+          <div className="flex flex-wrap items-center gap-3 flex-1">
+            <div className="relative">
+              <Input
+                placeholder="Search products..."
+                value={searchTerm}
+                onChange={handleSearchChange}
+                className="w-64 pl-9"
+              />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            </div>
+            <BottomSheet
+              open={isFilterSheetOpen}
+              onOpenChange={setIsFilterSheetOpen}
+              trigger={
+                <Button variant="outline" className="gap-2">
+                  <Filter className="w-4 h-4" />
+                  Filters
+                </Button>
+              }
+              title="Filter Products"
+              description="Filter products by category, status, and view mode"
+              side="right"
+              contentClassName="w-full max-w-full"
+              className="space-y-6 px-4"
             >
-              <Grid3X3 className="w-4 h-4" />
-            </Button>
+              {/* Category Filter */}
+              <div className="flex flex-col gap-3">
+                <label className="text-sm font-medium">Category</label>
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    variant={selectedCategory === "all" ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => handleCategoryChange("all")}
+                    className="h-9"
+                  >
+                    All Categories
+                  </Button>
+                  {categories.map((category) => (
+                    <Button
+                      key={category.categoryId}
+                      variant={
+                        selectedCategory === category.categoryId
+                          ? "default"
+                          : "outline"
+                      }
+                      size="sm"
+                      onClick={() => handleCategoryChange(category.categoryId)}
+                      className="h-9"
+                    >
+                      {category.title}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Status Filter */}
+              <div className="flex flex-col gap-3">
+                <label className="text-sm font-medium">Status</label>
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    variant={selectedStatus === "all" ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => handleStatusChange("all")}
+                    className="h-9"
+                  >
+                    All Status
+                  </Button>
+                  <Button
+                    variant={selectedStatus === "publish" ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => handleStatusChange("publish")}
+                    className="h-9"
+                  >
+                    Publish
+                  </Button>
+                  <Button
+                    variant={selectedStatus === "draft" ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => handleStatusChange("draft")}
+                    className="h-9"
+                  >
+                    Draft
+                  </Button>
+                </div>
+              </div>
+
+              {/* View Mode */}
+              <div className="flex flex-col gap-3">
+                <label className="text-sm font-medium">View Mode</label>
+                <div className="flex items-center border rounded-md p-1 w-fit">
+                  <Button
+                    variant={viewMode === "card" ? "default" : "ghost"}
+                    size="sm"
+                    onClick={() => setViewMode("card")}
+                    className="h-8 px-3"
+                  >
+                    <Grid3X3 className="w-4 h-4 mr-2" />
+                    Card
+                  </Button>
+                  <Button
+                    variant={viewMode === "table" ? "default" : "ghost"}
+                    size="sm"
+                    onClick={() => setViewMode("table")}
+                    className="h-8 px-3"
+                  >
+                    <List className="w-4 h-4 mr-2" />
+                    Table
+                  </Button>
+                </div>
+              </div>
+            </BottomSheet>
+          </div>
+          <div className="flex items-center gap-3">
             <Button
-              variant={viewMode === "table" ? "default" : "ghost"}
-              size="sm"
-              onClick={() => setViewMode("table")}
-              className="h-8 px-2"
+              variant="default"
+              className="px-6 py-2 font-medium"
+              onClick={() => router.push("/dashboard/products/products/new")}
             >
-              <List className="w-4 h-4" />
+              <Plus className="w-4 h-4 mr-2" />
+              Create Product
             </Button>
           </div>
-          <Button
-            variant="default"
-            className="px-6 py-2 font-medium"
-            onClick={() => router.push("/dashboard/products/products/new")}
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Create Product
-          </Button>
         </div>
       </div>
 
@@ -165,32 +272,22 @@ export default function ProductsLayout() {
             </div>
           ) : (
             currentProducts.map((product) => (
-              <Card key={product._id} className="overflow-hidden">
-                <div className="relative w-full aspect-4/3">
+              <Card key={product._id} className="overflow-hidden p-0 group">
+                <div className="relative w-full aspect-4/3 overflow-hidden">
                   {product.thumbnail ? (
                     <Image
                       src={product.thumbnail}
                       alt={product.title}
                       width={400}
                       height={300}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                   ) : (
                     <div className="w-full h-full bg-muted flex items-center justify-center">
                       <span className="text-muted-foreground">No image</span>
                     </div>
                   )}
-                </div>
-                <CardHeader className="p-4">
-                  <CardTitle className="text-lg truncate">
-                    {product.title}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-4 pt-0">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-lg font-bold">
-                      ${product.price.toFixed(2)}
-                    </span>
+                  <div className="absolute top-2 right-2">
                     <Badge
                       variant={
                         product.status === "publish" ? "default" : "secondary"
@@ -199,18 +296,10 @@ export default function ProductsLayout() {
                       {product.status}
                     </Badge>
                   </div>
-                  {product.tags && product.tags.length > 0 && (
-                    <div className="mb-2">
-                      <p className="text-xs text-muted-foreground truncate">
-                        Tags: {product.tags.map((tag) => tag.title).join(", ")}
-                      </p>
-                    </div>
-                  )}
-                  <div className="flex gap-2 mt-3">
+                  <div className="absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/50">
                     <Button
-                      variant="outline"
+                      variant="default"
                       size="sm"
-                      className="flex-1"
                       onClick={() =>
                         router.push(
                           `/dashboard/products/products/${product.productsId}`
@@ -220,6 +309,27 @@ export default function ProductsLayout() {
                       <Eye className="w-4 h-4 mr-1" />
                       View
                     </Button>
+                  </div>
+                </div>
+
+                <CardHeader>
+                  <CardTitle className="text-lg truncate">
+                    {product.title}
+                  </CardTitle>
+                </CardHeader>
+
+                <CardContent className="space-y-4 pb-4 -mt-4">
+                  <div className="flex justify-between items-center">
+                    <span className="text-lg font-bold">
+                      Rp {formatIDR(product.price)}
+                    </span>
+                  </div>
+
+                  <p className="text-xs text-muted-foreground truncate">
+                    Tags: {product.tags?.map((tag) => tag.title).join(", ") || "N/A"}
+                  </p>
+
+                  <div className="flex gap-2">
                     <Button
                       variant="outline"
                       size="sm"
@@ -282,12 +392,10 @@ export default function ProductsLayout() {
                 <TableRow>
                   <TableHead>Thumbnail</TableHead>
                   <TableHead>Title</TableHead>
-                  <TableHead>Product ID</TableHead>
                   <TableHead>Price</TableHead>
                   <TableHead>Stock</TableHead>
                   <TableHead>Sold</TableHead>
                   <TableHead>Category</TableHead>
-                  <TableHead>Tags</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Created</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
@@ -316,18 +424,12 @@ export default function ProductsLayout() {
                     <TableCell className="font-medium">
                       {product.title}
                     </TableCell>
-                    <TableCell>{product.productsId}</TableCell>
-                    <TableCell>${product.price.toFixed(2)}</TableCell>
+                    <TableCell>Rp {formatIDR(product.price)}</TableCell>
                     <TableCell>{product.stock}</TableCell>
                     <TableCell>{product.sold || 0}</TableCell>
                     <TableCell>
                       {product.category && product.category.length > 0
                         ? product.category.map((cat) => cat.title).join(", ")
-                        : "N/A"}
-                    </TableCell>
-                    <TableCell>
-                      {product.tags && product.tags.length > 0
-                        ? product.tags.join(", ")
                         : "N/A"}
                     </TableCell>
                     <TableCell>
@@ -340,9 +442,7 @@ export default function ProductsLayout() {
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      {product.created_at
-                        ? formatDate(product.created_at)
-                        : "N/A"}
+                      {product.created_at ? formatDate(product.created_at) : "N/A"}
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">

@@ -114,6 +114,21 @@ const productsSchema = new mongoose.Schema(
     price: {
       type: Number,
       required: true,
+      validate: {
+        validator: function (value: number) {
+          // If paymentType is "free", price must be 0
+          if (this.paymentType === "free") {
+            return value === 0;
+          }
+          // If paymentType is "paid", price must be greater than 0
+          if (this.paymentType === "paid") {
+            return value > 0;
+          }
+          return true;
+        },
+        message:
+          "Price must be 0 when paymentType is 'free', and must be greater than 0 when paymentType is 'paid'",
+      },
     },
     stock: {
       type: Number,
@@ -170,8 +185,21 @@ const productsSchema = new mongoose.Schema(
   }
 );
 
-// Add pre-save middleware to log the document
+// Add pre-save middleware to ensure price is 0 when paymentType is "free"
 productsSchema.pre("save", function (next) {
+  // If paymentType is "free", ensure price is 0
+  if (this.paymentType === "free") {
+    this.price = 0;
+  }
+  next();
+});
+
+// Add pre-validate middleware to ensure data consistency
+productsSchema.pre("validate", function (next) {
+  // If paymentType is "free", ensure price is 0
+  if (this.paymentType === "free" && this.price !== 0) {
+    this.price = 0;
+  }
   next();
 });
 

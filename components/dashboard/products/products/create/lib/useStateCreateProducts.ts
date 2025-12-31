@@ -57,6 +57,16 @@ export function useStateCreateProducts() {
     }
   }, [formData.title, isEdit]);
 
+  // Auto-set price to 0 when paymentType is "free"
+  useEffect(() => {
+    if (formData.paymentType === "free") {
+      setFormData((prev) => ({
+        ...prev,
+        price: 0,
+      }));
+    }
+  }, [formData.paymentType]);
+
   // Fetch collections
   useEffect(() => {
     const fetchCollections = async () => {
@@ -288,6 +298,9 @@ export function useStateCreateProducts() {
     setIsSubmitting(true);
 
     try {
+      // Ensure price is 0 if paymentType is "free"
+      const finalPrice = formData.paymentType === "free" ? 0 : formData.price;
+
       // Create new product
       const response = await fetch("/api/products", {
         method: "POST",
@@ -301,7 +314,7 @@ export function useStateCreateProducts() {
           thumbnail: formData.thumbnail,
           description: formData.description,
           faqs: formData.faqs || "",
-          price: formData.price,
+          price: finalPrice,
           stock: formData.stock,
           download: formData.download || "",
           paymentType: formData.paymentType,
@@ -370,9 +383,8 @@ export function useStateCreateProducts() {
         throw new Error(errorMessage);
       }
 
-      const newProduct = await response.json();
       toast.success("Product created successfully!");
-      router.push(`/dashboard/products/products/${newProduct._id}`);
+      router.push(`/dashboard/products/products`);
     } catch (error) {
       console.error("Error processing product:", error);
       toast.error(

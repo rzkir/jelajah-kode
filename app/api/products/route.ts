@@ -80,8 +80,8 @@ export async function GET(request: Request) {
         tags: product.tags,
         paymentType: product.paymentType,
         status: product.status,
-        created_at: product.created_at,
-        updated_at: product.updated_at,
+        created_at: product.createdAt,
+        updated_at: product.updatedAt,
       };
 
       return NextResponse.json(formattedProduct);
@@ -119,8 +119,8 @@ export async function GET(request: Request) {
         tags: product.tags,
         paymentType: product.paymentType,
         status: product.status,
-        created_at: product.created_at,
-        updated_at: product.updated_at,
+        created_at: product.createdAt,
+        updated_at: product.updatedAt,
       }));
 
       return NextResponse.json({
@@ -153,8 +153,6 @@ export async function POST(request: Request) {
       "productsId",
       "thumbnail",
       "description",
-      "price",
-      "stock",
       "author",
       "paymentType",
       "status",
@@ -170,6 +168,35 @@ export async function POST(request: Request) {
           { status: 400 }
         );
       }
+    }
+
+    // Validate price - handle special case for paymentType "free"
+    if (body.paymentType === "free") {
+      // For free products, ensure price is 0
+      body.price = 0;
+    } else if (body.paymentType === "paid") {
+      // For paid products, price must be provided and greater than 0
+      if (body.price === undefined || body.price === null || body.price <= 0) {
+        return NextResponse.json(
+          {
+            error:
+              "Price is required and must be greater than 0 for paid products",
+          },
+          { status: 400 }
+        );
+      }
+    }
+
+    // Validate stock - must be a number (can be 0)
+    if (
+      body.stock === undefined ||
+      body.stock === null ||
+      typeof body.stock !== "number"
+    ) {
+      return NextResponse.json(
+        { error: "Stock is required and must be a number" },
+        { status: 400 }
+      );
     }
 
     // Helper function to parse array fields that might be stringified
@@ -216,13 +243,21 @@ export async function POST(request: Request) {
     // Build product data explicitly to avoid any field conflicts
     const formattedTags = formatTags(body.tags);
 
+    // Ensure price is set correctly based on paymentType
+    const finalPrice =
+      body.paymentType === "free"
+        ? 0
+        : typeof body.price === "number"
+        ? body.price
+        : Number(body.price);
+
     const productData = {
       title: body.title,
       productsId: body.productsId,
       thumbnail: body.thumbnail,
       description: body.description,
       faqs: body.faqs || "",
-      price: typeof body.price === "number" ? body.price : Number(body.price),
+      price: finalPrice,
       stock: typeof body.stock === "number" ? body.stock : Number(body.stock),
       download: body.download || "",
       paymentType: body.paymentType,
@@ -300,8 +335,8 @@ export async function POST(request: Request) {
       tags: savedProduct.tags,
       paymentType: savedProduct.paymentType,
       status: savedProduct.status,
-      created_at: savedProduct.created_at,
-      updated_at: savedProduct.updated_at,
+      created_at: savedProduct.createdAt,
+      updated_at: savedProduct.updatedAt,
     };
 
     return NextResponse.json(formattedProduct, { status: 201 });
@@ -386,8 +421,8 @@ export async function PUT(request: Request) {
       tags: updatedProduct.tags,
       paymentType: updatedProduct.paymentType,
       status: updatedProduct.status,
-      created_at: updatedProduct.created_at,
-      updated_at: updatedProduct.updated_at,
+      created_at: updatedProduct.createdAt,
+      updated_at: updatedProduct.updatedAt,
     };
 
     return NextResponse.json(formattedProduct);

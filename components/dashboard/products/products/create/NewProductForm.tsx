@@ -141,7 +141,8 @@ export default function NewProductForm() {
                     type="text"
                     value={formatIDR(formData.price)}
                     onChange={handlePriceChange}
-                    required
+                    required={formData.paymentType === "paid"}
+                    disabled={formData.paymentType === "free"}
                     placeholder="0"
                     inputMode="numeric"
                   />
@@ -178,7 +179,11 @@ export default function NewProductForm() {
                     name="paymentType"
                     value={formData.paymentType}
                     onValueChange={(value: "free" | "paid") =>
-                      setFormData((prev) => ({ ...prev, paymentType: value }))
+                      setFormData((prev) => ({
+                        ...prev,
+                        paymentType: value,
+                        price: value === "free" ? 0 : prev.price,
+                      }))
                     }
                   >
                     <SelectTrigger id="paymentType" className="w-full">
