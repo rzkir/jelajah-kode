@@ -31,10 +31,7 @@ const API_SECRET = process.env.NEXT_PUBLIC_API_SECRET;
 // Helper to construct API endpoint URLs
 const createEndpoint = (path: string) => {
   // Ensure path starts with /
-  let cleanPath = path.startsWith("/") ? path : `/${path}`;
-
-  // Remove any domain that might be in the path itself (clean it first)
-  cleanPath = cleanPath.replace(/^\/[^\/]+\.(vercel\.app|localhost|local)/, "");
+  const cleanPath = path.startsWith("/") ? path : `/${path}`;
 
   // If base URL is set and is a valid absolute URL, use it
   if (
