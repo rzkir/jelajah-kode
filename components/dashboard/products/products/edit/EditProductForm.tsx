@@ -1,5 +1,8 @@
 "use client";
 
+import * as React from "react";
+import { Check, ChevronsUpDown } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 
 import { Input } from "@/components/ui/input";
@@ -17,6 +20,23 @@ import {
 } from "@/components/ui/select";
 
 import { Skeleton } from "@/components/ui/skeleton";
+
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+
+import { cn } from "@/lib/utils";
 
 import { useRouter } from "next/navigation";
 
@@ -52,6 +72,8 @@ export default function EditProductForm() {
     handlePriceChange,
     handleSubmit,
   } = useStateEditProducts();
+
+  const [categoryOpen, setCategoryOpen] = React.useState(false);
 
   if (isPageLoading) {
     return <FormSkelaton />;
@@ -94,24 +116,65 @@ export default function EditProductForm() {
 
                 <div className="flex flex-col gap-2">
                   <Label htmlFor="category">Category</Label>
-                  <Select
-                    name="category"
-                    value={formData.category}
-                    onValueChange={(value) =>
-                      setFormData((prev) => ({ ...prev, category: value }))
-                    }
-                  >
-                    <SelectTrigger id="category" className="w-full">
-                      <SelectValue placeholder="Select a category" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {categories.map((category) => (
-                        <SelectItem key={category._id} value={category._id}>
-                          {category.title}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <Popover open={categoryOpen} onOpenChange={setCategoryOpen}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        aria-expanded={categoryOpen}
+                        className="w-full justify-between"
+                      >
+                        {formData.category
+                          ? categories.find(
+                            (category) => category._id === formData.category
+                          )?.title
+                          : "Select category..."}
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="p-0" align="start">
+                      <Command>
+                        <CommandInput
+                          placeholder="Search category..."
+                          className="h-9"
+                        />
+                        <CommandList>
+                          <CommandEmpty>No category found.</CommandEmpty>
+                          <CommandGroup>
+                            {categories.map((category) => (
+                              <CommandItem
+                                key={category._id}
+                                value={category.title}
+                                onSelect={(currentValue) => {
+                                  const selectedCategory = categories.find(
+                                    (cat) => cat.title === currentValue
+                                  );
+                                  setFormData((prev) => ({
+                                    ...prev,
+                                    category:
+                                      selectedCategory?._id === formData.category
+                                        ? ""
+                                        : selectedCategory?._id || "",
+                                  }));
+                                  setCategoryOpen(false);
+                                }}
+                              >
+                                {category.title}
+                                <Check
+                                  className={cn(
+                                    "ml-auto h-4 w-4",
+                                    formData.category === category._id
+                                      ? "opacity-100"
+                                      : "opacity-0"
+                                  )}
+                                />
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
                 </div>
               </div>
 

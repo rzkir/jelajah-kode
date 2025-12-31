@@ -39,6 +39,11 @@ interface Discount {
     until?: string;
 }
 
+interface ProductTag {
+    title: string;
+    tagsId: string;
+}
+
 interface Product {
     _id: string;
     title: string;
@@ -57,7 +62,7 @@ interface Product {
     images?: string[];
     discount?: Discount;
     author: Author;
-    tags?: string[];
+    tags?: (ProductTag | string)[];
     paymentType: 'free' | 'paid';
     status: 'publish' | 'draft';
     created_at?: string;
@@ -325,11 +330,15 @@ export default function ProductDetailPage({ params }: { params: Promise<{ produc
                             </CardHeader>
                             <CardContent>
                                 <div className="flex flex-wrap gap-2">
-                                    {product.tags.map((tag, index) => (
-                                        <Badge key={`${tag}-${index}`} variant="outline">
-                                            {tag}
-                                        </Badge>
-                                    ))}
+                                    {product.tags.map((tag, index) => {
+                                        const tagTitle = typeof tag === 'string' ? tag : tag.title;
+                                        const tagKey = typeof tag === 'string' ? tag : (tag.tagsId || tag.title);
+                                        return (
+                                            <Badge key={`${tagKey}-${index}`} variant="outline">
+                                                {tagTitle}
+                                            </Badge>
+                                        );
+                                    })}
                                 </div>
                             </CardContent>
                         </Card>

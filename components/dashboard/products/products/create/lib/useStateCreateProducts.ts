@@ -296,7 +296,16 @@ export function useStateCreateProducts() {
           Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_SECRET}`,
         },
         body: JSON.stringify({
-          ...formData,
+          title: formData.title,
+          productsId: formData.productsId,
+          thumbnail: formData.thumbnail,
+          description: formData.description,
+          faqs: formData.faqs || "",
+          price: formData.price,
+          stock: formData.stock,
+          download: formData.download || "",
+          paymentType: formData.paymentType,
+          status: formData.status,
           tags: formData.tags
             .map((tagId) => {
               const tag = tags.find((t) => t._id === tagId);
@@ -320,7 +329,13 @@ export function useStateCreateProducts() {
             : [],
           frameworks:
             formData.frameworks.length > 0
-              ? frameworks.filter((fw) => formData.frameworks.includes(fw._id))
+              ? frameworks
+                  .filter((fw) => formData.frameworks.includes(fw._id))
+                  .map((fw) => ({
+                    title: fw.title,
+                    frameworkId: fw.frameworkId,
+                    thumbnail: fw.thumbnail,
+                  }))
               : [],
           discount:
             formData.discount?.type && formData.discount?.value
@@ -344,7 +359,15 @@ export function useStateCreateProducts() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to create product");
+        // Show more detailed error message if available
+        const errorMessage = errorData.details
+          ? `${errorData.error}: ${
+              Array.isArray(errorData.details)
+                ? errorData.details.join(", ")
+                : errorData.details
+            }`
+          : errorData.error || "Failed to create product";
+        throw new Error(errorMessage);
       }
 
       const newProduct = await response.json();

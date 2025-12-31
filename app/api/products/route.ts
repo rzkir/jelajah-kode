@@ -4,6 +4,8 @@ import { connectMongoDB } from "@/lib/mongodb";
 
 import { Types } from "mongoose";
 
+import mongoose from "mongoose";
+
 import Products from "@/models/Products";
 
 export async function GET(request: Request) {
@@ -94,7 +96,8 @@ export async function GET(request: Request) {
       const totalCount = await Products.countDocuments(query);
 
       // Format response
-      const formattedProducts = products.map((product) => ({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const formattedProducts = products.map((product: any) => ({
         _id: product._id.toString(),
         productsId: product.productsId,
         title: product.title,
@@ -169,12 +172,110 @@ export async function POST(request: Request) {
       }
     }
 
-    // Create new product
-    const newProduct = new Products({
-      ...body,
+    // Helper function to parse array fields that might be stringified
+    const parseArrayField = (field: unknown): unknown[] => {
+      if (Array.isArray(field)) {
+        return field;
+      }
+      if (typeof field === "string") {
+        try {
+          const parsed = JSON.parse(field);
+          return Array.isArray(parsed) ? parsed : [];
+        } catch {
+          return [];
+        }
+      }
+      return [];
+    };
+
+    // Validate and format tags array
+    const formatTags = (
+      tags: unknown
+    ): Array<{ title: string; tagsId: string }> => {
+      const parsed = parseArrayField(tags);
+      return parsed
+        .map((tag) => {
+          if (
+            typeof tag === "object" &&
+            tag !== null &&
+            "title" in tag &&
+            "tagsId" in tag
+          ) {
+            return {
+              title: String(tag.title),
+              tagsId: String(tag.tagsId),
+            };
+          }
+          return null;
+        })
+        .filter(
+          (tag): tag is { title: string; tagsId: string } => tag !== null
+        );
+    };
+
+    // Build product data explicitly to avoid any field conflicts
+    const formattedTags = formatTags(body.tags);
+
+    const productData = {
+      title: body.title,
+      productsId: body.productsId,
+      thumbnail: body.thumbnail,
+      description: body.description,
+      faqs: body.faqs || "",
+      price: typeof body.price === "number" ? body.price : Number(body.price),
+      stock: typeof body.stock === "number" ? body.stock : Number(body.stock),
+      download: body.download || "",
+      paymentType: body.paymentType,
+      status: body.status,
+      tags: formattedTags,
+      frameworks: parseArrayField(body.frameworks),
+      category: parseArrayField(body.category),
+      images: parseArrayField(body.images),
+      discount: body.discount || undefined,
+      author: body.author,
       createdAt: new Date(),
       updatedAt: new Date(),
-    });
+    };
+
+    // Ensure tags is always an array of objects (not stringified)
+    if (!Array.isArray(productData.tags)) {
+      console.error("Tags is not an array:", productData.tags);
+      return NextResponse.json(
+        { error: "Tags must be an array" },
+        { status: 400 }
+      );
+    }
+
+    // Validate each tag has the required structure
+    for (const tag of productData.tags) {
+      if (
+        !tag ||
+        typeof tag !== "object" ||
+        !("title" in tag) ||
+        !("tagsId" in tag)
+      ) {
+        console.error("Invalid tag structure:", tag);
+        return NextResponse.json(
+          { error: "Each tag must have title and tagsId" },
+          { status: 400 }
+        );
+      }
+    }
+
+    // Create new product - ensure tags is a fresh array of plain objects
+    const productDataForMongoose = {
+      ...productData,
+      tags: formattedTags.map((tag) => ({
+        title: String(tag.title),
+        tagsId: String(tag.tagsId),
+      })),
+    };
+
+    // Create product instance - create a clean copy to avoid any reference issues
+    // This ensures we have plain JavaScript objects that Mongoose can properly cast
+    const cleanProductData = JSON.parse(JSON.stringify(productDataForMongoose));
+
+    const newProduct = new Products(cleanProductData);
 
     const savedProduct = await newProduct.save();
 
@@ -206,6 +307,31 @@ export async function POST(request: Request) {
     return NextResponse.json(formattedProduct, { status: 201 });
   } catch (error) {
     console.error("Error creating product:", error);
+
+    // Provide more detailed error messages
+    if (error instanceof Error) {
+      // Check if it's a Mongoose validation error
+      if (error instanceof mongoose.Error.ValidationError) {
+        const validationErrors = Object.values(error.errors).map(
+          (err) => err.message
+        );
+        return NextResponse.json(
+          {
+            error: "Validation error",
+            details:
+              validationErrors.length > 0 ? validationErrors : [error.message],
+          },
+          { status: 400 }
+        );
+      }
+
+      // Return the actual error message
+      return NextResponse.json(
+        { error: error.message || "Failed to create product" },
+        { status: 500 }
+      );
+    }
+
     return NextResponse.json(
       { error: "Failed to create product" },
       { status: 500 }

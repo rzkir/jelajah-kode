@@ -32,6 +32,20 @@ const productsCategorySchema = new mongoose.Schema(
   { _id: false }
 );
 
+const productsTagsSchema = new mongoose.Schema(
+  {
+    title: {
+      type: String,
+      required: true,
+    },
+    tagsId: {
+      type: String,
+      required: true,
+    },
+  },
+  { _id: false }
+);
+
 const discountSchema = new mongoose.Schema(
   {
     type: {
@@ -110,7 +124,7 @@ const productsSchema = new mongoose.Schema(
     },
     download: {
       type: String,
-      required: true,
+      default: "",
     },
     category: {
       type: [productsCategorySchema],
@@ -137,7 +151,7 @@ const productsSchema = new mongoose.Schema(
       required: true,
     },
     tags: {
-      type: [String],
+      type: [productsTagsSchema],
       default: [],
     },
     paymentType: {
