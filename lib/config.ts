@@ -1,3 +1,5 @@
+// Use relative paths for same-origin API calls
+// Only use absolute URL if explicitly needed for cross-origin requests
 const API_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "";
 
 const API_SECRET = process.env.NEXT_PUBLIC_API_SECRET;

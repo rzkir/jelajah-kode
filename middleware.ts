@@ -34,12 +34,20 @@ const publicPaths = [
 // Define admin-only paths
 const adminPaths = ["/dashboard"];
 
-export function proxy(request: NextRequest) {
+export default function middleware(request: NextRequest) {
   const token = request.cookies.get("token")?.value;
   const { pathname } = request.nextUrl;
+  const method = request.method;
 
-  // Allow all auth API routes without proxy check
-  if (pathname.startsWith("/api/auth")) {
+  // CRITICAL: Always allow all API routes to pass through without any checks
+  // This prevents redirects on POST/PUT/DELETE requests to API endpoints
+  if (pathname.startsWith("/api/")) {
+    return NextResponse.next();
+  }
+
+  // Only handle GET requests for page routes
+  // Never redirect POST/PUT/DELETE/PATCH requests
+  if (method !== "GET") {
     return NextResponse.next();
   }
 
