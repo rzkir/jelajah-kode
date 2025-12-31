@@ -1,12 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
-import { addCorsHeaders, handleCorsOptions } from "@/lib/cors";
-
-export async function OPTIONS(req: NextRequest) {
-  return handleCorsOptions(req);
-}
-
-export async function POST(req: NextRequest) {
+export async function POST() {
   const response = NextResponse.json({ message: "Logged out successfully" });
 
   response.cookies.set({
@@ -19,5 +13,5 @@ export async function POST(req: NextRequest) {
     path: "/",
   });
 
-  return addCorsHeaders(response, req.headers.get("origin"));
+  return response;
 }

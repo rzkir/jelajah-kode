@@ -1,15 +1,9 @@
-/**
- * Centralized API Configuration
- * Contains all API endpoints and configuration used throughout the application
- */
-
 const API_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
-/**
- * Authentication API Endpoints
- */
-export const API_ENDPOINTS = {
-  auth: {
+const API_SECRET = process.env.NEXT_PUBLIC_API_SECRET;
+
+export const API_CONFIG = {
+  ENDPOINTS: {
     signIn: `${API_BASE_URL}/api/auth/signin`,
     signUp: `${API_BASE_URL}/api/auth/signup`,
     signOut: `${API_BASE_URL}/api/auth/signout`,
@@ -19,71 +13,5 @@ export const API_ENDPOINTS = {
     changePassword: `${API_BASE_URL}/api/auth/change-password`,
     me: `${API_BASE_URL}/api/auth/me`,
   },
-} as const;
-
-/**
- * API Configuration
- */
-export const API_CONFIG = {
-  headers: {
-    "Content-Type": "application/json",
-  },
-  timeout: 30000, // 30 seconds
-} as const;
-
-/**
- * Helper function to make API calls with consistent configuration
- */
-export async function apiCall<T>(
-  url: string,
-  options: RequestInit = {}
-): Promise<{ data: T; error?: never } | { data?: never; error: string }> {
-  try {
-    // Ensure URL is valid
-    if (!url || url === "undefined" || url.includes("undefined")) {
-      return {
-        error: "Invalid API endpoint URL. Please check your configuration.",
-      };
-    }
-
-    const response = await fetch(url, {
-      ...options,
-      headers: {
-        ...API_CONFIG.headers,
-        ...options.headers,
-      },
-    });
-
-    // Check if response is JSON before parsing
-    const contentType = response.headers.get("content-type");
-    let data;
-
-    if (contentType && contentType.includes("application/json")) {
-      data = await response.json();
-    } else {
-      // If not JSON, read as text for error messages
-      const text = await response.text();
-      return {
-        error: `Request failed with status ${response.status}: ${text.substring(
-          0,
-          100
-        )}`,
-      };
-    }
-
-    if (!response.ok) {
-      return {
-        error: data.error || `Request failed with status ${response.status}`,
-      };
-    }
-
-    return { data };
-  } catch (error) {
-    return {
-      error:
-        error instanceof Error
-          ? error.message
-          : "An unexpected error occurred. Please try again.",
-    };
-  }
-}
+  SECRET: API_SECRET,
+};

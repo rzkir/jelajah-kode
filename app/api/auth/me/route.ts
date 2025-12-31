@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 import { cookies } from "next/headers";
 
@@ -8,13 +8,7 @@ import { Account } from "@/models/Account";
 
 import { verifyJWT } from "@/hooks/jwt";
 
-import { addCorsHeaders, handleCorsOptions } from "@/lib/cors";
-
-export async function OPTIONS(req: NextRequest) {
-  return handleCorsOptions(req);
-}
-
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
     await connectMongoDB();
 
@@ -23,32 +17,20 @@ export async function GET(req: NextRequest) {
     const token = cookieStore.get("token")?.value;
 
     if (!token) {
-      const errorResponse = NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
-      return addCorsHeaders(errorResponse, req.headers.get("origin"));
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     let decodedToken;
     try {
       decodedToken = await verifyJWT(token);
     } catch {
-      const errorResponse = NextResponse.json(
-        { error: "Invalid token" },
-        { status: 401 }
-      );
-      return addCorsHeaders(errorResponse, req.headers.get("origin"));
+      return NextResponse.json({ error: "Invalid token" }, { status: 401 });
     }
 
     const user = await Account.findById(decodedToken._id);
 
     if (!user) {
-      const errorResponse = NextResponse.json(
-        { error: "User not found" },
-        { status: 404 }
-      );
-      return addCorsHeaders(errorResponse, req.headers.get("origin"));
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
     // Convert to plain object to access timestamps safely
@@ -77,13 +59,11 @@ export async function GET(req: NextRequest) {
       updated_at: userObj.updatedAt?.toISOString() || new Date().toISOString(),
     };
 
-    const successResponse = NextResponse.json(userData, { status: 200 });
-    return addCorsHeaders(successResponse, req.headers.get("origin"));
+    return NextResponse.json(userData, { status: 200 });
   } catch {
-    const errorResponse = NextResponse.json(
+    return NextResponse.json(
       { error: "Failed to get user data. Please try again." },
       { status: 500 }
     );
-    return addCorsHeaders(errorResponse, req.headers.get("origin"));
   }
 }

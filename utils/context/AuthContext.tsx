@@ -8,7 +8,7 @@ import { toast } from "sonner";
 
 import type { Accounts, AuthContextType, UserRole } from "@/types/auth";
 
-import { API_ENDPOINTS, apiCall } from "@/lib/config";
+import { API_CONFIG } from "@/lib/config";
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -53,19 +53,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Since the cookie is httpOnly, we can't read it directly
       // Instead, we'll make an API call to check if the user is authenticated
       try {
-        const userResponse = await apiCall<Accounts>(API_ENDPOINTS.auth.me, {
+        const userResponse = await fetch(API_CONFIG.ENDPOINTS.me, {
           method: "GET",
+          credentials: "include",
         });
 
-        if (userResponse.error || !userResponse.data) {
-          // User is not authenticated
-          setUser(null);
-          setUserRole(null);
-        } else {
-          const account = userResponse.data;
-          setUser(account);
-          setUserRole(account.role);
+        if (!userResponse.ok) {
+          throw new Error("Unauthorized");
         }
+
+        const userResponseData = await userResponse.json();
+
+        if (userResponseData.error) {
+          throw new Error(userResponseData.error);
+        }
+
+        // The API returns user data directly, not wrapped in a data property
+        const account = userResponseData;
+        setUser(account);
+        setUserRole(account.role);
       } catch (error) {
         console.error("Auth initialization error:", error);
         // Error occurred while fetching user data
@@ -82,25 +88,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signIn = async (email: string, password: string) => {
     try {
       // Call the sign-in API directly
-      const result = await apiCall(API_ENDPOINTS.auth.signIn, {
+      const result = await fetch(API_CONFIG.ENDPOINTS.signIn, {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
         body: JSON.stringify({ email, password }),
       });
+      const resultData = await result.json();
 
-      if (result.error) {
-        throw new Error(result.error);
+      if (resultData.error) {
+        throw new Error(resultData.error);
       }
 
       // Fetch the complete user data from the API
-      const userResponse = await apiCall<Accounts>(API_ENDPOINTS.auth.me, {
+      const userResponse = await fetch(API_CONFIG.ENDPOINTS.me, {
         method: "GET",
+        credentials: "include",
       });
+      const userResponseData = await userResponse.json();
 
-      if (userResponse.error || !userResponse.data) {
-        throw new Error(userResponse.error || "Failed to fetch user data");
+      if (userResponseData.error) {
+        throw new Error(userResponseData.error);
       }
 
-      const account = userResponse.data;
+      // The API returns user data directly, not wrapped in a data property
+      const account = userResponseData;
       setUser(account);
       setUserRole(account.role);
 
@@ -132,7 +146,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signOut = async () => {
     try {
       // Make a request to our custom signout endpoint to clear JWT cookie
-      await fetch(API_ENDPOINTS.auth.signOut, {
+      await fetch(API_CONFIG.ENDPOINTS.signOut, {
         method: "POST",
         credentials: "include",
       });
@@ -154,7 +168,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       // Make API call to ensure server-side logout
       try {
-        await fetch(API_ENDPOINTS.auth.signOut, {
+        await fetch(API_CONFIG.ENDPOINTS.signOut, {
           method: "POST",
           credentials: "include",
         });
@@ -173,15 +187,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const refreshUserData = async (): Promise<Accounts | null> => {
     try {
-      const response = await apiCall<Accounts>(API_ENDPOINTS.auth.me, {
+      const response = await fetch(API_CONFIG.ENDPOINTS.me, {
         method: "GET",
+        credentials: "include",
       });
+      const responseData = await response.json();
 
-      if (response.error || !response.data) {
+      if (responseData.error) {
+        throw new Error(responseData.error);
         return null;
       }
 
-      const account = response.data;
+      // The API returns user data directly, not wrapped in a data property
+      const account = responseData;
       setUser(account);
       setUserRole(account.role);
 
@@ -193,13 +211,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const resetPassword = async (email: string) => {
     try {
-      const result = await apiCall(API_ENDPOINTS.auth.resetPassword, {
+      const result = await fetch(API_CONFIG.ENDPOINTS.resetPassword, {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
         body: JSON.stringify({ email }),
       });
+      const resultData = await result.json();
 
-      if (result.error) {
-        throw new Error(result.error);
+      if (resultData.error) {
+        throw new Error(resultData.error);
       }
 
       toast.success("OTP has been sent to your email!", {
@@ -218,13 +241,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const forgetPassword = async (email: string) => {
     try {
-      const result = await apiCall(API_ENDPOINTS.auth.forgetPassword, {
+      const result = await fetch(API_CONFIG.ENDPOINTS.forgetPassword, {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
         body: JSON.stringify({ email }),
       });
+      const resultData = await result.json();
 
-      if (result.error) {
-        throw new Error(result.error);
+      if (resultData.error) {
+        throw new Error(resultData.error);
       }
 
       toast.success("Password reset code sent to your email!", {
@@ -247,16 +275,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return false;
       }
 
-      const result = await apiCall(API_ENDPOINTS.auth.changePassword, {
+      const result = await fetch(API_CONFIG.ENDPOINTS.changePassword, {
         method: "PUT",
-        body: JSON.stringify({
-          userId: user._id,
-          newPassword,
-        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ userId: user._id, newPassword }),
       });
+      const resultData = await result.json();
 
-      if (result.error) {
-        throw new Error(result.error);
+      if (resultData.error) {
+        throw new Error(resultData.error);
       }
 
       toast.success("Password updated successfully!");
@@ -273,13 +303,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const verifyOtp = async (token: string) => {
     try {
-      const result = await apiCall(API_ENDPOINTS.auth.verification, {
+      const result = await fetch(API_CONFIG.ENDPOINTS.verification, {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
         body: JSON.stringify({ token }),
       });
 
-      if (result.error) {
-        throw new Error(result.error);
+      const resultData = await result.json();
+
+      if (resultData.error) {
+        throw new Error(resultData.error);
       }
       setResetToken(token);
       toast.success("OTP verified. Redirecting...");
@@ -298,13 +334,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         throw new Error("Missing token. Please verify OTP again.");
       }
 
-      const result = await apiCall(API_ENDPOINTS.auth.verification, {
+      const result = await fetch(API_CONFIG.ENDPOINTS.verification, {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
         body: JSON.stringify({ token: resetToken, newPassword }),
       });
 
-      if (result.error) {
-        throw new Error(result.error);
+      const resultData = await result.json();
+
+      if (resultData.error) {
+        throw new Error(resultData.error);
       }
       toast.success("Password reset successful. Redirecting...");
       setResetToken(null);
@@ -346,16 +388,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setPasswordResetIsLoading(true);
 
     try {
-      const result = await apiCall(API_ENDPOINTS.auth.resetPassword, {
+      const result = await fetch(API_CONFIG.ENDPOINTS.resetPassword, {
         method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
         body: JSON.stringify({
           token: passwordResetOtp,
           newPassword: passwordResetNewPassword,
         }),
       });
 
-      if (result.error) {
-        throw new Error(result.error);
+      const resultData = await result.json();
+
+      if (resultData.error) {
+        throw new Error(resultData.error);
       }
 
       toast.success("Password reset successfully!");
@@ -415,13 +463,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setForgetPasswordIsLoading(true);
 
     try {
-      const result = await apiCall(API_ENDPOINTS.auth.forgetPassword, {
+      const result = await fetch(API_CONFIG.ENDPOINTS.forgetPassword, {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
         body: JSON.stringify({ email: forgetPasswordEmail }),
       });
 
-      if (result.error) {
-        throw new Error(result.error);
+      const resultData = await result.json();
+
+      if (resultData.error) {
+        throw new Error(resultData.error);
       }
 
       toast.success("Password reset code sent to your email!", {
@@ -493,23 +547,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signUp = async (name: string, email: string, password: string) => {
     // For email/password signup, we still use the existing API route
     try {
-      const result = await apiCall<{ userId: string }>(
-        API_ENDPOINTS.auth.signUp,
-        {
-          method: "POST",
-          body: JSON.stringify({
-            name,
-            email,
-            password,
-          }),
-        }
-      );
+      const result = await fetch(API_CONFIG.ENDPOINTS.signUp, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ name, email, password }),
+      });
+      const resultData = await result.json();
 
-      if (result.error || !result.data) {
-        throw new Error(result.error || "Failed to sign up");
+      if (resultData.error) {
+        throw new Error(resultData.error);
       }
 
-      const { userId } = result.data;
+      // The API returns userId directly, not wrapped in a data property
+      const { userId } = resultData;
 
       // The API returns userId after successful signup, but we need to fetch user details
       // For now, we'll create a minimal account object and the user will be fully populated after verification
