@@ -50,36 +50,88 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     // Check for existing JWT token and fetch user data
     const initializeAuth = async () => {
+      // Ensure we're in the browser (not SSR)
+      if (typeof window === "undefined") {
+        setLoading(false);
+        return;
+      }
+
       // Since the cookie is httpOnly, we can't read it directly
       // Instead, we'll make an API call to check if the user is authenticated
       try {
-        const userResponse = await fetch(API_CONFIG.ENDPOINTS.me, {
+        // Ensure we have a valid URL
+        const apiUrl = API_CONFIG.ENDPOINTS.me;
+        if (!apiUrl || apiUrl.trim() === "") {
+          console.error("API endpoint URL is not configured");
+          setLoading(false);
+          return;
+        }
+
+        // Log the URL for debugging (only in development)
+        if (process.env.NODE_ENV === "development") {
+          console.log("Fetching user data from:", apiUrl);
+        }
+
+        const userResponse = await fetch(apiUrl, {
           method: "GET",
           credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }).catch((fetchError) => {
+          // Handle network errors
+          console.error("Network error during auth initialization:", fetchError);
+          // Don't throw - just set user to null and continue
+          return null;
         });
+
+        // If fetch failed, userResponse will be null
+        if (!userResponse) {
+          setUser(null);
+          setUserRole(null);
+          setLoading(false);
+          return;
+        }
 
         if (!userResponse.ok) {
           // If response is not OK, check if it's JSON before parsing
           const contentType = userResponse.headers.get("content-type");
           if (contentType && contentType.includes("application/json")) {
-            const errorData = await userResponse.json();
-            throw new Error(errorData.error || "Unauthorized");
-          } else {
-            // If not JSON, just throw a generic error
-            throw new Error("Unauthorized");
+            try {
+              const errorData = await userResponse.json();
+              // 401 is expected when not authenticated, don't log as error
+              if (userResponse.status !== 401) {
+                console.error("Auth error:", errorData.error || "Unauthorized");
+              }
+            } catch {
+              // Ignore parse errors for non-JSON responses
+            }
           }
+          // Not authenticated - this is normal, not an error
+          setUser(null);
+          setUserRole(null);
+          setLoading(false);
+          return;
         }
 
         // Check content type before parsing JSON
         const contentType = userResponse.headers.get("content-type");
         if (!contentType || !contentType.includes("application/json")) {
-          throw new Error("Invalid response format");
+          console.error("Invalid response format from server");
+          setUser(null);
+          setUserRole(null);
+          setLoading(false);
+          return;
         }
 
         const userResponseData = await userResponse.json();
 
         if (userResponseData.error) {
-          throw new Error(userResponseData.error);
+          console.error("API returned error:", userResponseData.error);
+          setUser(null);
+          setUserRole(null);
+          setLoading(false);
+          return;
         }
 
         // The API returns user data directly, not wrapped in a data property
@@ -91,9 +143,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // Error occurred while fetching user data
         setUser(null);
         setUserRole(null);
+      } finally {
+        setLoading(false);
       }
-
-      setLoading(false);
     };
 
     initializeAuth();
