@@ -6,7 +6,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { cn } from "@/lib/utils";
-import { API_ENDPOINTS, apiCall } from "@/lib/config";
+import { API_CONFIG } from "@/lib/config";
 import { Button } from "@/components/ui/button";
 import {
   Field,
@@ -37,23 +37,24 @@ export function OTPForm({ className, email, ...props }: React.ComponentProps<"di
     setIsLoading(true);
 
     try {
-      const result = await apiCall<{ user?: { role: string } }>(
-        API_ENDPOINTS.auth.verification,
-        {
-          method: "PUT",
-          body: JSON.stringify({ token: otp }),
-        }
-      );
+      const response = await fetch(API_CONFIG.ENDPOINTS.verification, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ token: otp }),
+      });
 
-      if (result.error || !result.data) {
+      const result = await response.json();
+
+      if (!response.ok || result.error) {
         throw new Error(result.error || "Failed to verify OTP");
       }
 
-      const data = result.data;
-
       toast.success("Email verified successfully!");
       // Redirect to dashboard or home based on user role
-      if (data.user?.role === "admins") {
+      if (result.user?.role === "admins") {
         router.push("/dashboard");
       } else {
         router.push("/");
@@ -80,16 +81,19 @@ export function OTPForm({ className, email, ...props }: React.ComponentProps<"di
     setIsResending(true);
 
     try {
-      const result = await apiCall(
-        API_ENDPOINTS.auth.verification,
-        {
-          method: "POST",
-          body: JSON.stringify({ email }),
-        }
-      );
+      const response = await fetch(API_CONFIG.ENDPOINTS.verification, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ email }),
+      });
 
-      if (result.error) {
-        throw new Error(result.error);
+      const result = await response.json();
+
+      if (!response.ok || result.error) {
+        throw new Error(result.error || "Failed to resend verification code");
       }
 
       toast.success("Verification code resent successfully!");
