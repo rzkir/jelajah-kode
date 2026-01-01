@@ -368,3 +368,46 @@ interface ProductsDetails {
   created_at: string;
   updated_at: string;
 }
+
+//====================== Products Search ======================//
+interface ProductsSearchItem {
+  _id: string;
+  productsId: string;
+  title: string;
+  thumbnail: string;
+  frameworks: Productsframeworks[];
+  price: number;
+  stock: number;
+  download?: string;
+  category: ProductsCategory[];
+  type: ProductsType[];
+  discount?: {
+    type: string;
+    value: number;
+    until: string;
+  };
+  author: {
+    _id: string;
+    name: string;
+    picture?: string;
+    role: UserRole;
+  };
+  tags?: ProductsTags[];
+  paymentType: string;
+  status: string;
+  created_at: string;
+  updated_at: string;
+}
+
+interface ProductsSearchPagination {
+  page: number;
+  limit: number;
+  total: number;
+  pages: number;
+}
+
+interface ProductsSearchResponse {
+  data: ProductsSearchItem[];
+  pagination: ProductsSearchPagination;
+  query: string;
+}

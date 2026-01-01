@@ -20,6 +20,17 @@ export async function GET(request: Request) {
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "10");
 
+    // Check if query parameter is empty
+    if (!q || q.trim() === "") {
+      return NextResponse.json(
+        {
+          message:
+            "Parameter 'q' tidak boleh kosong. Silakan masukkan kata kunci pencarian.",
+        },
+        { status: 400 }
+      );
+    }
+
     // Calculate skip value for pagination
     const skip = (page - 1) * limit;
 
@@ -58,8 +69,6 @@ export async function GET(request: Request) {
       title: product.title,
       thumbnail: product.thumbnail,
       frameworks: product.frameworks,
-      description: product.description,
-      faqs: product.faqs,
       price: product.price,
       stock: product.stock,
       sold: product.sold,
@@ -69,7 +78,6 @@ export async function GET(request: Request) {
       rating: product.rating,
       views: product.views,
       ratingCount: product.ratingCount,
-      images: product.images,
       discount: product.discount,
       author: product.author,
       tags: product.tags,

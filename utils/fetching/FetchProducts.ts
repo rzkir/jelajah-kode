@@ -52,3 +52,91 @@ export const fetchProductsById = async (
     return {} as unknown as ProductsDetails;
   }
 };
+
+export const fetchProductsBySearch = async (
+  query: string,
+  page: number = 1,
+  limit: number = 10
+): Promise<ProductsSearchResponse> => {
+  try {
+    const response = await fetch(
+      API_CONFIG.ENDPOINTS.products.search(query, page, limit),
+      {
+        next: { revalidate: 0 },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${API_CONFIG.SECRET}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Failed to search products: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    if (process.env.NODE_ENV !== "production") {
+      console.error("Error searching products:", error);
+    }
+    return {
+      data: [],
+      pagination: {
+        page: 1,
+        limit: 10,
+        total: 0,
+        pages: 0,
+      },
+      query: query,
+    };
+  }
+};
+
+export const fetchProductCategories = async (): Promise<Category[]> => {
+  try {
+    const response = await fetch(API_CONFIG.ENDPOINTS.products.categories, {
+      cache: "no-store",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${API_CONFIG.SECRET}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch categories: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return Array.isArray(data) ? data : data?.data || [];
+  } catch (error) {
+    if (process.env.NODE_ENV !== "production") {
+      console.error("Error fetching categories:", error);
+    }
+    return [];
+  }
+};
+
+export const fetchProductType = async (): Promise<Type[]> => {
+  try {
+    const response = await fetch(API_CONFIG.ENDPOINTS.products.type, {
+      cache: "no-store",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${API_CONFIG.SECRET}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch types: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return Array.isArray(data) ? data : data?.data || [];
+  } catch (error) {
+    if (process.env.NODE_ENV !== "production") {
+      console.error("Error fetching types:", error);
+    }
+    return [];
+  }
+};

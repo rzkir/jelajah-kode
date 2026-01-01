@@ -26,6 +26,10 @@ export const API_CONFIG = {
       byId: (id: string) => `${API_BASE_URL}/api/products?id=${id}`,
       byProductsId: (productsId: string) =>
         `${API_BASE_URL}/api/products/${productsId}`,
+      search: (query: string, page: number = 1, limit: number = 10) =>
+        `${API_BASE_URL}/api/products/search?q=${encodeURIComponent(
+          query
+        )}&page=${page}&limit=${limit}`,
     },
   },
   SECRET: API_SECRET,
