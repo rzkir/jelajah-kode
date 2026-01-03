@@ -15,14 +15,14 @@ interface Product {
   price: number;
   stock: number;
   sold?: number;
-  category: Array<{
+  category: {
     title: string;
     categoryId: string;
-  }>;
-  type: Array<{
+  };
+  type: {
     title: string;
     typeId: string;
-  }>;
+  };
   tags?: Array<{
     title: string;
     tagsId: string;
@@ -61,19 +61,21 @@ export default function useStateProduct() {
       product.productsId.toLowerCase().includes(searchTerm.toLowerCase()) ||
       product.description.toLowerCase().includes(searchTerm.toLowerCase());
 
+    // Handle backward compatibility: check if category is array or object
+    const category = Array.isArray(product.category)
+      ? product.category[0]
+      : product.category;
     const matchesCategory =
       selectedCategory === "all" ||
-      product.category.some(
-        (cat) =>
-          cat.categoryId === selectedCategory || cat.title === selectedCategory
-      );
+      (category &&
+        (category.categoryId === selectedCategory ||
+          category.title === selectedCategory));
 
-    // Type filter
+    // Handle backward compatibility: check if type is array or object
+    const type = Array.isArray(product.type) ? product.type[0] : product.type;
     const matchesType =
       selectedType === "all" ||
-      product.type.some(
-        (type) => type.typeId === selectedType || type.title === selectedType
-      );
+      (type && (type.typeId === selectedType || type.title === selectedType));
 
     // Status filter
     const matchesStatus =
@@ -95,14 +97,21 @@ export default function useStateProduct() {
     >();
 
     products.forEach((product) => {
-      product.category?.forEach((cat) => {
-        if (!categoryMap.has(cat.categoryId)) {
-          categoryMap.set(cat.categoryId, {
-            title: cat.title,
-            categoryId: cat.categoryId,
-          });
-        }
-      });
+      // Handle backward compatibility: check if category is array or object
+      if (product.category) {
+        const categoryList = Array.isArray(product.category)
+          ? product.category
+          : [product.category];
+
+        categoryList.forEach((cat) => {
+          if (cat && !categoryMap.has(cat.categoryId)) {
+            categoryMap.set(cat.categoryId, {
+              title: cat.title,
+              categoryId: cat.categoryId,
+            });
+          }
+        });
+      }
     });
 
     return Array.from(categoryMap.values());
@@ -113,14 +122,21 @@ export default function useStateProduct() {
     const typeMap = new Map<string, { title: string; typeId: string }>();
 
     products.forEach((product) => {
-      product.type?.forEach((type) => {
-        if (!typeMap.has(type.typeId)) {
-          typeMap.set(type.typeId, {
-            title: type.title,
-            typeId: type.typeId,
-          });
-        }
-      });
+      // Handle backward compatibility: check if type is array or object
+      if (product.type) {
+        const typeList = Array.isArray(product.type)
+          ? product.type
+          : [product.type];
+
+        typeList.forEach((type) => {
+          if (type && !typeMap.has(type.typeId)) {
+            typeMap.set(type.typeId, {
+              title: type.title,
+              typeId: type.typeId,
+            });
+          }
+        });
+      }
     });
 
     return Array.from(typeMap.values());

@@ -76,7 +76,6 @@ export default function ProductsLayout() {
     handleCategoryChange,
     handleTypeChange,
     handleStatusChange,
-    formatDate,
     router,
   } = useStateProduct();
 
@@ -115,159 +114,158 @@ export default function ProductsLayout() {
           </ol>
         </div>
 
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full">
-          <div className="flex flex-wrap items-center gap-3 flex-1">
-            <div className="relative">
-              <Input
-                placeholder="Search products..."
-                value={searchTerm}
-                onChange={handleSearchChange}
-                className="w-64 pl-9"
-              />
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            </div>
-
-            <BottomSheet
-              open={isFilterSheetOpen}
-              onOpenChange={setIsFilterSheetOpen}
-              trigger={
-                <Button variant="outline" className="gap-2">
-                  <Filter className="w-4 h-4" />
-                  Filters
-                </Button>
-              }
-              title="Filter Products"
-              description="Filter products by category, type, status, and view mode"
-              side="right"
-              contentClassName="w-full max-w-full"
-              className="space-y-6 px-4"
-            >
-              {/* Category Filter */}
-              <div className="flex flex-col gap-3 mb-2">
-                <label className="text-sm font-medium">Category</label>
-                <div className="flex flex-wrap gap-2">
-                  <Button
-                    variant={selectedCategory === "all" ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => handleCategoryChange("all")}
-                    className="h-9"
-                  >
-                    All Categories
-                  </Button>
-                  {categories.map((category) => (
-                    <Button
-                      key={category.categoryId}
-                      variant={
-                        selectedCategory === category.categoryId
-                          ? "default"
-                          : "outline"
-                      }
-                      size="sm"
-                      onClick={() => handleCategoryChange(category.categoryId)}
-                      className="h-9"
-                    >
-                      {category.title}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Type Filter */}
-              <div className="flex flex-col gap-3 mb-2">
-                <label className="text-sm font-medium">Type</label>
-                <div className="flex flex-wrap gap-2">
-                  <Button
-                    variant={selectedType === "all" ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => handleTypeChange("all")}
-                    className="h-9"
-                  >
-                    All Types
-                  </Button>
-                  {types.map((type) => (
-                    <Button
-                      key={type.typeId}
-                      variant={
-                        selectedType === type.typeId ? "default" : "outline"
-                      }
-                      size="sm"
-                      onClick={() => handleTypeChange(type.typeId)}
-                      className="h-9"
-                    >
-                      {type.title}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Status Filter */}
-              <div className="flex flex-col gap-3 mb-2">
-                <label className="text-sm font-medium">Status</label>
-                <div className="flex flex-wrap gap-2">
-                  <Button
-                    variant={selectedStatus === "all" ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => handleStatusChange("all")}
-                    className="h-9"
-                  >
-                    All Status
-                  </Button>
-                  <Button
-                    variant={selectedStatus === "publish" ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => handleStatusChange("publish")}
-                    className="h-9"
-                  >
-                    Publish
-                  </Button>
-                  <Button
-                    variant={selectedStatus === "draft" ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => handleStatusChange("draft")}
-                    className="h-9"
-                  >
-                    Draft
-                  </Button>
-                </div>
-              </div>
-
-              {/* View Mode */}
-              <div className="flex flex-col gap-3">
-                <label className="text-sm font-medium">View Mode</label>
-                <div className="flex items-center border rounded-md p-1 w-fit">
-                  <Button
-                    variant={viewMode === "card" ? "default" : "ghost"}
-                    size="sm"
-                    onClick={() => setViewMode("card")}
-                    className="h-8 px-3"
-                  >
-                    <Grid3X3 className="w-4 h-4 mr-2" />
-                    Card
-                  </Button>
-                  <Button
-                    variant={viewMode === "table" ? "default" : "ghost"}
-                    size="sm"
-                    onClick={() => setViewMode("table")}
-                    className="h-8 px-3"
-                  >
-                    <List className="w-4 h-4 mr-2" />
-                    Table
-                  </Button>
-                </div>
-              </div>
-            </BottomSheet>
-          </div>
-          <div className="flex items-center gap-3">
-            <Button
-              variant="default"
-              className="px-6 py-2 font-medium"
-              onClick={() => router.push("/dashboard/products/products/new")}
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Create Product
-            </Button>
-          </div>
+        <div className="flex items-center gap-3">
+          <Button
+            variant="default"
+            className="px-6 py-2 font-medium"
+            onClick={() => router.push("/dashboard/products/products/new")}
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Create Product
+          </Button>
         </div>
+      </div>
+
+      <div className="flex flex-wrap items-center gap-3 flex-1">
+        <div className="relative">
+          <Input
+            placeholder="Search products..."
+            value={searchTerm}
+            onChange={handleSearchChange}
+            className="w-64 pl-9"
+          />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+        </div>
+
+        <BottomSheet
+          open={isFilterSheetOpen}
+          onOpenChange={setIsFilterSheetOpen}
+          trigger={
+            <Button variant="outline" className="gap-2">
+              <Filter className="w-4 h-4" />
+              Filters
+            </Button>
+          }
+          title="Filter Products"
+          description="Filter products by category, type, status, and view mode"
+          side="right"
+          contentClassName="w-full max-w-full"
+          className="space-y-6 px-4 pb-4"
+        >
+          {/* Category Filter */}
+          <div className="flex flex-col gap-3 mb-2">
+            <label className="text-sm font-medium">Category</label>
+            <div className="flex flex-wrap gap-2">
+              <Button
+                variant={selectedCategory === "all" ? "default" : "outline"}
+                size="sm"
+                onClick={() => handleCategoryChange("all")}
+                className="h-9"
+              >
+                All Categories
+              </Button>
+              {categories.map((category) => (
+                <Button
+                  key={category.categoryId}
+                  variant={
+                    selectedCategory === category.categoryId
+                      ? "default"
+                      : "outline"
+                  }
+                  size="sm"
+                  onClick={() => handleCategoryChange(category.categoryId)}
+                  className="h-9"
+                >
+                  {category.title}
+                </Button>
+              ))}
+            </div>
+          </div>
+
+          {/* Type Filter */}
+          <div className="flex flex-col gap-3 mb-2">
+            <label className="text-sm font-medium">Type</label>
+            <div className="flex flex-wrap gap-2">
+              <Button
+                variant={selectedType === "all" ? "default" : "outline"}
+                size="sm"
+                onClick={() => handleTypeChange("all")}
+                className="h-9"
+              >
+                All Types
+              </Button>
+              {types.map((type) => (
+                <Button
+                  key={type.typeId}
+                  variant={
+                    selectedType === type.typeId ? "default" : "outline"
+                  }
+                  size="sm"
+                  onClick={() => handleTypeChange(type.typeId)}
+                  className="h-9"
+                >
+                  {type.title}
+                </Button>
+              ))}
+            </div>
+          </div>
+
+          {/* Status Filter */}
+          <div className="flex flex-col gap-3 mb-2">
+            <label className="text-sm font-medium">Status</label>
+            <div className="flex flex-wrap gap-2">
+              <Button
+                variant={selectedStatus === "all" ? "default" : "outline"}
+                size="sm"
+                onClick={() => handleStatusChange("all")}
+                className="h-9"
+              >
+                All Status
+              </Button>
+              <Button
+                variant={selectedStatus === "publish" ? "default" : "outline"}
+                size="sm"
+                onClick={() => handleStatusChange("publish")}
+                className="h-9"
+              >
+                Publish
+              </Button>
+              <Button
+                variant={selectedStatus === "draft" ? "default" : "outline"}
+                size="sm"
+                onClick={() => handleStatusChange("draft")}
+                className="h-9"
+              >
+                Draft
+              </Button>
+            </div>
+          </div>
+
+          {/* View Mode */}
+          <div className="flex flex-col gap-3">
+            <label className="text-sm font-medium">View Mode</label>
+            <div className="flex items-center border rounded-md p-1 w-fit">
+              <Button
+                variant={viewMode === "card" ? "default" : "ghost"}
+                size="sm"
+                onClick={() => setViewMode("card")}
+                className="h-8 px-3"
+              >
+                <Grid3X3 className="w-4 h-4 mr-2" />
+                Card
+              </Button>
+              <Button
+                variant={viewMode === "table" ? "default" : "ghost"}
+                size="sm"
+                onClick={() => setViewMode("table")}
+                className="h-8 px-3"
+              >
+                <List className="w-4 h-4 mr-2" />
+                Table
+              </Button>
+            </div>
+          </div>
+        </BottomSheet>
       </div>
 
       {/* Content Section */}
@@ -423,9 +421,7 @@ export default function ProductsLayout() {
                   <TableHead>Price</TableHead>
                   <TableHead>Stock</TableHead>
                   <TableHead>Sold</TableHead>
-                  <TableHead>Category</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead>Created</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -456,11 +452,6 @@ export default function ProductsLayout() {
                     <TableCell>{product.stock}</TableCell>
                     <TableCell>{product.sold || 0}</TableCell>
                     <TableCell>
-                      {product.category && product.category.length > 0
-                        ? product.category.map((cat) => cat.title).join(", ")
-                        : "N/A"}
-                    </TableCell>
-                    <TableCell>
                       <Badge
                         variant={
                           product.status === "publish" ? "default" : "secondary"
@@ -468,9 +459,6 @@ export default function ProductsLayout() {
                       >
                         {product.status}
                       </Badge>
-                    </TableCell>
-                    <TableCell>
-                      {product.created_at ? formatDate(product.created_at) : "N/A"}
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">

@@ -234,58 +234,94 @@ export async function POST(request: Request) {
         );
     };
 
-    // Validate and format category array
+    // Validate and format category object
     const formatCategory = (
       category: unknown
-    ): Array<{ title: string; categoryId: string }> => {
-      const parsed = parseArrayField(category);
-      return parsed
-        .map((cat) => {
-          if (
-            typeof cat === "object" &&
-            cat !== null &&
-            "title" in cat &&
-            "categoryId" in cat
-          ) {
-            return {
-              title: String(cat.title),
-              categoryId: String(cat.categoryId),
-            };
-          }
-          return null;
-        })
-        .filter(
-          (cat): cat is { title: string; categoryId: string } => cat !== null
-        );
+    ): { title: string; categoryId: string } | null => {
+      // Handle array input (for backward compatibility) - take first element
+      if (Array.isArray(category) && category.length > 0) {
+        const cat = category[0];
+        if (
+          typeof cat === "object" &&
+          cat !== null &&
+          "title" in cat &&
+          "categoryId" in cat
+        ) {
+          return {
+            title: String(cat.title),
+            categoryId: String(cat.categoryId),
+          };
+        }
+      }
+      // Handle object input
+      if (
+        typeof category === "object" &&
+        category !== null &&
+        "title" in category &&
+        "categoryId" in category
+      ) {
+        return {
+          title: String(category.title),
+          categoryId: String(category.categoryId),
+        };
+      }
+      return null;
     };
 
-    // Validate and format type array
+    // Validate and format type object
     const formatType = (
       type: unknown
-    ): Array<{ title: string; typeId: string }> => {
-      const parsed = parseArrayField(type);
-      return parsed
-        .map((t) => {
-          if (
-            typeof t === "object" &&
-            t !== null &&
-            "title" in t &&
-            "typeId" in t
-          ) {
-            return {
-              title: String(t.title),
-              typeId: String(t.typeId),
-            };
-          }
-          return null;
-        })
-        .filter((t): t is { title: string; typeId: string } => t !== null);
+    ): { title: string; typeId: string } | null => {
+      // Handle array input (for backward compatibility) - take first element
+      if (Array.isArray(type) && type.length > 0) {
+        const t = type[0];
+        if (
+          typeof t === "object" &&
+          t !== null &&
+          "title" in t &&
+          "typeId" in t
+        ) {
+          return {
+            title: String(t.title),
+            typeId: String(t.typeId),
+          };
+        }
+      }
+      // Handle object input
+      if (
+        typeof type === "object" &&
+        type !== null &&
+        "title" in type &&
+        "typeId" in type
+      ) {
+        return {
+          title: String(type.title),
+          typeId: String(type.typeId),
+        };
+      }
+      return null;
     };
 
     // Build product data explicitly to avoid any field conflicts
     const formattedTags = formatTags(body.tags);
     const formattedCategory = formatCategory(body.category);
     const formattedType = formatType(body.type);
+
+    // Validate category is provided
+    if (!formattedCategory) {
+      return NextResponse.json(
+        { error: "Category is required and must have title and categoryId" },
+        { status: 400 }
+      );
+    }
+
+    // Validate type is provided
+    if (!formattedType) {
+      return NextResponse.json(
+        { error: "Type is required and must have title and typeId" },
+        { status: 400 }
+      );
+    }
 
     // Ensure price is set correctly based on paymentType
     const finalPrice =
@@ -342,53 +378,76 @@ export async function POST(request: Request) {
       }
     }
 
-    // Validate each category has the required structure
-    for (const cat of productData.category) {
-      if (
-        !cat ||
-        typeof cat !== "object" ||
-        !("title" in cat) ||
-        !("categoryId" in cat)
-      ) {
-        console.error("Invalid category structure:", cat);
-        return NextResponse.json(
-          { error: "Each category must have title and categoryId" },
-          { status: 400 }
-        );
-      }
+    // Validate category has the required structure
+    if (
+      !productData.category ||
+      typeof productData.category !== "object" ||
+      !("title" in productData.category) ||
+      !("categoryId" in productData.category)
+    ) {
+      console.error("Invalid category structure:", productData.category);
+      return NextResponse.json(
+        { error: "Category must have title and categoryId" },
+        { status: 400 }
+      );
     }
 
-    // Validate each type has the required structure
-    for (const t of productData.type) {
-      if (!t || typeof t !== "object" || !("title" in t) || !("typeId" in t)) {
-        console.error("Invalid type structure:", t);
-        return NextResponse.json(
-          { error: "Each type must have title and typeId" },
-          { status: 400 }
-        );
-      }
+    // Validate type has the required structure
+    if (
+      !productData.type ||
+      typeof productData.type !== "object" ||
+      !("title" in productData.type) ||
+      !("typeId" in productData.type)
+    ) {
+      console.error("Invalid type structure:", productData.type);
+      return NextResponse.json(
+        { error: "Type must have title and typeId" },
+        { status: 400 }
+      );
     }
 
-    // Create new product - ensure tags, category, and type are fresh arrays of plain objects
-    const productDataForMongoose = {
+    // Create new product - ensure tags, category, and type are fresh objects
+    const productDataForMongoose: {
+      [key: string]: unknown;
+      category?: { title: string; categoryId: string };
+      type?: { title: string; typeId: string };
+    } = {
       ...productData,
       tags: formattedTags.map((tag) => ({
         title: String(tag.title),
         tagsId: String(tag.tagsId),
       })),
-      category: formattedCategory.map((cat) => ({
-        title: String(cat.title),
-        categoryId: String(cat.categoryId),
-      })),
-      type: formattedType.map((t) => ({
-        title: String(t.title),
-        typeId: String(t.typeId),
-      })),
     };
+
+    // Ensure category is an object, not an array
+    if (formattedCategory) {
+      productDataForMongoose.category = {
+        title: String(formattedCategory.title),
+        categoryId: String(formattedCategory.categoryId),
+      };
+    }
+
+    // Ensure type is an object, not an array
+    if (formattedType) {
+      productDataForMongoose.type = {
+        title: String(formattedType.title),
+        typeId: String(formattedType.typeId),
+      };
+    }
 
     // Create product instance - create a clean copy to avoid any reference issues
     // This ensures we have plain JavaScript objects that Mongoose can properly cast
     const cleanProductData = JSON.parse(JSON.stringify(productDataForMongoose));
+
+    // Double check: ensure category is not an array
+    if (cleanProductData.category && Array.isArray(cleanProductData.category)) {
+      cleanProductData.category = cleanProductData.category[0] || undefined;
+    }
+
+    // Double check: ensure type is not an array
+    if (cleanProductData.type && Array.isArray(cleanProductData.type)) {
+      cleanProductData.type = cleanProductData.type[0] || undefined;
+    }
 
     const newProduct = new Products(cleanProductData);
 
@@ -511,58 +570,94 @@ export async function PUT(request: Request) {
         );
     };
 
-    // Validate and format category array
+    // Validate and format category object
     const formatCategory = (
       category: unknown
-    ): Array<{ title: string; categoryId: string }> => {
-      const parsed = parseArrayField(category);
-      return parsed
-        .map((cat) => {
-          if (
-            typeof cat === "object" &&
-            cat !== null &&
-            "title" in cat &&
-            "categoryId" in cat
-          ) {
-            return {
-              title: String(cat.title),
-              categoryId: String(cat.categoryId),
-            };
-          }
-          return null;
-        })
-        .filter(
-          (cat): cat is { title: string; categoryId: string } => cat !== null
-        );
+    ): { title: string; categoryId: string } | null => {
+      // Handle array input (for backward compatibility) - take first element
+      if (Array.isArray(category) && category.length > 0) {
+        const cat = category[0];
+        if (
+          typeof cat === "object" &&
+          cat !== null &&
+          "title" in cat &&
+          "categoryId" in cat
+        ) {
+          return {
+            title: String(cat.title),
+            categoryId: String(cat.categoryId),
+          };
+        }
+      }
+      // Handle object input
+      if (
+        typeof category === "object" &&
+        category !== null &&
+        "title" in category &&
+        "categoryId" in category
+      ) {
+        return {
+          title: String(category.title),
+          categoryId: String(category.categoryId),
+        };
+      }
+      return null;
     };
 
-    // Validate and format type array
+    // Validate and format type object
     const formatType = (
       type: unknown
-    ): Array<{ title: string; typeId: string }> => {
-      const parsed = parseArrayField(type);
-      return parsed
-        .map((t) => {
-          if (
-            typeof t === "object" &&
-            t !== null &&
-            "title" in t &&
-            "typeId" in t
-          ) {
-            return {
-              title: String(t.title),
-              typeId: String(t.typeId),
-            };
-          }
-          return null;
-        })
-        .filter((t): t is { title: string; typeId: string } => t !== null);
+    ): { title: string; typeId: string } | null => {
+      // Handle array input (for backward compatibility) - take first element
+      if (Array.isArray(type) && type.length > 0) {
+        const t = type[0];
+        if (
+          typeof t === "object" &&
+          t !== null &&
+          "title" in t &&
+          "typeId" in t
+        ) {
+          return {
+            title: String(t.title),
+            typeId: String(t.typeId),
+          };
+        }
+      }
+      // Handle object input
+      if (
+        typeof type === "object" &&
+        type !== null &&
+        "title" in type &&
+        "typeId" in type
+      ) {
+        return {
+          title: String(type.title),
+          typeId: String(type.typeId),
+        };
+      }
+      return null;
     };
 
     // Format the data
     const formattedTags = formatTags(body.tags);
     const formattedCategory = formatCategory(body.category);
     const formattedType = formatType(body.type);
+
+    // Validate category is provided
+    if (!formattedCategory) {
+      return NextResponse.json(
+        { error: "Category is required and must have title and categoryId" },
+        { status: 400 }
+      );
+    }
+
+    // Validate type is provided
+    if (!formattedType) {
+      return NextResponse.json(
+        { error: "Type is required and must have title and typeId" },
+        { status: 400 }
+      );
+    }
 
     // Validate each tag has the required structure
     for (const tag of formattedTags) {
@@ -580,56 +675,85 @@ export async function PUT(request: Request) {
       }
     }
 
-    // Validate each category has the required structure
-    for (const cat of formattedCategory) {
-      if (
-        !cat ||
-        typeof cat !== "object" ||
-        !("title" in cat) ||
-        !("categoryId" in cat)
-      ) {
-        console.error("Invalid category structure:", cat);
-        return NextResponse.json(
-          { error: "Each category must have title and categoryId" },
-          { status: 400 }
-        );
-      }
+    // Validate category has the required structure
+    if (
+      !formattedCategory ||
+      typeof formattedCategory !== "object" ||
+      !("title" in formattedCategory) ||
+      !("categoryId" in formattedCategory)
+    ) {
+      console.error("Invalid category structure:", formattedCategory);
+      return NextResponse.json(
+        { error: "Category must have title and categoryId" },
+        { status: 400 }
+      );
     }
 
-    // Validate each type has the required structure
-    for (const t of formattedType) {
-      if (!t || typeof t !== "object" || !("title" in t) || !("typeId" in t)) {
-        console.error("Invalid type structure:", t);
-        return NextResponse.json(
-          { error: "Each type must have title and typeId" },
-          { status: 400 }
-        );
-      }
+    // Validate type has the required structure
+    if (
+      !formattedType ||
+      typeof formattedType !== "object" ||
+      !("title" in formattedType) ||
+      !("typeId" in formattedType)
+    ) {
+      console.error("Invalid type structure:", formattedType);
+      return NextResponse.json(
+        { error: "Type must have title and typeId" },
+        { status: 400 }
+      );
     }
 
-    // Prepare update data with formatted arrays
-    const updateData = {
+    // Prepare update data with formatted objects
+    const updateData: {
+      [key: string]: unknown;
+      category?: { title: string; categoryId: string };
+      type?: { title: string; typeId: string };
+      updatedAt: Date;
+    } = {
       ...body,
       tags: formattedTags.map((tag) => ({
         title: String(tag.title),
         tagsId: String(tag.tagsId),
       })),
-      category: formattedCategory.map((cat) => ({
-        title: String(cat.title),
-        categoryId: String(cat.categoryId),
-      })),
-      type: formattedType.map((t) => ({
-        title: String(t.title),
-        typeId: String(t.typeId),
-      })),
       updatedAt: new Date(),
     };
 
+    // Ensure category is an object, not an array
+    if (formattedCategory) {
+      updateData.category = {
+        title: String(formattedCategory.title),
+        categoryId: String(formattedCategory.categoryId),
+      };
+    }
+
+    // Ensure type is an object, not an array
+    if (formattedType) {
+      updateData.type = {
+        title: String(formattedType.title),
+        typeId: String(formattedType.typeId),
+      };
+    }
+
+    // Double check: ensure category is not an array
+    if (updateData.category && Array.isArray(updateData.category)) {
+      updateData.category = updateData.category[0] || undefined;
+    }
+
+    // Double check: ensure type is not an array
+    if (updateData.type && Array.isArray(updateData.type)) {
+      updateData.type = updateData.type[0] || undefined;
+    }
+
     // Find and update the product
+    // Ensure category is not an array before updating
+    if (updateData.category && Array.isArray(updateData.category)) {
+      updateData.category = updateData.category[0] || undefined;
+    }
+
     const updatedProduct = await Products.findByIdAndUpdate(
       id,
       updateData,
-      { new: true } // Return the updated document
+      { new: true, runValidators: true } // Return the updated document and run validators
     );
 
     if (!updatedProduct) {

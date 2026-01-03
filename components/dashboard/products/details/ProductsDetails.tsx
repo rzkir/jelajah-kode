@@ -165,9 +165,11 @@ export default function ProductsDetails({ product }: { product: ProductsDetails 
                         <CardContent>
                             <ScrollArea className="w-full">
                                 <div className="prose prose-sm max-w-none dark:prose-invert">
-                                    <div className="min-w-max">
-                                        <TypographyContent html={product.description} />
-                                    </div>
+                                    <TypographyContent
+                                        html={product.description}
+                                        youtubeContainerClassName="w-full max-w-full"
+                                        youtubeIframeClassName="w-full h-full"
+                                    />
                                 </div>
                                 <ScrollBar orientation="horizontal" />
                             </ScrollArea>
@@ -186,7 +188,7 @@ export default function ProductsDetails({ product }: { product: ProductsDetails 
                                 <ScrollArea className="w-full">
                                     <div className="prose prose-sm max-w-none dark:prose-invert">
                                         <div className="min-w-max">
-                                            <TypographyContent html={product.faqs} />
+                                            <TypographyContent html={product.faqs} youtubeWrapperClassName="my-8" youtubeContainerClassName="shadow-lg border-2 border-primary/20" youtubeIframeClassName="rounded-xl" />
                                         </div>
                                     </div>
                                     <ScrollBar orientation="horizontal" />
@@ -300,40 +302,37 @@ export default function ProductsDetails({ product }: { product: ProductsDetails 
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-5">
-                            {product.category && product.category.length > 0 && (
+                            {product.category && (
                                 <div>
                                     <h4 className="text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-wide">
                                         Categories
                                     </h4>
                                     <div className="flex flex-wrap gap-2">
-                                        {product.category.map((cat, idx) => (
-                                            <Badge
-                                                key={`${cat.categoryId}-${idx}`}
-                                                variant="secondary"
-                                                className="px-3 py-1"
-                                            >
-                                                {cat.title}
-                                            </Badge>
-                                        ))}
+                                        <Badge
+                                            key={`${product.category.categoryId}`}
+                                            variant="secondary"
+                                            className="px-3 py-1"
+                                        >
+                                            {product.category.title}
+                                        </Badge>
+
                                     </div>
                                 </div>
                             )}
 
-                            {product.type && product.type.length > 0 && (
+                            {product.type && (
                                 <div>
                                     <h4 className="text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-wide">
                                         Type
                                     </h4>
                                     <div className="flex flex-wrap gap-2">
-                                        {product.type.map((type, idx) => (
-                                            <Badge
-                                                key={`${type.typeId}-${idx}`}
-                                                variant="outline"
-                                                className="px-3 py-1"
-                                            >
-                                                {type.title}
-                                            </Badge>
-                                        ))}
+                                        <Badge
+                                            key={`${product.type.typeId}`}
+                                            variant="secondary"
+                                            className="px-3 py-1"
+                                        >
+                                            {product.type.title}
+                                        </Badge>
                                     </div>
                                 </div>
                             )}

@@ -10,6 +10,7 @@ interface Accounts {
   picture?: string;
   status: "active" | "inactive";
   isVerified: "true" | "false" | boolean;
+  emailVerified?: boolean;
   password?: string;
   created_at?: string;
   updated_at?: string;
@@ -30,6 +31,7 @@ interface AuthContextType {
   resetPassword: (email: string) => Promise<void>;
   forgetPassword: (email: string) => Promise<void>;
   changePassword: (newPassword: string) => Promise<boolean>;
+  refreshUserData: () => Promise<Accounts | null>;
   resetToken: string | null;
   setResetToken: (token: string | null) => void;
   verifyOtp: (token: string) => Promise<void>;

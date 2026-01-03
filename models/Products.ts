@@ -156,12 +156,10 @@ const productsSchema = new mongoose.Schema(
       default: "",
     },
     category: {
-      type: [productsCategorySchema],
-      default: [],
+      type: productsCategorySchema,
     },
     type: {
-      type: [productsTypeSchema],
-      default: [],
+      type: productsTypeSchema,
     },
     rating: {
       type: Number,
@@ -204,11 +202,33 @@ const productsSchema = new mongoose.Schema(
 );
 
 // Add pre-save middleware to ensure price is 0 when paymentType is "free"
+// and ensure category and type are objects, not arrays
 productsSchema.pre("save", function (next) {
   // If paymentType is "free", ensure price is 0
   if (this.paymentType === "free") {
     this.price = 0;
   }
+
+  // Ensure category is an object, not an array
+  if (this.category && Array.isArray(this.category)) {
+    // If category is an array, take the first element
+    if (this.category.length > 0) {
+      this.category = this.category[0];
+    } else {
+      this.category = undefined;
+    }
+  }
+
+  // Ensure type is an object, not an array
+  if (this.type && Array.isArray(this.type)) {
+    // If type is an array, take the first element
+    if (this.type.length > 0) {
+      this.type = this.type[0];
+    } else {
+      this.type = undefined;
+    }
+  }
+
   next();
 });
 
@@ -218,7 +238,71 @@ productsSchema.pre("validate", function (next) {
   if (this.paymentType === "free" && this.price !== 0) {
     this.price = 0;
   }
+
+  // Ensure category is an object, not an array
+  if (this.category && Array.isArray(this.category)) {
+    // If category is an array, take the first element
+    if (this.category.length > 0) {
+      this.category = this.category[0];
+    } else {
+      this.category = undefined;
+    }
+  }
+
+  // Ensure type is an object, not an array
+  if (this.type && Array.isArray(this.type)) {
+    // If type is an array, take the first element
+    if (this.type.length > 0) {
+      this.type = this.type[0];
+    } else {
+      this.type = undefined;
+    }
+  }
+
   next();
+});
+
+// Transform category and type to ensure they're always objects when converting to JSON
+productsSchema.set("toJSON", {
+  transform: function (
+    doc: unknown,
+    ret: { category?: unknown; type?: unknown }
+  ) {
+    // Ensure category is always an object, not an array
+    if (
+      ret.category &&
+      Array.isArray(ret.category) &&
+      ret.category.length > 0
+    ) {
+      ret.category = ret.category[0];
+    }
+    // Ensure type is always an object, not an array
+    if (ret.type && Array.isArray(ret.type) && ret.type.length > 0) {
+      ret.type = ret.type[0];
+    }
+    return ret;
+  },
+});
+
+productsSchema.set("toObject", {
+  transform: function (
+    doc: unknown,
+    ret: { category?: unknown; type?: unknown }
+  ) {
+    // Ensure category is always an object, not an array
+    if (
+      ret.category &&
+      Array.isArray(ret.category) &&
+      ret.category.length > 0
+    ) {
+      ret.category = ret.category[0];
+    }
+    // Ensure type is always an object, not an array
+    if (ret.type && Array.isArray(ret.type) && ret.type.length > 0) {
+      ret.type = ret.type[0];
+    }
+    return ret;
+  },
 });
 
 // Prevent OverwriteModelError by checking if model already exists

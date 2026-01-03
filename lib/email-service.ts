@@ -15,7 +15,7 @@ class EmailService {
     const { html, text } = generateVerificationEmailTemplate(otp);
 
     await this.transporter.sendMail({
-      from: process.env.EMAIL_ADMIN,
+      from: `"Jelajah Kode" <${process.env.EMAIL_ADMIN}>`,
       to,
       subject: "Welcome to Jelajah Kode! Email Verification Code",
       html,
@@ -27,7 +27,7 @@ class EmailService {
     const { html, text } = generatePasswordResetEmailTemplate(otp);
 
     await this.transporter.sendMail({
-      from: process.env.EMAIL_ADMIN,
+      from: `"Jelajah Kode" <${process.env.EMAIL_ADMIN}>`,
       to,
       subject: "Password Reset Code",
       text,
@@ -42,7 +42,7 @@ class EmailService {
     text?: string
   ): Promise<void> {
     await this.transporter.sendMail({
-      from: process.env.EMAIL_ADMIN,
+      from: `"Jelajah Kode" <${process.env.EMAIL_ADMIN}>`,
       to,
       subject,
       text,

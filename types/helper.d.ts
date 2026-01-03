@@ -29,3 +29,13 @@ interface BottomSheetProps {
   showHeader?: boolean;
   responsive?: boolean;
 }
+
+//=================== Countdown ===================//
+
+interface CountdownTime {
+  days: number;
+  hours: number;
+  minutes: number;
+  seconds: number;
+  isExpired: boolean;
+}

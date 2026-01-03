@@ -346,17 +346,15 @@ export function useStateCreateProducts() {
             })
             .filter((tag) => tag !== null),
           category: formData.category
-            ? [
-                {
-                  title:
-                    categories.find((cat) => cat._id === formData.category)
-                      ?.title || "",
-                  categoryId:
-                    categories.find((cat) => cat._id === formData.category)
-                      ?.categoryId || "",
-                },
-              ]
-            : [],
+            ? {
+                title:
+                  categories.find((cat) => cat._id === formData.category)
+                    ?.title || "",
+                categoryId:
+                  categories.find((cat) => cat._id === formData.category)
+                    ?.categoryId || "",
+              }
+            : undefined,
           frameworks:
             formData.frameworks.length > 0
               ? frameworks
@@ -368,15 +366,12 @@ export function useStateCreateProducts() {
                   }))
               : [],
           type: formData.type
-            ? [
-                {
-                  title:
-                    types.find((t) => t._id === formData.type)?.title || "",
-                  typeId:
-                    types.find((t) => t._id === formData.type)?.typeId || "",
-                },
-              ]
-            : [],
+            ? {
+                title: types.find((t) => t._id === formData.type)?.title || "",
+                typeId:
+                  types.find((t) => t._id === formData.type)?.typeId || "",
+              }
+            : undefined,
           discount:
             formData.discount?.type && formData.discount?.value
               ? {

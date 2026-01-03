@@ -140,3 +140,43 @@ export const fetchProductType = async (): Promise<Type[]> => {
     return [];
   }
 };
+
+export const fetchProductsDiscount = async (
+  page: number = 1,
+  limit: number = 10
+): Promise<ProductsDiscountResponse> => {
+  try {
+    const response = await fetch(
+      API_CONFIG.ENDPOINTS.products.discount(page, limit),
+      {
+        next: { revalidate: 0 },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${API_CONFIG.SECRET}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        `Failed to fetch products discount: ${response.statusText}`
+      );
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    if (process.env.NODE_ENV !== "production") {
+      console.error("Error fetching products discount:", error);
+    }
+    return {
+      data: [],
+      pagination: {
+        page: 1,
+        limit: 10,
+        total: 0,
+        pages: 0,
+      },
+    };
+  }
+};

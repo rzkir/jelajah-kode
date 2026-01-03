@@ -76,6 +76,7 @@ export default function EditProductForm() {
 
   const [categoryOpen, setCategoryOpen] = React.useState(false);
   const [typeOpen, setTypeOpen] = React.useState(false);
+  const [frameworkSearch, setFrameworkSearch] = React.useState("");
 
   if (isPageLoading) {
     return <FormSkelaton />;
@@ -322,6 +323,171 @@ export default function EditProductForm() {
                 </div>
               </div>
 
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="tags">Tags</Label>
+                {loading ? (
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
+                    {[...Array(5)].map((_, i) => (
+                      <Skeleton key={i} className="h-16 w-full" />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
+                    {tags.map((tag) => (
+                      <div
+                        key={tag._id}
+                        className={`border rounded-md p-3 cursor-pointer transition-colors ${formData.tags.includes(tag._id)
+                          ? "border-primary bg-primary/10"
+                          : "border-gray-200 hover:border-gray-300"
+                          }`}
+                        onClick={() =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            tags: prev.tags.includes(tag._id)
+                              ? prev.tags.filter((id) => id !== tag._id)
+                              : [...prev.tags, tag._id],
+                          }))
+                        }
+                      >
+                        <div className="flex items-center gap-3">
+                          <div
+                            className={`w-4 h-4 rounded border ${formData.tags.includes(tag._id)
+                              ? "bg-primary border-primary"
+                              : "border-gray-300"
+                              }`}
+                          >
+                            {formData.tags.includes(tag._id) && (
+                              <svg
+                                className="w-4 h-4 text-white"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth="2"
+                                  d="M5 13l4 4L19 7"
+                                ></path>
+                              </svg>
+                            )}
+                          </div>
+                          <span className="text-sm font-medium">
+                            {tag.title}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Discount Section */}
+              <div className="border rounded-lg p-4 bg-muted">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="font-medium">Discount</h3>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm text-muted-foreground">
+                      Enable discount
+                    </span>
+                    <input
+                      type="checkbox"
+                      checked={!!formData.discount}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          discount: e.target.checked
+                            ? {
+                              type: "percentage",
+                              value: 0,
+                              until: "",
+                            }
+                            : undefined,
+                        }))
+                      }
+                      className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                    />
+                  </div>
+                </div>
+
+                {formData.discount && (
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="flex flex-col gap-2">
+                      <Label htmlFor="discountType">Type</Label>
+
+                      <Select
+                        name="discountType"
+                        value={formData.discount.type}
+                        onValueChange={(value: "percentage" | "fixed") =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            discount: {
+                              type: value,
+                              value: prev.discount ? prev.discount.value : 0,
+                              until: prev.discount ? prev.discount.until : "",
+                            },
+                          }))
+                        }
+                      >
+                        <SelectTrigger id="discountType" className="w-full">
+                          <SelectValue placeholder="Select discount type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="percentage">Percentage</SelectItem>
+                          <SelectItem value="fixed">Fixed Amount</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                      <Label htmlFor="discountValue">Value</Label>
+                      <Input
+                        id="discountValue"
+                        type="number"
+                        min="0"
+                        value={formData.discount.value}
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            discount: {
+                              type: prev.discount
+                                ? prev.discount.type
+                                : "percentage",
+                              value: Number(e.target.value),
+                              until: prev.discount ? prev.discount.until : "",
+                            },
+                          }))
+                        }
+                        placeholder="Discount value"
+                      />
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                      <Label htmlFor="discountUntil">Until (Optional)</Label>
+                      <Input
+                        id="discountUntil"
+                        type="date"
+                        value={formData.discount.until || ""}
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            discount: {
+                              type: prev.discount
+                                ? prev.discount.type
+                                : "percentage",
+                              value: prev.discount ? prev.discount.value : 0,
+                              until: e.target.value,
+                            },
+                          }))
+                        }
+                        placeholder="End date (YYYY-MM-DD)"
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="flex flex-col gap-2">
                   <Label htmlFor="thumbnail">Thumbnail *</Label>
@@ -473,85 +639,6 @@ export default function EditProductForm() {
                 />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="price">Price *</Label>
-                  <Input
-                    id="price"
-                    name="price"
-                    type="text"
-                    value={formatIDR(formData.price)}
-                    onChange={handlePriceChange}
-                    required
-                    placeholder="0"
-                    inputMode="numeric"
-                  />
-                </div>
-
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="stock">Stock *</Label>
-                  <Input
-                    id="stock"
-                    name="stock"
-                    type="number"
-                    value={formData.stock}
-                    onChange={handleChange}
-                    required
-                    min="0"
-                  />
-                </div>
-
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="download">Download URL</Label>
-                  <Input
-                    id="download"
-                    name="download"
-                    type="text"
-                    value={formData.download || ""}
-                    onChange={handleChange}
-                    placeholder="https://example.com/download"
-                  />
-                </div>
-
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="paymentType">Payment Type *</Label>
-                  <Select
-                    name="paymentType"
-                    value={formData.paymentType}
-                    onValueChange={(value: "free" | "paid") =>
-                      setFormData((prev) => ({ ...prev, paymentType: value }))
-                    }
-                  >
-                    <SelectTrigger id="paymentType" className="w-full">
-                      <SelectValue placeholder="Select payment type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="free">Free</SelectItem>
-                      <SelectItem value="paid">Paid</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="status">Status *</Label>
-                  <Select
-                    name="status"
-                    value={formData.status}
-                    onValueChange={(value: "publish" | "draft") =>
-                      setFormData((prev) => ({ ...prev, status: value }))
-                    }
-                  >
-                    <SelectTrigger id="status" className="w-full">
-                      <SelectValue placeholder="Select status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="draft">Draft</SelectItem>
-                      <SelectItem value="publish">Publish</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
               <div className="flex flex-col gap-2">
                 <Label htmlFor="framework">Framework</Label>
                 {loading ? (
@@ -561,224 +648,86 @@ export default function EditProductForm() {
                     ))}
                   </div>
                 ) : (
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
-                    {frameworks.map((framework) => (
-                      <div
-                        key={framework._id}
-                        className={`border rounded-md p-3 cursor-pointer transition-colors ${formData.frameworks.includes(framework._id)
-                          ? "border-primary bg-primary/10"
-                          : "border-gray-200 hover:border-gray-300"
-                          }`}
-                        onClick={() =>
-                          setFormData((prev) => ({
-                            ...prev,
-                            frameworks: prev.frameworks.includes(framework._id)
-                              ? prev.frameworks.filter(
-                                (id) => id !== framework._id
-                              )
-                              : [...prev.frameworks, framework._id],
-                          }))
-                        }
-                      >
-                        <div className="flex items-center gap-3">
-                          <div
-                            className={`w-4 h-4 rounded border ${formData.frameworks.includes(framework._id)
-                              ? "bg-primary border-primary"
-                              : "border-gray-300"
-                              }`}
-                          >
-                            {formData.frameworks.includes(framework._id) && (
-                                <svg
-                                  className="w-4 h-4 text-white"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  viewBox="0 0 24 24"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="2"
-                                    d="M5 13l4 4L19 7"
-                                  ></path>
-                                </svg>
-                              )}
-                          </div>
-                          {framework.thumbnail && (
-                            <Image
-                              src={framework.thumbnail}
-                              alt={framework.title}
-                              width={32}
-                              height={32}
-                              className="w-8 h-8 object-contain rounded border"
-                            />
-                          )}
-                          <span>{framework.title}</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              <div className="flex flex-col gap-2">
-                <Label htmlFor="tags">Tags</Label>
-                {loading ? (
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
-                    {[...Array(5)].map((_, i) => (
-                      <Skeleton key={i} className="h-16 w-full" />
-                    ))}
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
-                    {tags.map((tag) => (
-                      <div
-                        key={tag._id}
-                        className={`border rounded-md p-3 cursor-pointer transition-colors ${formData.tags.includes(tag._id)
-                          ? "border-primary bg-primary/10"
-                          : "border-gray-200 hover:border-gray-300"
-                          }`}
-                        onClick={() =>
-                          setFormData((prev) => ({
-                            ...prev,
-                            tags: prev.tags.includes(tag._id)
-                              ? prev.tags.filter((id) => id !== tag._id)
-                              : [...prev.tags, tag._id],
-                          }))
-                        }
-                      >
-                        <div className="flex items-center gap-3">
-                          <div
-                            className={`w-4 h-4 rounded border ${formData.tags.includes(tag._id)
-                              ? "bg-primary border-primary"
-                              : "border-gray-300"
-                              }`}
-                          >
-                            {formData.tags.includes(tag._id) && (
-                              <svg
-                                className="w-4 h-4 text-white"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth="2"
-                                  d="M5 13l4 4L19 7"
-                                ></path>
-                              </svg>
-                            )}
-                          </div>
-                          <span className="text-sm font-medium">
-                            {tag.title}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Discount Section */}
-              <div className="border rounded-lg p-4 bg-muted">
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="font-medium">Discount</h3>
-                  <div className="flex items-center space-x-2">
-                    <span className="text-sm text-muted-foreground">
-                      Enable discount
-                    </span>
-                    <input
-                      type="checkbox"
-                      checked={!!formData.discount}
-                      onChange={(e) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          discount: e.target.checked
-                            ? {
-                              type: "percentage",
-                              value: 0,
-                              until: "",
-                            }
-                            : undefined,
-                        }))
-                      }
-                      className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                  <>
+                    <Input
+                      placeholder="Search framework..."
+                      value={frameworkSearch}
+                      onChange={(e) => setFrameworkSearch(e.target.value)}
+                      className="mb-2"
                     />
-                  </div>
-                </div>
-                {formData.discount && (
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                      <Label htmlFor="discountType">Type</Label>
-                      <Select
-                        name="discountType"
-                        value={formData.discount.type}
-                        onValueChange={(value: "percentage" | "fixed") =>
-                          setFormData((prev) => ({
-                            ...prev,
-                            discount: {
-                              type: value,
-                              value: prev.discount ? prev.discount.value : 0,
-                              until: prev.discount ? prev.discount.until : "",
-                            },
-                          }))
-                        }
-                      >
-                        <SelectTrigger id="discountType">
-                          <SelectValue placeholder="Select discount type" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="percentage">Percentage</SelectItem>
-                          <SelectItem value="fixed">Fixed Amount</SelectItem>
-                        </SelectContent>
-                      </Select>
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
+                      {frameworks
+                        .filter((framework) =>
+                          framework.title
+                            .toLowerCase()
+                            .includes(frameworkSearch.toLowerCase())
+                        )
+                        .map((framework) => (
+                          <div
+                            key={framework._id}
+                            className={`border rounded-md p-3 cursor-pointer transition-colors ${formData.frameworks.includes(framework._id)
+                              ? "border-primary bg-primary/10"
+                              : "border-gray-200 hover:border-gray-300"
+                              }`}
+                            onClick={() =>
+                              setFormData((prev) => ({
+                                ...prev,
+                                frameworks: prev.frameworks.includes(framework._id)
+                                  ? prev.frameworks.filter(
+                                    (id) => id !== framework._id
+                                  )
+                                  : [...prev.frameworks, framework._id],
+                              }))
+                            }
+                          >
+                            <div className="flex items-center gap-3">
+                              <div
+                                className={`w-4 h-4 rounded border ${formData.frameworks.includes(framework._id)
+                                  ? "bg-primary border-primary"
+                                  : "border-gray-300"
+                                  }`}
+                              >
+                                {formData.frameworks.includes(framework._id) && (
+                                  <svg
+                                    className="w-4 h-4 text-white"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth="2"
+                                      d="M5 13l4 4L19 7"
+                                    ></path>
+                                  </svg>
+                                )}
+                              </div>
+                              {framework.thumbnail && (
+                                <Image
+                                  src={framework.thumbnail}
+                                  alt={framework.title}
+                                  width={32}
+                                  height={32}
+                                  className="w-8 h-8 object-contain rounded border"
+                                />
+                              )}
+                              <span>{framework.title}</span>
+                            </div>
+                          </div>
+                        ))}
                     </div>
-                    <div>
-                      <Label htmlFor="discountValue">Value</Label>
-                      <Input
-                        id="discountValue"
-                        type="number"
-                        min="0"
-                        value={formData.discount.value}
-                        onChange={(e) =>
-                          setFormData((prev) => ({
-                            ...prev,
-                            discount: {
-                              type: prev.discount
-                                ? prev.discount.type
-                                : "percentage",
-                              value: Number(e.target.value),
-                              until: prev.discount ? prev.discount.until : "",
-                            },
-                          }))
-                        }
-                        placeholder="Discount value"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="discountUntil">Until (Optional)</Label>
-                      <Input
-                        id="discountUntil"
-                        type="date"
-                        value={formData.discount.until || ""}
-                        onChange={(e) =>
-                          setFormData((prev) => ({
-                            ...prev,
-                            discount: {
-                              type: prev.discount
-                                ? prev.discount.type
-                                : "percentage",
-                              value: prev.discount ? prev.discount.value : 0,
-                              until: e.target.value,
-                            },
-                          }))
-                        }
-                        placeholder="End date (YYYY-MM-DD)"
-                      />
-                    </div>
-                  </div>
+                    {frameworkSearch && frameworks.filter((framework) =>
+                      framework.title
+                        .toLowerCase()
+                        .includes(frameworkSearch.toLowerCase())
+                    ).length === 0 && (
+                        <p className="text-sm text-muted-foreground text-center py-4">
+                          No framework found matching &quot;{frameworkSearch}&quot;
+                        </p>
+                      )}
+                  </>
                 )}
               </div>
             </div>

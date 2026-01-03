@@ -138,9 +138,13 @@ export function useStateEditProducts() {
           stock: product.stock,
           download: product.download || "",
           category:
-            product.category && product.category.length > 0
+            product.category
               ? (() => {
-                  const categoryId = product.category[0].categoryId;
+                  // Handle backward compatibility: check if category is array or object
+                  const categoryObj = Array.isArray(product.category)
+                    ? product.category[0]
+                    : product.category;
+                  const categoryId = categoryObj?.categoryId;
                   const foundCategory = categoriesData.find(
                     (cat) => cat.categoryId === categoryId
                   );
@@ -148,9 +152,13 @@ export function useStateEditProducts() {
                 })()
               : "",
           type:
-            product.type && product.type.length > 0
+            product.type
               ? (() => {
-                  const typeId = product.type[0].typeId;
+                  // Handle backward compatibility: check if type is array or object
+                  const typeObj = Array.isArray(product.type)
+                    ? product.type[0]
+                    : product.type;
+                  const typeId = typeObj?.typeId;
                   const foundType = typesData.find((t) => t.typeId === typeId);
                   return foundType ? foundType._id : "";
                 })()
@@ -403,27 +411,21 @@ export function useStateEditProducts() {
               })
               .filter((tag) => tag !== null),
             category: formData.category
-              ? [
-                  {
-                    title:
-                      categories.find((cat) => cat._id === formData.category)
-                        ?.title || "",
-                    categoryId:
-                      categories.find((cat) => cat._id === formData.category)
-                        ?.categoryId || "",
-                  },
-                ]
-              : [],
+              ? {
+                  title:
+                    categories.find((cat) => cat._id === formData.category)
+                      ?.title || "",
+                  categoryId:
+                    categories.find((cat) => cat._id === formData.category)
+                      ?.categoryId || "",
+                }
+              : undefined,
             type: formData.type
-              ? [
-                  {
-                    title:
-                      types.find((t) => t._id === formData.type)?.title || "",
-                    typeId:
-                      types.find((t) => t._id === formData.type)?.typeId || "",
-                  },
-                ]
-              : [],
+              ? {
+                  title: types.find((t) => t._id === formData.type)?.title || "",
+                  typeId: types.find((t) => t._id === formData.type)?.typeId || "",
+                }
+              : undefined,
             frameworks:
               formData.frameworks.length > 0
                 ? frameworks

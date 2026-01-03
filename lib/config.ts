@@ -13,6 +13,7 @@ export const API_CONFIG = {
     forgetPassword: `${API_BASE_URL}/api/auth/forget-password`,
     changePassword: `${API_BASE_URL}/api/auth/change-password`,
     me: `${API_BASE_URL}/api/auth/me`,
+    uploadPicture: `${API_BASE_URL}/api/auth/upload-picture`,
     products: {
       base: `${API_BASE_URL}/api/products`,
       categories: `${API_BASE_URL}/api/products/categories`,
@@ -30,6 +31,8 @@ export const API_CONFIG = {
         `${API_BASE_URL}/api/products/search?q=${encodeURIComponent(
           query
         )}&page=${page}&limit=${limit}`,
+      discount: (page: number = 1, limit: number = 10) =>
+        `${API_BASE_URL}/api/products/discount?page=${page}&limit=${limit}`,
     },
   },
   SECRET: API_SECRET,

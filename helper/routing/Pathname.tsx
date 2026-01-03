@@ -16,7 +16,7 @@ const Pathname = ({ children }: { children: React.ReactNode }) => {
   const isRoute =
     pathname?.includes("/signin") ||
     pathname?.includes("/signup") ||
-    pathname?.includes("/forgot-password") ||
+    pathname?.includes("/forget-password") ||
     pathname?.includes("/verification") ||
     pathname?.includes("/change-password") ||
     pathname?.includes("/reset-password") ||

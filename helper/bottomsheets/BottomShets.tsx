@@ -52,14 +52,14 @@ export default function BottomSheet({
     return (
         <Sheet open={open} onOpenChange={onOpenChange}>
             {trigger && <SheetTrigger asChild>{trigger}</SheetTrigger>}
-            <SheetContent side={sheetSide} className={sheetContentClassName}>
+            <SheetContent side={sheetSide} className={cn("flex flex-col", sheetContentClassName)}>
                 {showHeader && (title || description) && (
                     <SheetHeader>
                         {title && <SheetTitle>{title}</SheetTitle>}
                         {description && <SheetDescription>{description}</SheetDescription>}
                     </SheetHeader>
                 )}
-                <ScrollArea className={cn("h-full", className)}>
+                <ScrollArea className={cn("flex-1", className)}>
                     {children}
                 </ScrollArea>
             </SheetContent>

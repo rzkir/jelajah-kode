@@ -11,8 +11,8 @@ interface Products {
   stock: number;
   sold?: number;
   download?: string;
-  category: ProductsCategory[];
-  type: ProductsType[];
+  category: ProductsCategory;
+  type: ProductsType;
   rating?: number;
   views?: number;
   ratingCount?: number;
@@ -353,7 +353,7 @@ interface ProductsDetails {
   rating?: number;
   views?: number;
   ratingCount?: number;
-  category: ProductsCategory[];
+  category: ProductsCategory;
   images: string[];
   author: {
     _id: string;
@@ -362,7 +362,7 @@ interface ProductsDetails {
     role: UserRole;
   };
   tags: ProductsTags[];
-  type: ProductsType[];
+  type: ProductsType;
   paymentType: string;
   status: string;
   created_at: string;
@@ -379,8 +379,8 @@ interface ProductsSearchItem {
   price: number;
   stock: number;
   download?: string;
-  category: ProductsCategory[];
-  type: ProductsType[];
+  category: ProductsCategory;
+  type: ProductsType;
   discount?: {
     type: string;
     value: number;
@@ -410,4 +410,43 @@ interface ProductsSearchResponse {
   data: ProductsSearchItem[];
   pagination: ProductsSearchPagination;
   query: string;
+}
+
+//====================== Products Discount ======================//
+interface ProductsDiscountItem {
+  _id: string;
+  productsId: string;
+  title: string;
+  thumbnail: string;
+  price: number;
+  stock: number;
+  category: ProductsCategory;
+  frameworks: Productsframeworks[];
+  discount: {
+    type: "percentage" | "fixed";
+    value: number;
+    until: string;
+  };
+  author: {
+    _id: string;
+    name: string;
+    picture: string;
+    role: UserRole;
+  };
+  type: ProductsType;
+  paymentType: "free" | "paid";
+  created_at: string;
+  updated_at: string;
+}
+
+interface ProductsDiscountPagination {
+  page: number;
+  limit: number;
+  total: number;
+  pages: number;
+}
+
+interface ProductsDiscountResponse {
+  data: ProductsDiscountItem[];
+  pagination: ProductsDiscountPagination;
 }
