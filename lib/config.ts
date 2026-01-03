@@ -31,7 +31,8 @@ export const API_CONFIG = {
         `${API_BASE_URL}/api/products/search?q=${encodeURIComponent(
           query
         )}&page=${page}&limit=${limit}`,
-      discount: `${API_BASE_URL}/api/products/discount`,
+      discount: (page: number = 1, limit: number = 10) =>
+        `${API_BASE_URL}/api/products/discount?page=${page}&limit=${limit}`,
     },
   },
   SECRET: API_SECRET,
