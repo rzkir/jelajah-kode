@@ -279,10 +279,10 @@ export default function ProductsDetails({ product }: { product: ProductsDetails 
                                 </div>
                             )}
 
-                            {product.download && (
+                            {product.downloadUrl && (
                                 <div className="pt-4 border-t">
                                     <a
-                                        href={product.download}
+                                        href={product.downloadUrl}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="flex items-center justify-center gap-2 w-full p-3 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors font-medium"
