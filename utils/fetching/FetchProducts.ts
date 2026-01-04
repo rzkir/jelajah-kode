@@ -1,5 +1,7 @@
 import { API_CONFIG } from "@/lib/config";
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+
 export const fetchProducts = async (): Promise<Products[]> => {
   try {
     const response = await fetch(API_CONFIG.ENDPOINTS.products.base, {
@@ -147,12 +149,12 @@ export const fetchProductsDiscount = async (
 ): Promise<ProductsDiscountResponse> => {
   try {
     const response = await fetch(
-      API_CONFIG.ENDPOINTS.products.discount(page, limit),
+      `${API_BASE_URL}/api/products/discount?page=${page}&limit=${limit}`,
       {
         next: { revalidate: 0 },
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${API_CONFIG.SECRET}`,
+          Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_SECRET}`,
         },
       }
     );
