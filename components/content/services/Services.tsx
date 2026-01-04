@@ -29,9 +29,9 @@ const services = [
 
 export default function Services() {
     return (
-        <section className="min-h-full overflow-visible bg-background relative py-10 px-4 md:px-0">
+        <section className="min-h-full overflow-visible bg-background relative py-10">
             {/* Background Pattern */}
-            <div className="container mx-auto">
+            <div className="container mx-auto px-4 xl:px-6">
                 <div className="absolute inset-0 opacity-30 dark:opacity-20">
                     <div
                         className="absolute inset-0"

@@ -46,6 +46,7 @@ import Image from "next/image";
 import QuillEditor from "@/helper/editor/QuillEditor";
 
 import { useStateCreateProducts } from "@/components/dashboard/products/products/create/lib/useStateCreateProducts";
+
 import { formatIDR } from "@/hooks/FormatPrice";
 
 import FormSkelaton from "@/components/dashboard/products/products/FormSkelaton";
@@ -165,12 +166,12 @@ export default function NewProductForm() {
                 </div>
 
                 <div className="flex flex-col gap-2">
-                  <Label htmlFor="download">Download URL</Label>
+                  <Label htmlFor="downloadUrl">Download URL</Label>
                   <Input
-                    id="download"
-                    name="download"
+                    id="downloadUrl"
+                    name="downloadUrl"
                     type="text"
-                    value={formData.download || ""}
+                    value={formData.downloadUrl || ""}
                     onChange={handleChange}
                     placeholder="https://example.com/download"
                   />

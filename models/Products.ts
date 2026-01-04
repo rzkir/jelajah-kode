@@ -150,10 +150,15 @@ const productsSchema = new mongoose.Schema(
     },
     sold: {
       type: Number,
+      default: 0,
     },
-    download: {
+    downloadUrl: {
       type: String,
       default: "",
+    },
+    downloadCount: {
+      type: Number,
+      default: 0,
     },
     category: {
       type: productsCategorySchema,

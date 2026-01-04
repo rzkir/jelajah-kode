@@ -10,7 +10,8 @@ interface Products {
   price: number;
   stock: number;
   sold?: number;
-  download?: string;
+  downloadUrl?: string;
+  downloadCount?: number;
   category: ProductsCategory;
   type: ProductsType;
   rating?: number;
@@ -111,7 +112,7 @@ interface CreateFormData {
   faqs: string;
   price: number;
   stock: number;
-  download?: string;
+  downloadUrl?: string;
   category: string;
   frameworks: string[];
   tags: string[];
@@ -134,7 +135,7 @@ interface EditFormData {
   faqs: string;
   price: number;
   stock: number;
-  download?: string;
+  downloadUrl?: string;
   category: string;
   frameworks: string[];
   tags: string[];
@@ -344,7 +345,8 @@ interface ProductsDetails {
   price: number;
   stock: number;
   sold?: number;
-  download?: string;
+  downloadUrl?: string;
+  downloadCount?: number;
   discount?: {
     type: "percentage" | "fixed";
     value: number;
@@ -378,7 +380,8 @@ interface ProductsSearchItem {
   frameworks: Productsframeworks[];
   price: number;
   stock: number;
-  download?: string;
+  downloadUrl?: string;
+  downloadCount?: number;
   category: ProductsCategory;
   type: ProductsType;
   discount?: {
@@ -420,6 +423,8 @@ interface ProductsDiscountItem {
   thumbnail: string;
   price: number;
   stock: number;
+  sold: number;
+  downloadCount: number;
   category: ProductsCategory;
   frameworks: Productsframeworks[];
   discount: {

@@ -4,8 +4,8 @@ import Filter from "@/components/content/filter/Filter"
 
 export default function Page() {
     return (
-        <section className="min-h-full overflow-visible relative py-14 md:py-36 px-4 md:px-0">
-            <div className="container mx-auto">
+        <section className="min-h-full overflow-visible relative py-14 pt-32 xl:pt-unset md:py-36">
+            <div className="container mx-auto px-4">
                 {/* Content */}
                 <div className="relative z-10 max-w-4xl mx-auto text-center space-y-8">
                     {/* Top Label */}

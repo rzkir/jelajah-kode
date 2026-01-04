@@ -31,7 +31,7 @@ export function useStateEditProducts() {
     faqs: "",
     price: 0,
     stock: 0,
-    download: "",
+    downloadUrl: "",
     category: "",
     frameworks: [],
     tags: [],
@@ -136,33 +136,31 @@ export function useStateEditProducts() {
           faqs: product.faqs,
           price: product.price,
           stock: product.stock,
-          download: product.download || "",
-          category:
-            product.category
-              ? (() => {
-                  // Handle backward compatibility: check if category is array or object
-                  const categoryObj = Array.isArray(product.category)
-                    ? product.category[0]
-                    : product.category;
-                  const categoryId = categoryObj?.categoryId;
-                  const foundCategory = categoriesData.find(
-                    (cat) => cat.categoryId === categoryId
-                  );
-                  return foundCategory ? foundCategory._id : "";
-                })()
-              : "",
-          type:
-            product.type
-              ? (() => {
-                  // Handle backward compatibility: check if type is array or object
-                  const typeObj = Array.isArray(product.type)
-                    ? product.type[0]
-                    : product.type;
-                  const typeId = typeObj?.typeId;
-                  const foundType = typesData.find((t) => t.typeId === typeId);
-                  return foundType ? foundType._id : "";
-                })()
-              : "",
+          downloadUrl: product.downloadUrl || "",
+          category: product.category
+            ? (() => {
+                // Handle backward compatibility: check if category is array or object
+                const categoryObj = Array.isArray(product.category)
+                  ? product.category[0]
+                  : product.category;
+                const categoryId = categoryObj?.categoryId;
+                const foundCategory = categoriesData.find(
+                  (cat) => cat.categoryId === categoryId
+                );
+                return foundCategory ? foundCategory._id : "";
+              })()
+            : "",
+          type: product.type
+            ? (() => {
+                // Handle backward compatibility: check if type is array or object
+                const typeObj = Array.isArray(product.type)
+                  ? product.type[0]
+                  : product.type;
+                const typeId = typeObj?.typeId;
+                const foundType = typesData.find((t) => t.typeId === typeId);
+                return foundType ? foundType._id : "";
+              })()
+            : "",
           frameworks: product.frameworks
             ? (() => {
                 const frameworkIds = product.frameworks.map(
@@ -422,8 +420,10 @@ export function useStateEditProducts() {
               : undefined,
             type: formData.type
               ? {
-                  title: types.find((t) => t._id === formData.type)?.title || "",
-                  typeId: types.find((t) => t._id === formData.type)?.typeId || "",
+                  title:
+                    types.find((t) => t._id === formData.type)?.title || "",
+                  typeId:
+                    types.find((t) => t._id === formData.type)?.typeId || "",
                 }
               : undefined,
             frameworks:

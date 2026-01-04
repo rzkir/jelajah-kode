@@ -273,12 +273,12 @@ export default function EditProductForm() {
                 </div>
 
                 <div className="flex flex-col gap-2">
-                  <Label htmlFor="download">Download URL</Label>
+                  <Label htmlFor="downloadUrl">Download URL</Label>
                   <Input
-                    id="download"
-                    name="download"
+                    id="downloadUrl"
+                    name="downloadUrl"
                     type="text"
-                    value={formData.download || ""}
+                    value={formData.downloadUrl || ""}
                     onChange={handleChange}
                     placeholder="https://example.com/download"
                   />

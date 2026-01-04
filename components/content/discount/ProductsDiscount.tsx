@@ -1,100 +1,9 @@
 "use client"
 
-import { Card, CardTitle, CardContent } from "@/components/ui/card"
-
-import { Badge } from "@/components/ui/badge"
-
-import Link from "next/link"
-
-import Image from "next/image"
-
-import { useDiscount } from "@/hooks/discountServices"
-
 import { useEffect, useState, useCallback } from "react"
 
-function ProductDiscountCard({ item }: { item: ProductsDiscountItem }) {
-    const { originalPrice, discountedPrice, activeDiscount, hasActiveDiscount } = useDiscount(item.price, item.discount);
-
-    return (
-        <Link href={`/products/${item.productsId}`} className="group">
-            <Card className="p-0 overflow-hidden h-full transition-all duration-300 hover:shadow-lg hover:scale-[1.02] border-2 hover:border-primary/50">
-                {/* Image Container with Discount Badge */}
-                <div className="relative aspect-video overflow-hidden bg-muted">
-                    <Image
-                        src={item.thumbnail}
-                        alt={item.title}
-                        fill
-                        className="object-cover transition-transform duration-300 group-hover:scale-110"
-                    />
-                    {/* Discount Badge Overlay */}
-                    {hasActiveDiscount && activeDiscount && (
-                        <div className="absolute top-3 left-3 z-10">
-                            <Badge
-                                variant="destructive"
-                                className="text-sm font-bold px-3 py-1 shadow-lg"
-                            >
-                                {activeDiscount.type === "percentage"
-                                    ? `-${activeDiscount.value}%`
-                                    : `-Rp ${activeDiscount.value.toLocaleString('id-ID')}`
-                                }
-                            </Badge>
-                        </div>
-                    )}
-                </div>
-
-                <CardContent className="pt-0 space-y-3">
-                    <CardTitle className="text-lg line-clamp-1 group-hover:text-primary transition-colors">
-                        {item.title}
-                    </CardTitle>
-                    {/* Frameworks */}
-                    <div className="flex flex-wrap gap-2">
-                        {
-                            item.frameworks.slice(0, 3).map((framework: Productsframeworks, frameworkIdx: number) => {
-                                return (
-                                    <Badge
-                                        key={frameworkIdx}
-                                        variant="outline"
-                                        className="text-xs px-2 py-1"
-                                    >
-                                        {framework.title}
-                                    </Badge>
-                                )
-                            })
-                        }
-                        {item.frameworks.length > 3 && (
-                            <Badge
-                                variant="outline"
-                                className="text-xs px-2 py-1"
-                            >
-                                +{item.frameworks.length - 3}
-                            </Badge>
-                        )}
-                    </div>
-
-                    {/* Price Section */}
-                    <div className="flex flex-row items-end gap-2 mb-5">
-                        {item.paymentType === 'free' ? (
-                            <span className="text-2xl font-bold text-green-600">Free</span>
-                        ) : hasActiveDiscount ? (
-                            <>
-                                <span className="text-2xl font-bold text-primary">
-                                    Rp {discountedPrice.toLocaleString('id-ID')}
-                                </span>
-                                <span className="text-sm text-muted-foreground line-through">
-                                    Rp {originalPrice.toLocaleString('id-ID')}
-                                </span>
-                            </>
-                        ) : (
-                            <span className="text-2xl font-bold text-primary">
-                                Rp {originalPrice.toLocaleString('id-ID')}
-                            </span>
-                        )}
-                    </div>
-                </CardContent>
-            </Card>
-        </Link>
-    )
-}
+import ProductsCard from "@/components/ui/products/ProductsCard"
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 
 function CountdownTimer({ endDate }: { endDate: string }) {
     const [mounted, setMounted] = useState(false);
@@ -132,20 +41,16 @@ function CountdownTimer({ endDate }: { endDate: string }) {
     }));
 
     useEffect(() => {
-        // Mark as mounted to avoid hydration mismatch (deferred)
         const mountTimeout = setTimeout(() => {
             setMounted(true);
         }, 0);
 
-        // Function to update time left
         const updateTime = () => {
             setTimeLeft(calculateTimeLeft());
         };
 
-        // Update immediately when component mounts (deferred to avoid lint warning)
         const immediateUpdate = setTimeout(updateTime, 0);
 
-        // Update every second
         const interval = setInterval(updateTime, 1000);
 
         return () => {
@@ -155,15 +60,22 @@ function CountdownTimer({ endDate }: { endDate: string }) {
         };
     }, [calculateTimeLeft]);
 
-    // Show placeholder during SSR to avoid hydration mismatch
     if (!mounted) {
         return (
-            <div className="flex flex-row items-center gap-3 px-4 py-2 rounded-lg bg-primary/10 border border-primary/20">
-                <h3 className="text-sm font-medium text-muted-foreground">Ends in</h3>
-                <div className="flex flex-row items-center gap-2 font-mono">
-                    <span className="text-lg font-bold text-primary">
-                        00:00:00
-                    </span>
+            <div className="flex items-center justify-center px-6 py-3 rounded-lg bg-red-600">
+                <span className="text-white font-bold text-sm mr-3">Sale ends in:</span>
+                <div className="flex items-baseline gap-1">
+                    <span className="text-white font-bold text-xl">00</span>
+                    <span className="text-white text-xs">d</span>
+                    <span className="text-white font-bold text-xl mx-1">:</span>
+                    <span className="text-white font-bold text-xl">00</span>
+                    <span className="text-white text-xs">h</span>
+                    <span className="text-white font-bold text-xl mx-1">:</span>
+                    <span className="text-white font-bold text-xl">00</span>
+                    <span className="text-white text-xs">m</span>
+                    <span className="text-white font-bold text-xl mx-1">:</span>
+                    <span className="text-white font-bold text-xl">00</span>
+                    <span className="text-white text-xs">s</span>
                 </div>
             </div>
         );
@@ -171,26 +83,35 @@ function CountdownTimer({ endDate }: { endDate: string }) {
 
     if (timeLeft.expired) {
         return (
-            <div className="flex flex-row items-center gap-3 px-4 py-2 rounded-lg bg-destructive/10 border border-destructive/20">
-                <h3 className="text-sm font-medium text-destructive">Expired</h3>
+            <div className="flex items-center justify-center px-6 py-3 rounded-lg bg-red-600">
+                <span className="text-white font-bold text-sm">Sale expired</span>
             </div>
         );
     }
 
     return (
-        <div className="flex flex-row items-center gap-3 px-4 py-2 rounded-lg bg-primary/10 border border-primary/20">
-            <h3 className="text-sm font-medium text-muted-foreground">Ends in</h3>
-            <div className="flex flex-row items-center gap-2 font-mono">
-                {timeLeft.days > 0 && (
-                    <span className="text-lg font-bold text-primary">
-                        {timeLeft.days}d
-                    </span>
-                )}
-                <span className="text-lg font-bold text-primary">
-                    {String(timeLeft.hours).padStart(2, '0')}:
-                    {String(timeLeft.minutes).padStart(2, '0')}:
+        <div className="flex items-center justify-center px-6 py-3 rounded-lg bg-red-600">
+            <span className="text-white font-bold text-sm mr-3">Sale ends in:</span>
+            <div className="flex items-baseline gap-1">
+                <span className="text-white font-bold text-xl">
+                    {String(timeLeft.days).padStart(2, '0')}
+                </span>
+                <span className="text-white text-xs">d</span>
+                <span className="text-white font-bold text-xl mx-1">:</span>
+                <span className="text-white font-bold text-xl">
+                    {String(timeLeft.hours).padStart(2, '0')}
+                </span>
+                <span className="text-white text-xs">h</span>
+                <span className="text-white font-bold text-xl mx-1">:</span>
+                <span className="text-white font-bold text-xl">
+                    {String(timeLeft.minutes).padStart(2, '0')}
+                </span>
+                <span className="text-white text-xs">m</span>
+                <span className="text-white font-bold text-xl mx-1">:</span>
+                <span className="text-white font-bold text-xl">
                     {String(timeLeft.seconds).padStart(2, '0')}
                 </span>
+                <span className="text-white text-xs">s</span>
             </div>
         </div>
     );
@@ -213,8 +134,8 @@ export default function ProductsDiscount({ productsDiscount }: { productsDiscoun
     const earliestEndDate = getEarliestEndDate();
 
     return (
-        <section className="py-12 md:py-16 lg:py-20">
-            <div className="container mx-auto px-4">
+        <section className="py-4">
+            <div className="container mx-auto px-4 space-y-6 xl:px-6">
                 {/* Header Section */}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
                     {/* Heading */}
@@ -233,14 +154,19 @@ export default function ProductsDiscount({ productsDiscount }: { productsDiscoun
                     )}
                 </div>
 
-                {/* Products Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {
-                        productsArray.map((item, idx) => (
-                            <ProductDiscountCard key={idx} item={item} />
-                        ))
-                    }
-                </div>
+                {/* Products Row */}
+                <ScrollArea className="w-full">
+                    <div className="flex flex-row gap-6 pb-4">
+                        {
+                            productsArray.map((item, idx) => (
+                                <div key={idx} className="shrink-0 w-96">
+                                    <ProductsCard item={item} />
+                                </div>
+                            ))
+                        }
+                    </div>
+                    <ScrollBar orientation="horizontal" />
+                </ScrollArea>
             </div>
         </section>
     )
