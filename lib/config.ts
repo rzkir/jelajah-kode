@@ -33,7 +33,18 @@ export const API_CONFIG = {
         )}&page=${page}&limit=${limit}`,
       discount: (page: number = 1, limit: number = 10) =>
         `${API_BASE_URL}/api/products/discount?page=${page}&limit=${limit}`,
+      ratings: (productsId: string, page: number = 1, limit: number = 10) =>
+        `${API_BASE_URL}/api/ratings/${productsId}?page=${page}&limit=${limit}`,
     },
+    checkout: `${API_BASE_URL}/api/checkout`,
+    transactions: `${API_BASE_URL}/api/transactions`,
+    transactionsUpdate: `${API_BASE_URL}/api/transactions/update`,
+    ratings: `${API_BASE_URL}/api/ratings`,
   },
   SECRET: API_SECRET,
+  SOCIAL_MEDIA: {
+    tiktok: process.env.NEXT_PUBLIC_TIKTOK_URL,
+    instagram: process.env.NEXT_PUBLIC_INSTAGRAM_URL,
+    facebook: process.env.NEXT_PUBLIC_FACEBOOK_URL,
+  },
 };

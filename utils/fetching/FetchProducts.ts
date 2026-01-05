@@ -1,7 +1,5 @@
 import { API_CONFIG } from "@/lib/config";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
-
 export const fetchProducts = async (): Promise<Products[]> => {
   try {
     const response = await fetch(API_CONFIG.ENDPOINTS.products.base, {
@@ -149,12 +147,12 @@ export const fetchProductsDiscount = async (
 ): Promise<ProductsDiscountResponse> => {
   try {
     const response = await fetch(
-      `${API_BASE_URL}/api/products/discount?page=${page}&limit=${limit}`,
+      API_CONFIG.ENDPOINTS.products.discount(page, limit),
       {
         next: { revalidate: 0 },
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_SECRET}`,
+          Authorization: `Bearer ${API_CONFIG.SECRET}`,
         },
       }
     );
@@ -180,5 +178,38 @@ export const fetchProductsDiscount = async (
         pages: 0,
       },
     };
+  }
+};
+
+export const fetchProductsRatings = async (
+  productsId: string,
+  page: number = 1,
+  limit: number = 10
+): Promise<Ratings[]> => {
+  try {
+    const response = await fetch(
+      API_CONFIG.ENDPOINTS.products.ratings(productsId, page, limit),
+      {
+        next: { revalidate: 0 },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${API_CONFIG.SECRET}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        `Failed to fetch products ratings: ${response.statusText}`
+      );
+    }
+
+    const data = await response.json();
+    return data.ratings;
+  } catch (error) {
+    if (process.env.NODE_ENV !== "production") {
+      console.error("Error fetching products ratings:", error);
+    }
+    return [] as unknown as Ratings[];
   }
 };

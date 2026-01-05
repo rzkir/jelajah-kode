@@ -30,6 +30,7 @@ interface ProductsCardProps {
         };
         paymentType: "free" | "paid";
         rating?: number;
+        ratingCount?: number;
     };
     href?: string;
     showRating?: boolean;
@@ -44,7 +45,6 @@ export default function ProductsCard({
 }: ProductsCardProps) {
     const { originalPrice, discountedPrice, activeDiscount, hasActiveDiscount } = useDiscount(item.price, item.discount);
     const productHref = href || `/products/${item.productsId}`;
-    const displayRating = item.rating || 4.8; // Default rating if not provided
 
     return (
         <Link href={productHref} className={`group ${className}`}>
@@ -112,15 +112,18 @@ export default function ProductsCard({
 
                     {/* Rating and Download Count */}
                     {showRating && (
-                        <div className="flex flex-row items-center gap-2">
-                            <span className="flex flex-row items-center gap-2 text-sm text-muted-foreground">
-                                <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
-                                {displayRating}
+                        <div className="flex flex-row items-center gap-4">
+                            <span className="flex flex-row items-center gap-1.5 text-sm text-muted-foreground">
+                                <Star className={`w-4 h-4 ${item.rating && item.rating > 0 ? 'text-yellow-500 fill-yellow-500' : 'text-gray-300'}`} />
+                                <span className="font-medium">{(item.rating && item.rating > 0) ? item.rating.toFixed(1) : '0.0'}</span>
+                                {item.ratingCount !== undefined && item.ratingCount > 0 && (
+                                    <span className="text-xs">({item.ratingCount})</span>
+                                )}
                             </span>
 
-                            <span className="flex flex-row items-center gap-2 text-sm text-muted-foreground">
+                            <span className="flex flex-row items-center gap-1.5 text-sm text-muted-foreground">
                                 <DownloadIcon className="w-4 h-4" />
-                                {item.downloadCount ? item.downloadCount : 0}
+                                {item.downloadCount ? item.downloadCount.toLocaleString('id-ID') : 0}
                             </span>
                         </div>
                     )}

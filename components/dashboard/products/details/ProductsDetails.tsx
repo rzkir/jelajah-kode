@@ -50,16 +50,6 @@ export default function ProductsDetails({ product }: { product: ProductsDetails 
                                 >
                                     {product.paymentType === 'free' ? '🆓 Free' : '💰 Paid'}
                                 </Badge>
-                                {product.rating && (
-                                    <Badge variant="outline" className="text-xs px-3 py-1">
-                                        ⭐ {product.rating.toFixed(1)} ({product.ratingCount || 0})
-                                    </Badge>
-                                )}
-                                {product.views && (
-                                    <Badge variant="outline" className="text-xs px-3 py-1">
-                                        👁️ {product.views} views
-                                    </Badge>
-                                )}
                             </div>
                             <h1 className="text-4xl lg:text-5xl font-bold tracking-tight bg-linear-to-r from-foreground to-foreground/70 bg-clip-text">
                                 {product.title}

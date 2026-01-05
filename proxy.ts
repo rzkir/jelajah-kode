@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+
 import type { NextRequest } from "next/server";
 
 // Simple JWT decoding function that works in edge runtime
@@ -29,6 +30,8 @@ const publicPaths = [
   "/change-password",
   "/forget-password",
   "/reset-password",
+  "/products",
+  "/search",
 ];
 
 // Define admin-only paths
@@ -112,6 +115,30 @@ export default function proxy(request: NextRequest) {
     }
   }
 
+  // Allow access to product detail pages without authentication (check before public path check)
+  if (pathname.startsWith("/products/")) {
+    // Allow access to product detail pages without requiring login
+    return NextResponse.next();
+  }
+
+  // Handle checkout pages - require authentication
+  // This includes: /checkout, /checkout/payment, /checkout/success, /checkout/pending, /checkout/failed
+  if (pathname.startsWith("/checkout")) {
+    // Checkout pages require authentication
+    if (!isAuthenticated) {
+      // Preserve the checkout URL in redirect for after login
+      const redirectUrl = pathname + (request.nextUrl.search || "");
+      return NextResponse.redirect(
+        new URL(
+          `/signin?redirect=${encodeURIComponent(redirectUrl)}`,
+          request.url
+        )
+      );
+    }
+    // If authenticated, allow access to all checkout pages
+    return NextResponse.next();
+  }
+
   // If user is not on a public path and not authenticated, redirect to signin
   if (!isPublicPath && !isAuthenticated) {
     return NextResponse.redirect(new URL("/signin", request.url));
@@ -130,22 +157,6 @@ export default function proxy(request: NextRequest) {
     }
 
     // If admin role is verified, allow access
-    return NextResponse.next();
-  }
-
-  // Allow access to product detail pages only for authenticated admins
-  if (pathname.startsWith("/dashboard/products/products/")) {
-    if (!isAuthenticated) {
-      // If not authenticated, redirect to signin
-      return NextResponse.redirect(new URL("/signin", request.url));
-    }
-
-    if (userRole !== "admins") {
-      // If not admin, redirect to home
-      return NextResponse.redirect(new URL("/", request.url));
-    }
-
-    // If admin role is verified, allow access to product pages
     return NextResponse.next();
   }
 

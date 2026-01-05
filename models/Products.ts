@@ -166,15 +166,6 @@ const productsSchema = new mongoose.Schema(
     type: {
       type: productsTypeSchema,
     },
-    rating: {
-      type: Number,
-    },
-    views: {
-      type: Number,
-    },
-    ratingCount: {
-      type: Number,
-    },
     images: {
       type: [String],
       default: [],

@@ -12,11 +12,10 @@ interface Products {
   sold?: number;
   downloadUrl?: string;
   downloadCount?: number;
+  rating?: number;
+  ratingCount?: number;
   category: ProductsCategory;
   type: ProductsType;
-  rating?: number;
-  views?: number;
-  ratingCount?: number;
   images?: string[];
   discount?: {
     type: "percentage" | "fixed";
@@ -55,20 +54,6 @@ interface ProductsType {
 interface ProductsTags {
   title: string;
   tagsId: string;
-}
-
-interface ProductsReview {
-  _id: string;
-  productsId: string;
-  author: {
-    _id: string;
-    name: string;
-    picture: string;
-  };
-  rating: number;
-  comment: string;
-  createdAt: string;
-  updatedAt: string;
 }
 
 interface Category {
@@ -382,6 +367,8 @@ interface ProductsSearchItem {
   stock: number;
   downloadUrl?: string;
   downloadCount?: number;
+  rating?: number;
+  ratingCount?: number;
   category: ProductsCategory;
   type: ProductsType;
   discount?: {
@@ -425,6 +412,8 @@ interface ProductsDiscountItem {
   stock: number;
   sold: number;
   downloadCount: number;
+  rating?: number;
+  ratingCount?: number;
   category: ProductsCategory;
   frameworks: Productsframeworks[];
   discount: {

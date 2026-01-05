@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 
+import Script from "next/script";
+
 import { Geist, Geist_Mono } from "next/font/google";
 
 import "@/helper/style/globals.css";
@@ -30,11 +32,20 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const midtransClientKey = process.env.MIDTRANS_CLIENT_KEY || "";
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        {midtransClientKey && (
+          <Script
+            src="https://app.sandbox.midtrans.com/snap/snap.js"
+            data-client-key={midtransClientKey}
+            strategy="afterInteractive"
+          />
+        )}
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

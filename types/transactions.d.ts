@@ -1,0 +1,46 @@
+interface Transactions {
+  _id: string;
+  products: TransactionsProducts;
+  user: Users;
+  paymentMethod: "paid" | "free";
+  status: "pending" | "success" | "expired" | "canceled";
+  total_amount?: number;
+  order_id?: string;
+  snap_token?: string;
+  payment_details?: {
+    payment_type?: string;
+    bank?: string;
+    va_number?: string;
+    transaction_id?: string;
+    transaction_time?: string;
+    settlement_time?: string;
+    currency?: string;
+  };
+  created_at: string;
+  updated_at: string;
+}
+
+interface TransactionsProducts {
+  _id: string;
+  productsId: string;
+  title: string;
+  thumbnail: string;
+  price: number;
+  quantity: number;
+  downloadUrl?: string;
+  paymentType: "free" | "paid";
+  discount?: {
+    type: "percentage" | "fixed";
+    value: number;
+    until?: string;
+  };
+  amount: number;
+}
+
+interface Users {
+  _id: string;
+  name: string;
+  email: string;
+  picture?: string;
+  role: UserRole;
+}

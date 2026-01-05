@@ -9,12 +9,6 @@ import mongoose from "mongoose";
 import Products from "@/models/Products";
 
 export async function GET(request: Request) {
-  const authHeader = request.headers.get("authorization");
-
-  if (authHeader !== `Bearer ${process.env.NEXT_PUBLIC_API_SECRET}`) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
   try {
     await connectMongoDB();
 
@@ -24,6 +18,18 @@ export async function GET(request: Request) {
     const limit = parseInt(searchParams.get("limit") || "10");
     const search = searchParams.get("search") || "";
 
+    // Check if there's an id parameter for single product lookup
+    const id = searchParams.get("id");
+
+    // For single product lookup by ID, allow without auth (public access)
+    // For listing/search operations, require auth
+    if (!id) {
+      const authHeader = request.headers.get("authorization");
+      if (authHeader !== `Bearer ${process.env.NEXT_PUBLIC_API_SECRET}`) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
+    }
+
     // Calculate skip value for pagination
     const skip = (page - 1) * limit;
 
@@ -31,12 +37,13 @@ export async function GET(request: Request) {
     const query: {
       $or?: Array<{ [key: string]: { $regex: string; $options: string } }>;
       _id?: Types.ObjectId;
+      status?: string;
     } = {};
 
-    // Check if there's an id parameter for single product lookup
-    const id = searchParams.get("id");
     if (id) {
       query._id = new Types.ObjectId(id);
+      // Only allow access to published products for public access
+      query.status = "publish";
     } else if (search) {
       // Only apply search criteria if not looking up by id
       query.$or = [
