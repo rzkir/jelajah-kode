@@ -36,13 +36,11 @@ interface AuthContextType {
   setResetToken: (token: string | null) => void;
   verifyOtp: (token: string) => Promise<void>;
   finalizeResetPassword: (newPassword: string) => Promise<void>;
-  // Password reset flow state
   passwordResetStep: "otp" | "password";
   passwordResetOtp: string;
   passwordResetNewPassword: string;
   passwordResetConfirmPassword: string;
   passwordResetIsLoading: boolean;
-  // Password reset flow functions
   setPasswordResetStep: (step: "otp" | "password") => void;
   setPasswordResetOtp: (otp: string) => void;
   setPasswordResetNewPassword: (password: string) => void;

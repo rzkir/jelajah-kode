@@ -1,15 +1,16 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+
 import { useRouter, useSearchParams } from "next/navigation";
+
 import { toast } from "sonner";
 
-import { API_CONFIG } from "@/lib/config";
-import { useAuth } from "@/utils/context/AuthContext";
+import confetti from "canvas-confetti";
 
-type UseStateCheckoutSuccessParams = {
-  status?: string;
-};
+import { API_CONFIG } from "@/lib/config";
+
+import { useAuth } from "@/utils/context/AuthContext";
 
 const useStateCheckoutSuccess = ({ status }: UseStateCheckoutSuccessParams) => {
   const searchParams = useSearchParams();
@@ -29,6 +30,7 @@ const useStateCheckoutSuccess = ({ status }: UseStateCheckoutSuccessParams) => {
     Record<string, RatingData>
   >({});
   const [isContinuingPayment, setIsContinuingPayment] = useState(false);
+  const confettiTriggered = useRef(false);
 
   const fetchTransaction = useCallback(
     async (orderId: string) => {
@@ -142,6 +144,61 @@ const useStateCheckoutSuccess = ({ status }: UseStateCheckoutSuccessParams) => {
 
     fetchTransaction(orderId);
   }, [authLoading, fetchTransaction, router, searchParams, status, user]);
+
+  // Trigger confetti celebration when success page is first loaded
+  // Wait for loading to complete before showing confetti
+  useEffect(() => {
+    // Only trigger if loading is complete and transaction is success
+    if (
+      !authLoading &&
+      !isLoading &&
+      transaction?.status === "success" &&
+      !confettiTriggered.current
+    ) {
+      // Add a small delay to ensure loading overlay is fully gone
+      const timer = setTimeout(() => {
+        confettiTriggered.current = true;
+
+        // Main confetti burst
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: [
+            "#10b981",
+            "#3b82f6",
+            "#f59e0b",
+            "#ef4444",
+            "#8b5cf6",
+            "#ec4899",
+          ],
+        });
+
+        // Additional bursts for more celebration
+        setTimeout(() => {
+          confetti({
+            particleCount: 50,
+            angle: 60,
+            spread: 55,
+            origin: { x: 0 },
+            colors: ["#10b981", "#3b82f6", "#f59e0b"],
+          });
+        }, 250);
+
+        setTimeout(() => {
+          confetti({
+            particleCount: 50,
+            angle: 120,
+            spread: 55,
+            origin: { x: 1 },
+            colors: ["#10b981", "#3b82f6", "#f59e0b"],
+          });
+        }, 400);
+      }, 300); // 300ms delay to ensure overlay is gone
+
+      return () => clearTimeout(timer);
+    }
+  }, [authLoading, isLoading, transaction?.status]);
 
   const handleDownload = useCallback(
     async (downloadUrl?: string, productsId?: string) => {

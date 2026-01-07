@@ -45,6 +45,10 @@ interface Users {
   role: UserRole;
 }
 
+type UseStateCheckoutSuccessParams = {
+  status?: string;
+};
+
 //====================== Checkout ======================//
 
 interface CheckoutProduct {
@@ -60,6 +64,21 @@ interface CheckoutProduct {
     until?: string;
   };
   paymentType: "free" | "paid";
+}
+
+interface ProductsRatingsModalProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  selectedProduct: TransactionProduct | null;
+  rating: number;
+  hoveredRating: number;
+  comment: string;
+  isSubmittingRating: boolean;
+  onRatingChange: (rating: number) => void;
+  onHoveredRatingChange: (rating: number) => void;
+  onCommentChange: (comment: string) => void;
+  onSubmit: () => void;
+  onCancel: () => void;
 }
 
 //====================== Transaction Product ======================//
