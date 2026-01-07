@@ -2,9 +2,22 @@ import { Suspense } from 'react'
 
 import Checkout from '@/components/checkout/Checkout'
 
+import { generateCheckoutMetadata } from '@/helper/meta/Metadata'
+
 import { Loader2 } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
+
+interface PageProps {
+    searchParams: Promise<{
+        productId?: string
+        title?: string
+    }>
+}
+
+export async function generateMetadata({ searchParams }: PageProps) {
+    return generateCheckoutMetadata(searchParams)
+}
 
 export default function CheckoutPage() {
     return (

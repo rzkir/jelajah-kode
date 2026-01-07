@@ -34,7 +34,7 @@ interface ProductsCardProps {
             until?: string;
         };
         paymentType: "free" | "paid";
-        rating?: number;
+        ratingAverage?: number;
         ratingCount?: number;
     };
     href?: string;
@@ -48,6 +48,8 @@ export default function ProductsCard({
     className = ""
 }: ProductsCardProps) {
     const { originalPrice, discountedPrice, activeDiscount, hasActiveDiscount } = useDiscount(item.price, item.discount);
+    const ratingValue = item.ratingAverage ?? 0;
+    const ratingCount = item.ratingCount ?? 0;
     const productHref = href || `/products/${item.productsId}`;
 
     return (
@@ -59,6 +61,7 @@ export default function ProductsCard({
                         src={item.thumbnail}
                         alt={item.title}
                         fill
+                        loading="lazy"
                         className="object-cover transition-transform duration-300 group-hover:scale-110"
                     />
                     {/* Discount Badge Overlay */}
@@ -117,10 +120,10 @@ export default function ProductsCard({
                     {/* Rating and Download Count */}
                     <div className="flex flex-row items-center gap-4">
                         <span className="flex flex-row items-center gap-1.5 text-sm text-muted-foreground">
-                            <Star className={`w-4 h-4 ${item.rating && item.rating > 0 ? 'text-yellow-500 fill-yellow-500' : 'text-gray-300'}`} />
-                            <span className="font-medium">{(item.rating && item.rating > 0) ? item.rating.toFixed(1) : '0.0'}</span>
-                            {item.ratingCount !== undefined && item.ratingCount > 0 && (
-                                <span className="text-xs">({item.ratingCount})</span>
+                            <Star className={`w-4 h-4 ${ratingValue > 0 ? 'text-yellow-500 fill-yellow-500' : 'text-gray-300'}`} />
+                            <span className="font-medium">{ratingValue > 0 ? ratingValue.toFixed(1) : '0.0'}</span>
+                            {ratingCount > 0 && (
+                                <span className="text-xs">({ratingCount})</span>
                             )}
                         </span>
 

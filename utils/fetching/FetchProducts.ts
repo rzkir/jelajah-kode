@@ -183,6 +183,86 @@ export const fetchProductsDiscount = async (
   }
 };
 
+export const fetchProductsMostSaled = async (
+  page: number = 1,
+  limit: number = 10
+): Promise<ProductsMostSaledResponse> => {
+  try {
+    const response = await fetch(
+      API_CONFIG.ENDPOINTS.products.mostSaled(page, limit),
+      {
+        next: { revalidate: 0 },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${API_CONFIG.SECRET}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        `Failed to fetch most saled products: ${response.statusText}`
+      );
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    if (process.env.NODE_ENV !== "production") {
+      console.error("Error fetching most saled products:", error);
+    }
+    return {
+      data: [],
+      pagination: {
+        page: 1,
+        limit: 10,
+        total: 0,
+        pages: 0,
+      },
+    };
+  }
+};
+
+export const fetchProductsPopular = async (
+  page: number = 1,
+  limit: number = 10
+): Promise<ProductsPopularResponse> => {
+  try {
+    const response = await fetch(
+      API_CONFIG.ENDPOINTS.products.popular(page, limit),
+      {
+        next: { revalidate: 0 },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${API_CONFIG.SECRET}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        `Failed to fetch popular products: ${response.statusText}`
+      );
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    if (process.env.NODE_ENV !== "production") {
+      console.error("Error fetching popular products:", error);
+    }
+    return {
+      data: [],
+      pagination: {
+        page: 1,
+        limit: 10,
+        total: 0,
+        pages: 0,
+      },
+    };
+  }
+};
+
 export const fetchProductsRatings = async (
   productsId: string,
   page: number = 1,

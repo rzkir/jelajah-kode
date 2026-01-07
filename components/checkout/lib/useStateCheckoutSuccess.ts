@@ -178,9 +178,6 @@ const useStateCheckoutSuccess = ({ status }: UseStateCheckoutSuccessParams) => {
       setSelectedProduct(product);
       const existingRating = productRatings[product.productsId];
       if (existingRating?.hasRated && existingRating.rating) {
-        toast.info(
-          "Anda telah memberikan rating untuk produk ini. Anda dapat memperbaruinya jika perlu."
-        );
         setRating(existingRating.rating.rating);
         setComment(existingRating.rating.comment);
       } else {

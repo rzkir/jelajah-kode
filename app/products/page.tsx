@@ -1,6 +1,8 @@
-import React from 'react'
+import { ProductsPageMetadata } from "@/helper/meta/Metadata"
 
-export default function page() {
+export const metadata = ProductsPageMetadata
+
+export default function Page() {
     return (
         <div>page</div>
     )

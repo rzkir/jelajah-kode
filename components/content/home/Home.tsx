@@ -10,17 +10,22 @@ export default function Page() {
                 <div className="relative z-10 max-w-4xl mx-auto text-center space-y-8">
                     {/* Top Label */}
                     <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gray-900/10 dark:bg-white/10 backdrop-blur-sm border border-gray-200/20 dark:border-white/20">
-                        <span className="text-sm font-medium text-gray-900 dark:text-white">Smarter Code, Less Effort</span>
+                        <span className="text-sm font-medium text-gray-900 dark:text-white">1000+ Premium Source Codes</span>
                         <span className="text-lg">📈</span>
                     </div>
 
                     {/* Main Headline */}
                     <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight text-gray-900 dark:text-white">
-                        Supercharge Your Codebase with an{' '}
+                        Find your{' '}
                         <span className="bg-linear-to-r from-blue-400 to-purple-400 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
-                            AI Coding Agent
+                            Perfect Template
                         </span>
                     </h1>
+
+                    <p className="text-xl text-gray-600 max-w-2xl mx-auto dark:text-gray-400">
+                        Jumpstart your development process with production-ready source code, templates, and components from top developers.
+
+                    </p>
                 </div>
 
                 <Filter />

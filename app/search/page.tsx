@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 
-import Products from "@/components/content/products/Products";
+import Products from "@/components/content/products/news-products/ProductsNews";
 
 import { API_CONFIG } from "@/lib/config";
 

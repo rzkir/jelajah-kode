@@ -46,6 +46,7 @@ export async function GET(request: Request) {
       downloadCount: product.downloadCount,
       category: product.category,
       rating: product.rating,
+      ratingAverage: product.ratingAverage,
       views: product.views,
       ratingCount: product.ratingCount,
       discount: product.discount,

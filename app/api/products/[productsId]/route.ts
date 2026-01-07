@@ -49,6 +49,7 @@ export async function GET(
       downloadCount: product.downloadCount,
       category: product.category,
       rating: product.rating,
+      ratingAverage: product.ratingAverage,
       views: product.views,
       ratingCount: product.ratingCount,
       images: product.images,

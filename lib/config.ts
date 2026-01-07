@@ -33,6 +33,10 @@ export const API_CONFIG = {
         )}&page=${page}&limit=${limit}`,
       discount: (page: number = 1, limit: number = 10) =>
         `${API_BASE_URL}/api/products/discount?page=${page}&limit=${limit}`,
+      mostSaled: (page: number = 1, limit: number = 10) =>
+        `${API_BASE_URL}/api/products/most-saled?page=${page}&limit=${limit}`,
+      popular: (page: number = 1, limit: number = 10) =>
+        `${API_BASE_URL}/api/products/popular?page=${page}&limit=${limit}`,
       ratings: (productsId: string, page: number = 1, limit: number = 10) =>
         `${API_BASE_URL}/api/ratings/${productsId}?page=${page}&limit=${limit}`,
     },

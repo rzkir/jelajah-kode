@@ -461,3 +461,89 @@ interface ProductsDiscountResponse {
   data: ProductsDiscountItem[];
   pagination: ProductsDiscountPagination;
 }
+
+//====================== Products Most Saled ======================//
+interface ProductsMostSaledItem {
+  _id: string;
+  productsId: string;
+  title: string;
+  thumbnail: string;
+  price: number;
+  stock: number;
+  sold: number;
+  downloadCount: number;
+  ratingAverage?: number;
+  ratingCount?: number;
+  category: ProductsCategory;
+  frameworks: Productsframeworks[];
+  discount?: {
+    type: "percentage" | "fixed";
+    value: number;
+    until?: string;
+  };
+  author: {
+    _id: string;
+    name: string;
+    picture?: string;
+    role: UserRole;
+  };
+  type: ProductsType;
+  paymentType: "free" | "paid";
+  created_at: string;
+  updated_at: string;
+}
+
+interface ProductsMostSaledPagination {
+  page: number;
+  total: number;
+  limit: number;
+  pages: number;
+}
+
+interface ProductsMostSaledResponse {
+  data: ProductsMostSaledItem[];
+  pagination: ProductsMostSaledPagination;
+}
+
+//====================== Products Popular (by downloads) ======================//
+interface ProductsPopularItem {
+  _id: string;
+  productsId: string;
+  title: string;
+  thumbnail: string;
+  price: number;
+  stock: number;
+  sold: number;
+  downloadCount: number;
+  ratingAverage?: number;
+  ratingCount?: number;
+  category: ProductsCategory;
+  frameworks: Productsframeworks[];
+  discount?: {
+    type: "percentage" | "fixed";
+    value: number;
+    until?: string;
+  };
+  author: {
+    _id: string;
+    name: string;
+    picture?: string;
+    role: UserRole;
+  };
+  type: ProductsType;
+  paymentType: "free" | "paid";
+  created_at: string;
+  updated_at: string;
+}
+
+interface ProductsPopularPagination {
+  page: number;
+  total: number;
+  limit: number;
+  pages: number;
+}
+
+interface ProductsPopularResponse {
+  data: ProductsPopularItem[];
+  pagination: ProductsPopularPagination;
+}
