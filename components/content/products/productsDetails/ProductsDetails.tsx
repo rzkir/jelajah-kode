@@ -179,13 +179,13 @@ export default function ProductsDetails({ product }: ProductsDetailsProps) {
 
                 {/* Rating and Downloads */}
                 <div className="flex items-center gap-6 mb-8">
-                    {product.rating && (
+                    {product.ratingAverage && (
                         <div className="flex items-center gap-2">
                             <div className="flex items-center">
                                 {[...Array(5)].map((_, i) => (
                                     <Star
                                         key={i}
-                                        className={`w-5 h-5 ${i < Math.floor(product.rating || 0)
+                                        className={`w-5 h-5 ${i < Math.floor(product.ratingAverage || 0)
                                             ? 'text-yellow-500 fill-yellow-500'
                                             : 'text-gray-300'
                                             }`}
@@ -193,7 +193,7 @@ export default function ProductsDetails({ product }: ProductsDetailsProps) {
                                 ))}
                             </div>
                             <span className="text-sm font-medium">
-                                {product.rating.toFixed(1)} ({product.ratingCount || 0} reviews)
+                                {product.ratingAverage?.toFixed(1)} ({product.ratingCount || 0} reviews)
                             </span>
                         </div>
                     )}
@@ -334,17 +334,17 @@ export default function ProductsDetails({ product }: ProductsDetailsProps) {
                                     <div className="flex items-center justify-between pb-4 border-b">
                                         <div>
                                             <h3 className="text-2xl font-bold mb-2">Customer Reviews</h3>
-                                            {product.rating && product.ratingCount ? (
+                                            {product.ratingAverage && product.ratingCount ? (
                                                 <div className="flex items-center gap-3">
                                                     <div className="flex items-center gap-1">
-                                                        <span className="text-3xl font-bold">{product.rating.toFixed(1)}</span>
+                                                        <span className="text-3xl font-bold">{product.ratingAverage?.toFixed(1)}</span>
                                                         <span className="text-muted-foreground">/ 5.0</span>
                                                     </div>
                                                     <div className="flex items-center">
                                                         {[...Array(5)].map((_, i) => (
                                                             <Star
                                                                 key={i}
-                                                                className={`w-5 h-5 ${i < Math.floor(product.rating || 0)
+                                                                className={`w-5 h-5 ${i < Math.floor(product.ratingAverage || 0)
                                                                     ? 'text-yellow-500 fill-yellow-500'
                                                                     : 'text-gray-300'
                                                                     }`}

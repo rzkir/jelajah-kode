@@ -12,8 +12,8 @@ interface Products {
   sold?: number;
   downloadUrl?: string;
   downloadCount?: number;
-  rating?: number;
   ratingCount?: number;
+  ratingAverage?: number;
   category: ProductsCategory;
   type: ProductsType;
   images?: string[];
@@ -33,6 +33,23 @@ interface Products {
   status: "publish" | "draft";
   created_at?: string;
   updated_at?: string;
+}
+
+interface Ratings {
+  _id: string;
+  productsId: string;
+  rating: number;
+  comment: string;
+  author: RatingsUser;
+  created_at: string;
+  updated_at: string;
+}
+
+interface RatingsUser {
+  _id: string;
+  name: string;
+  picture?: string;
+  role: UserRole;
 }
 
 interface Productsframeworks {
@@ -337,9 +354,9 @@ interface ProductsDetails {
     value: number;
     until?: string;
   };
-  rating?: number;
   views?: number;
   ratingCount?: number;
+  ratingAverage?: number;
   category: ProductsCategory;
   images: string[];
   author: {
@@ -367,8 +384,8 @@ interface ProductsSearchItem {
   stock: number;
   downloadUrl?: string;
   downloadCount?: number;
-  rating?: number;
   ratingCount?: number;
+  ratingAverage?: number;
   category: ProductsCategory;
   type: ProductsType;
   discount?: {
@@ -412,7 +429,7 @@ interface ProductsDiscountItem {
   stock: number;
   sold: number;
   downloadCount: number;
-  rating?: number;
+  ratingAverage?: number;
   ratingCount?: number;
   category: ProductsCategory;
   frameworks: Productsframeworks[];

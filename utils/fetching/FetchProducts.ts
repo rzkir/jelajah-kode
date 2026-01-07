@@ -3,7 +3,9 @@ import { API_CONFIG } from "@/lib/config";
 export const fetchProducts = async (): Promise<Products[]> => {
   try {
     const response = await fetch(API_CONFIG.ENDPOINTS.products.base, {
-      next: { revalidate: 10 },
+      next: {
+        revalidate: 0,
+      },
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${API_CONFIG.SECRET}`,

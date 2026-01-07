@@ -1,15 +1,19 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
-import { toast } from "sonner";
 import Image from "next/image";
+
 import Link from "next/link";
+
 import { CheckCircle2, Download, ArrowLeft, Loader2, Star } from "lucide-react";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
 import { Button } from "@/components/ui/button";
+
 import { Separator } from "@/components/ui/separator";
+
 import { Badge } from "@/components/ui/badge";
+
 import {
     Dialog,
     DialogContent,
@@ -18,264 +22,42 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
+
 import { Label } from "@/components/ui/label";
+
 import { Textarea } from "@/components/ui/textarea";
-import { useAuth } from "@/utils/context/AuthContext";
-import { API_CONFIG } from "@/lib/config";
+
 import { formatIDR } from "@/hooks/FormatPrice";
+
 import useFormatDate from "@/hooks/FormatDate";
 
-interface TransactionProduct {
-    _id: string;
-    productsId: string;
-    title: string;
-    thumbnail: string;
-    price: number;
-    quantity: number;
-    downloadUrl?: string;
-    paymentType: "free" | "paid";
-    discount?: {
-        type: "percentage" | "fixed";
-        value: number;
-        until?: string;
-    };
-    amount: number;
-}
+import useStateCheckoutSuccess from "@/components/checkout/lib/useStateCheckoutSuccess";
 
-interface Transaction {
-    _id: string;
-    products: TransactionProduct[];
-    user: {
-        _id: string;
-        name: string;
-        email: string;
-        picture?: string;
-        role: string;
-    };
-    paymentMethod: "paid" | "free";
-    status: "pending" | "success" | "expired" | "canceled";
-    total_amount?: number;
-    order_id?: string;
-    payment_details?: {
-        payment_type?: string;
-        bank?: string;
-        va_number?: string;
-        transaction_id?: string;
-        transaction_time?: string;
-        settlement_time?: string;
-        currency?: string;
-    };
-    created_at: string;
-    updated_at: string;
-}
-
-interface RatingData {
-    hasRated: boolean;
-    rating?: {
-        _id: string;
-        rating: number;
-        comment: string;
-    };
-}
-
-export default function CheckoutSuccess() {
-    const searchParams = useSearchParams();
-    const router = useRouter();
-    const { user, loading: authLoading } = useAuth();
-    const [transaction, setTransaction] = useState<Transaction | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
-    const [ratingModalOpen, setRatingModalOpen] = useState(false);
-    const [selectedProduct, setSelectedProduct] = useState<TransactionProduct | null>(null);
-    const [rating, setRating] = useState(0);
-    const [hoveredRating, setHoveredRating] = useState(0);
-    const [comment, setComment] = useState("");
-    const [isSubmittingRating, setIsSubmittingRating] = useState(false);
-    const [productRatings, setProductRatings] = useState<Record<string, RatingData>>({});
+export default function CheckoutSuccess({ status }: CheckoutSuccessProps) {
+    const {
+        router,
+        authLoading,
+        transaction,
+        isLoading,
+        ratingModalOpen,
+        selectedProduct,
+        rating,
+        hoveredRating,
+        comment,
+        isSubmittingRating,
+        productRatings,
+        isContinuingPayment,
+        setRating,
+        setHoveredRating,
+        setComment,
+        setRatingModalOpen,
+        setSelectedProduct,
+        handleDownload,
+        handleOpenRatingModal,
+        handleSubmitRating,
+        handleContinuePayment,
+    } = useStateCheckoutSuccess({ status });
     const { formatDate } = useFormatDate();
-
-    useEffect(() => {
-        if (authLoading) return;
-
-        if (!user) {
-            toast.error("Please login to view transaction");
-            router.push("/signin");
-            return;
-        }
-
-        const orderId = searchParams.get("order_id");
-        if (!orderId) {
-            toast.error("Order ID is required");
-            router.push("/products");
-            return;
-        }
-
-        fetchTransaction(orderId);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [searchParams, user, authLoading, router]);
-
-    const fetchTransaction = async (orderId: string) => {
-        try {
-            setIsLoading(true);
-            const response = await fetch(
-                `${API_CONFIG.ENDPOINTS.transactions}?order_id=${orderId}`,
-                {
-                    credentials: "include",
-                }
-            );
-
-            if (!response.ok) {
-                const data = await response.json();
-                throw new Error(data.error || "Failed to fetch transaction");
-            }
-
-            const data = await response.json();
-            setTransaction(data);
-
-            // If paid transaction, fetch payment details from Midtrans
-            if (data.paymentMethod === "paid" && !data.payment_details) {
-                try {
-                    await fetch(
-                        `${API_CONFIG.ENDPOINTS.transactionsUpdate}`,
-                        {
-                            method: "PUT",
-                            body: JSON.stringify({ order_id: orderId, status: "success" }),
-                        },
-                    );
-                } catch (error) {
-                    console.error("Failed to fetch payment details:", error);
-                }
-            }
-
-            // Fetch ratings for all products if transaction is successful
-            if (data.status === "success" && data.products) {
-                const ratings: Record<string, RatingData> = {};
-                for (const product of data.products) {
-                    try {
-                        const ratingResponse = await fetch(
-                            `${API_CONFIG.ENDPOINTS.ratings}?productsId=${product.productsId}`,
-                            {
-                                credentials: "include",
-                            }
-                        );
-                        if (ratingResponse.ok) {
-                            const ratingData = await ratingResponse.json();
-                            ratings[product.productsId] = ratingData;
-                        }
-                    } catch (error) {
-                        console.error(`Failed to fetch rating for product ${product.productsId}:`, error);
-                    }
-                }
-                setProductRatings(ratings);
-            }
-        } catch (error) {
-            console.error("Error fetching transaction:", error);
-            toast.error(
-                error instanceof Error ? error.message : "Failed to load transaction"
-            );
-            router.push("/products");
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    const handleDownload = async (downloadUrl?: string, productsId?: string) => {
-        if (!downloadUrl) {
-            toast.error("Download URL not available");
-            return;
-        }
-
-        // Update download count if productsId is provided
-        if (productsId) {
-            try {
-                // Update download count
-                const response = await fetch(
-                    `${API_CONFIG.ENDPOINTS.products.base}/${productsId}/download`,
-                    {
-                        method: "POST",
-                        credentials: "include",
-                    }
-                );
-
-                if (!response.ok) {
-                    console.error("Failed to update download count");
-                }
-            } catch (error) {
-                console.error("Failed to update download count:", error);
-                // Continue with download even if update fails
-            }
-        }
-
-        window.open(downloadUrl, "_blank");
-    };
-
-    const handleOpenRatingModal = (product: TransactionProduct) => {
-        setSelectedProduct(product);
-        const existingRating = productRatings[product.productsId];
-        if (existingRating?.hasRated && existingRating.rating) {
-            setRating(existingRating.rating.rating);
-            setComment(existingRating.rating.comment);
-        } else {
-            setRating(0);
-            setComment("");
-        }
-        setRatingModalOpen(true);
-    };
-
-    const handleSubmitRating = async () => {
-        if (!selectedProduct || rating === 0 || !comment.trim()) {
-            toast.error("Please provide a rating and comment");
-            return;
-        }
-
-        setIsSubmittingRating(true);
-        try {
-            const response = await fetch(API_CONFIG.ENDPOINTS.ratings, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                credentials: "include",
-                body: JSON.stringify({
-                    productsId: selectedProduct.productsId,
-                    rating,
-                    comment: comment.trim(),
-                }),
-            });
-
-            if (!response.ok) {
-                const data = await response.json();
-                throw new Error(data.error || "Failed to submit rating");
-            }
-
-            const data = await response.json();
-
-            // Update productRatings state
-            setProductRatings((prev) => ({
-                ...prev,
-                [selectedProduct.productsId]: {
-                    hasRated: true,
-                    rating: {
-                        _id: data._id,
-                        rating: data.rating,
-                        comment: data.comment,
-                    },
-                },
-            }));
-
-            toast.success("Thank you for your rating!");
-            setRatingModalOpen(false);
-            setRating(0);
-            setComment("");
-            setSelectedProduct(null);
-        } catch (error) {
-            console.error("Error submitting rating:", error);
-            toast.error(
-                error instanceof Error ? error.message : "Failed to submit rating"
-            );
-        } finally {
-            setIsSubmittingRating(false);
-        }
-    };
 
     if (authLoading || isLoading) {
         return (
@@ -354,6 +136,22 @@ export default function CheckoutSuccess() {
                         >
                             Order ID: {transaction.order_id}
                         </Badge>
+                        {transaction.status === "pending" && transaction.paymentMethod === "paid" && (
+                            <Button
+                                className="mt-4"
+                                onClick={handleContinuePayment}
+                                disabled={isContinuingPayment || !transaction.snap_token}
+                            >
+                                {isContinuingPayment ? (
+                                    <>
+                                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                        Memproses...
+                                    </>
+                                ) : (
+                                    "Lanjutkan Payment"
+                                )}
+                            </Button>
+                        )}
                     </div>
                 </CardContent>
             </Card>
@@ -401,26 +199,20 @@ export default function CheckoutSuccess() {
                                                 {formatIDR(item.amount)}
                                             </span>
                                             <div className="flex items-center gap-2">
-                                                {isSuccess && (
+                                                {isSuccess && !productRatings[item.productsId]?.hasRated && (
                                                     <Button
                                                         size="sm"
-                                                        variant={
-                                                            productRatings[item.productsId]?.hasRated
-                                                                ? "secondary"
-                                                                : "default"
-                                                        }
+                                                        variant="default"
                                                         onClick={() => handleOpenRatingModal(item)}
                                                     >
-                                                        <Star
-                                                            className={`h-4 w-4 mr-2 ${productRatings[item.productsId]?.hasRated
-                                                                ? "fill-yellow-400 text-yellow-400"
-                                                                : ""
-                                                                }`}
-                                                        />
-                                                        {productRatings[item.productsId]?.hasRated
-                                                            ? "Rated"
-                                                            : "Rate Product"}
+                                                        <Star className="h-4 w-4 mr-2" />
+                                                        Rate Product
                                                     </Button>
+                                                )}
+                                                {productRatings[item.productsId]?.hasRated && (
+                                                    <span className="text-xs text-muted-foreground">
+                                                        Anda telah memberikan rating untuk produk ini.
+                                                    </span>
                                                 )}
                                                 {item.downloadUrl && isSuccess && (
                                                     <Button
@@ -562,6 +354,22 @@ export default function CheckoutSuccess() {
                                 </Badge>
                             )}
                             <div className="pt-4 space-y-2">
+                                {transaction.status === "pending" && transaction.paymentMethod === "paid" && (
+                                    <Button
+                                        className="w-full"
+                                        onClick={handleContinuePayment}
+                                        disabled={isContinuingPayment || !transaction.snap_token}
+                                    >
+                                        {isContinuingPayment ? (
+                                            <>
+                                                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                                Memproses...
+                                            </>
+                                        ) : (
+                                            "Lanjutkan Payment"
+                                        )}
+                                    </Button>
+                                )}
                                 <Button asChild className="w-full" variant="outline">
                                     <Link href="/products">Continue Shopping</Link>
                                 </Button>

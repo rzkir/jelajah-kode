@@ -1,10 +1,15 @@
 "use client"
 
 import { Card, CardTitle, CardContent } from "@/components/ui/card"
+
 import { Badge } from "@/components/ui/badge"
+
 import Link from "next/link"
+
 import { DownloadIcon, Star } from "lucide-react"
+
 import Image from "next/image"
+
 import { useDiscount } from "@/hooks/discountServices"
 
 interface ProductsCardProps {
@@ -40,7 +45,6 @@ interface ProductsCardProps {
 export default function ProductsCard({
     item,
     href,
-    showRating = true,
     className = ""
 }: ProductsCardProps) {
     const { originalPrice, discountedPrice, activeDiscount, hasActiveDiscount } = useDiscount(item.price, item.discount);
@@ -111,22 +115,20 @@ export default function ProductsCard({
                     </CardTitle>
 
                     {/* Rating and Download Count */}
-                    {showRating && (
-                        <div className="flex flex-row items-center gap-4">
-                            <span className="flex flex-row items-center gap-1.5 text-sm text-muted-foreground">
-                                <Star className={`w-4 h-4 ${item.rating && item.rating > 0 ? 'text-yellow-500 fill-yellow-500' : 'text-gray-300'}`} />
-                                <span className="font-medium">{(item.rating && item.rating > 0) ? item.rating.toFixed(1) : '0.0'}</span>
-                                {item.ratingCount !== undefined && item.ratingCount > 0 && (
-                                    <span className="text-xs">({item.ratingCount})</span>
-                                )}
-                            </span>
+                    <div className="flex flex-row items-center gap-4">
+                        <span className="flex flex-row items-center gap-1.5 text-sm text-muted-foreground">
+                            <Star className={`w-4 h-4 ${item.rating && item.rating > 0 ? 'text-yellow-500 fill-yellow-500' : 'text-gray-300'}`} />
+                            <span className="font-medium">{(item.rating && item.rating > 0) ? item.rating.toFixed(1) : '0.0'}</span>
+                            {item.ratingCount !== undefined && item.ratingCount > 0 && (
+                                <span className="text-xs">({item.ratingCount})</span>
+                            )}
+                        </span>
 
-                            <span className="flex flex-row items-center gap-1.5 text-sm text-muted-foreground">
-                                <DownloadIcon className="w-4 h-4" />
-                                {item.downloadCount ? item.downloadCount.toLocaleString('id-ID') : 0}
-                            </span>
-                        </div>
-                    )}
+                        <span className="flex flex-row items-center gap-1.5 text-sm text-muted-foreground">
+                            <DownloadIcon className="w-4 h-4" />
+                            {item.downloadCount ? item.downloadCount.toLocaleString('id-ID') : 0}
+                        </span>
+                    </div>
 
                     {/* Price Section */}
                     <div className="flex flex-row items-end gap-2 mb-6 mt-5">

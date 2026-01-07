@@ -39,3 +39,23 @@ interface CountdownTime {
   seconds: number;
   isExpired: boolean;
 }
+
+//=================== Follow Steps Modal ===================//
+interface FollowStepsModalProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onComplete: () => void;
+  steps: Step[];
+  isProcessing: boolean;
+  onStepClick: (step: Step) => void;
+  onStepComplete: (stepId: string) => void;
+}
+
+type StepStatus = "pending" | "in-progress" | "completed";
+
+interface Step {
+  id: string;
+  name: string;
+  url: string;
+  status: StepStatus;
+}

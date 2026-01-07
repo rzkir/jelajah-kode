@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import { Check, ExternalLink, Loader2 } from "lucide-react";
+
 import {
     Dialog,
     DialogContent,
@@ -9,71 +9,18 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
+
 import { Button } from "@/components/ui/button";
-import { API_CONFIG } from "@/lib/config";
-
-interface FollowStepsModalProps {
-    open: boolean;
-    onOpenChange: (open: boolean) => void;
-    onComplete: () => void;
-}
-
-type StepStatus = "pending" | "in-progress" | "completed";
-
-interface Step {
-    id: string;
-    name: string;
-    url: string;
-    status: StepStatus;
-}
 
 export default function FollowStepsModal({
     open,
     onOpenChange,
     onComplete,
+    steps,
+    isProcessing,
+    onStepClick,
+    onStepComplete,
 }: FollowStepsModalProps) {
-    const [steps, setSteps] = useState<Step[]>([
-        {
-            id: "tiktok",
-            name: "TikTok",
-            url: API_CONFIG.SOCIAL_MEDIA.tiktok as string,
-            status: "pending",
-        },
-        {
-            id: "instagram",
-            name: "Instagram",
-            url: API_CONFIG.SOCIAL_MEDIA.instagram as string,
-            status: "pending",
-        },
-        {
-            id: "facebook",
-            name: "Facebook",
-            url: API_CONFIG.SOCIAL_MEDIA.facebook as string,
-            status: "pending",
-        },
-    ]);
-    const [isProcessing, setIsProcessing] = useState(false);
-
-    const handleStepClick = (step: Step) => {
-        // Open social media link in new tab
-        window.open(step.url, "_blank", "noopener,noreferrer");
-
-        // Mark step as in-progress
-        setSteps((prevSteps) =>
-            prevSteps.map((s) =>
-                s.id === step.id ? { ...s, status: "in-progress" } : s
-            )
-        );
-    };
-
-    const handleStepComplete = (stepId: string) => {
-        setSteps((prevSteps) =>
-            prevSteps.map((s) =>
-                s.id === stepId ? { ...s, status: "completed" } : s
-            )
-        );
-    };
-
     const allStepsCompleted = steps.every((step) => step.status === "completed");
 
     return (
@@ -137,9 +84,9 @@ export default function FollowStepsModal({
                                     size="sm"
                                     onClick={() => {
                                         if (step.status === "in-progress") {
-                                            handleStepComplete(step.id);
+                                            onStepComplete(step.id);
                                         } else {
-                                            handleStepClick(step);
+                                            onStepClick(step);
                                         }
                                     }}
                                 >
@@ -168,13 +115,7 @@ export default function FollowStepsModal({
                     <Button
                         onClick={async () => {
                             if (allStepsCompleted && !isProcessing) {
-                                setIsProcessing(true);
-                                try {
-                                    await onComplete();
-                                } catch (error) {
-                                    console.error("Error completing checkout:", error);
-                                    setIsProcessing(false);
-                                }
+                                await onComplete();
                             }
                         }}
                         disabled={!allStepsCompleted || isProcessing}

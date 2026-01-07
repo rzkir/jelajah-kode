@@ -99,6 +99,64 @@ const authorSchema = new mongoose.Schema(
   { _id: false }
 );
 
+const productsRatingAuthorSchema = new mongoose.Schema(
+  {
+    _id: {
+      type: String,
+      required: true,
+    },
+    name: {
+      type: String,
+      required: true,
+    },
+    picture: {
+      type: String,
+      default: "",
+    },
+    role: {
+      type: String,
+      enum: ["admins", "user"],
+      required: true,
+    },
+  },
+  { _id: false }
+);
+
+const productsRatingSchema = new mongoose.Schema(
+  {
+    _id: {
+      type: String,
+      required: true,
+    },
+    productsId: {
+      type: String,
+      required: true,
+    },
+    rating: {
+      type: Number,
+      required: true,
+    },
+    comment: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    author: {
+      type: productsRatingAuthorSchema,
+      required: true,
+    },
+    created_at: {
+      type: String,
+      required: true,
+    },
+    updated_at: {
+      type: String,
+      required: true,
+    },
+  },
+  { _id: false }
+);
+
 const productsSchema = new mongoose.Schema(
   {
     title: {
@@ -179,6 +237,22 @@ const productsSchema = new mongoose.Schema(
     },
     tags: {
       type: [productsTagsSchema],
+      default: [],
+    },
+    rating: {
+      type: Number,
+      default: 0,
+    },
+    ratingAverage: {
+      type: Number,
+      default: 0,
+    },
+    ratingCount: {
+      type: Number,
+      default: 0,
+    },
+    ratings: {
+      type: [productsRatingSchema],
       default: [],
     },
     paymentType: {

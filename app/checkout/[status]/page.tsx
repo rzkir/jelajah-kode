@@ -4,7 +4,7 @@ import CheckoutSuccess from '@/components/checkout/CheckoutSuccess'
 
 import { Loader2 } from 'lucide-react'
 
-export default function CheckoutSuccessPage() {
+export default function CheckoutStatusPage({ params }: { params: { status: string } }) {
     return (
         <Suspense
             fallback={
@@ -15,7 +15,7 @@ export default function CheckoutSuccessPage() {
                 </div>
             }
         >
-            <CheckoutSuccess />
+            <CheckoutSuccess status={params.status} />
         </Suspense>
     )
 }

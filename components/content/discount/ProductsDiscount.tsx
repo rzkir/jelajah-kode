@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from "react"
 
 import ProductsCard from "@/components/ui/products/ProductsCard"
+
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 
 function CountdownTimer({ endDate }: { endDate: string }) {

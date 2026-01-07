@@ -244,16 +244,32 @@ async function updateProductRating(productId: string): Promise<void> {
       productsId: product.productsId,
     });
 
-    if (ratings.length === 0) {
-      return;
-    }
+    const ratingCount = ratings.length;
+
+    const formattedRatings = ratings.map((ratingDoc) => {
+      const ratingObj = ratingDoc.toObject();
+      return {
+        _id: ratingObj._id.toString(),
+        productsId: ratingObj.productsId,
+        rating: ratingObj.rating,
+        comment: ratingObj.comment,
+        author: ratingObj.author,
+        created_at:
+          ratingObj.createdAt?.toISOString() || new Date().toISOString(),
+        updated_at:
+          ratingObj.updatedAt?.toISOString() || new Date().toISOString(),
+      };
+    });
 
     const totalRating = ratings.reduce((sum, r) => sum + r.rating, 0);
-    const averageRating = totalRating / ratings.length;
+    const averageRating =
+      ratingCount > 0 ? Math.round((totalRating / ratingCount) * 10) / 10 : 0;
 
     await Products.findByIdAndUpdate(productId, {
-      rating: Math.round(averageRating * 10) / 10, // Round to 1 decimal place
-      ratingCount: ratings.length,
+      rating: averageRating,
+      ratingAverage: averageRating,
+      ratingCount,
+      ratings: formattedRatings,
       updatedAt: new Date(),
     });
   } catch (error) {

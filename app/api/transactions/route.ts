@@ -61,14 +61,14 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // If paid transaction and payment_details is missing, fetch from Midtrans
+    // If paid transaction and still pending (or missing payment_details), fetch latest status from Midtrans
     const hasPaymentDetails =
       transaction.payment_details && transaction.payment_details.payment_type;
 
     if (
       transaction.paymentMethod === "paid" &&
-      !hasPaymentDetails &&
-      transaction.order_id
+      transaction.order_id &&
+      (transaction.status === "pending" || !hasPaymentDetails)
     ) {
       try {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -134,6 +134,7 @@ export async function GET(request: NextRequest) {
               pending: "pending",
               settlement: "success",
               success: "success",
+              capture: "success", // credit card transactions often use "capture"
               expire: "expired",
               cancel: "canceled",
               deny: "canceled",
@@ -202,6 +203,7 @@ export async function GET(request: NextRequest) {
       status: transactionObj.status,
       total_amount: transactionObj.total_amount,
       order_id: transactionObj.order_id,
+      snap_token: transactionObj.snap_token || null,
       payment_details: transactionObj.payment_details || null,
       created_at:
         transactionObj.createdAt?.toISOString() || new Date().toISOString(),
