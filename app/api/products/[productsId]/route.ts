@@ -53,6 +53,7 @@ export async function GET(
       views: product.views,
       ratingCount: product.ratingCount,
       images: product.images,
+      licenses: product.licenses || [],
       discount: product.discount,
       author: product.author,
       tags: product.tags,

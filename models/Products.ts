@@ -228,6 +228,10 @@ const productsSchema = new mongoose.Schema(
       type: [String],
       default: [],
     },
+    licenses: {
+      type: [String],
+      default: [],
+    },
     discount: {
       type: discountSchema,
     },

@@ -17,6 +17,7 @@ interface Products {
   category: ProductsCategory;
   type: ProductsType;
   images?: string[];
+  licenses?: string[];
   discount?: {
     type: "percentage" | "fixed";
     value: number;
@@ -122,6 +123,7 @@ interface CreateFormData {
   paymentType: "free" | "paid";
   status: "publish" | "draft";
   images: string[];
+  licenses?: string[];
   discount?: {
     type: "percentage" | "fixed";
     value: number;
@@ -145,6 +147,7 @@ interface EditFormData {
   paymentType: "free" | "paid";
   status: "publish" | "draft";
   images: string[];
+  licenses?: string[];
   discount?: {
     type: "percentage" | "fixed";
     value: number;
@@ -359,6 +362,7 @@ interface ProductsDetails {
   ratingAverage?: number;
   category: ProductsCategory;
   images: string[];
+  licenses?: string[];
   author: {
     _id: string;
     name: string;

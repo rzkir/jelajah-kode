@@ -39,6 +39,7 @@ export function useStateEditProducts() {
     paymentType: "paid",
     status: "draft",
     images: [],
+    licenses: [],
     discount: undefined,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -185,6 +186,7 @@ export function useStateEditProducts() {
                 .filter((id: string | null): id is string => id !== null)
             : [],
           images: product.images || [],
+          licenses: product.licenses || [],
           discount: product.discount || undefined,
         }));
       } catch (error) {
@@ -445,6 +447,12 @@ export function useStateEditProducts() {
                   }
                 : undefined,
             images: formData.images ? formData.images : [],
+            licenses: Array.isArray(formData.licenses)
+              ? formData.licenses.filter(
+                  (license): license is string =>
+                    typeof license === "string" && license.trim() !== ""
+                )
+              : [],
             author: user
               ? {
                   _id: user._id,

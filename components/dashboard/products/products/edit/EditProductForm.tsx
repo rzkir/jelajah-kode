@@ -383,6 +383,74 @@ export default function EditProductForm() {
                 )}
               </div>
 
+              {/* Licenses Section */}
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="licenses">Licenses</Label>
+                <div className="space-y-2">
+                  <div className="flex gap-2">
+                    <Input
+                      id="license-input"
+                      placeholder="Enter license (e.g., MIT, Apache 2.0, GPL-3.0)"
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          const input = e.currentTarget;
+                          const value = input.value.trim();
+                          if (value && !formData.licenses?.includes(value)) {
+                            setFormData((prev) => ({
+                              ...prev,
+                              licenses: [...(prev.licenses || []), value],
+                            }));
+                            input.value = "";
+                          }
+                        }
+                      }}
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => {
+                        const input = document.getElementById("license-input") as HTMLInputElement;
+                        const value = input?.value.trim();
+                        if (value && !formData.licenses?.includes(value)) {
+                          setFormData((prev) => ({
+                            ...prev,
+                            licenses: [...(prev.licenses || []), value],
+                          }));
+                          if (input) input.value = "";
+                        }
+                      }}
+                    >
+                      Add
+                    </Button>
+                  </div>
+                  {formData.licenses && formData.licenses.length > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                      {formData.licenses.map((license, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center gap-2 px-3 py-1 bg-primary/10 border border-primary rounded-md"
+                        >
+                          <span className="text-sm font-medium">{license}</span>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setFormData((prev) => ({
+                                ...prev,
+                                licenses: prev.licenses?.filter((_, i) => i !== index) || [],
+                              }))
+                            }
+                            className="text-destructive hover:text-destructive/80"
+                          >
+                            <span className="w-4 h-4 flex items-center justify-center">×</span>
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+
               {/* Discount Section */}
               <div className="border rounded-lg p-4 bg-muted">
                 <div className="flex items-center justify-between mb-3">

@@ -42,6 +42,7 @@ export function useStateCreateProducts() {
     paymentType: "paid",
     status: "draft",
     images: [],
+    licenses: [],
     discount: undefined,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -383,6 +384,12 @@ export function useStateCreateProducts() {
                 }
               : undefined,
           images: formData.images ? formData.images : [],
+          licenses: Array.isArray(formData.licenses)
+            ? formData.licenses.filter(
+                (license): license is string =>
+                  typeof license === "string" && license.trim() !== ""
+              )
+            : [],
           author: user
             ? {
                 _id: user._id,

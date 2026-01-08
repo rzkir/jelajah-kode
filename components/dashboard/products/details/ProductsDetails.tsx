@@ -385,6 +385,30 @@ export default function ProductsDetails({ product }: { product: ProductsDetails 
                         </Card>
                     )}
 
+                    {/* Licenses */}
+                    {product.licenses && product.licenses.length > 0 && (
+                        <Card className="shadow-md hover:shadow-lg transition-shadow">
+                            <CardHeader className="pb-4">
+                                <CardTitle className="text-xl flex items-center gap-2">
+                                    <span>📜</span> Licenses
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="flex flex-wrap gap-2">
+                                    {product.licenses.map((license, index) => (
+                                        <Badge
+                                            key={`license-${index}`}
+                                            variant="secondary"
+                                            className="px-3 py-1 hover:bg-primary/10 hover:border-primary transition-colors"
+                                        >
+                                            {license}
+                                        </Badge>
+                                    ))}
+                                </div>
+                            </CardContent>
+                        </Card>
+                    )}
+
                     {/* Author */}
                     <Card className="shadow-md hover:shadow-lg transition-shadow">
                         <CardHeader className="pb-4">

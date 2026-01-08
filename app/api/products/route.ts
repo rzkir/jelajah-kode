@@ -217,6 +217,9 @@ export async function POST(request: Request) {
           return [];
         }
       }
+      if (field === null || field === undefined) {
+        return [];
+      }
       return [];
     };
 
@@ -361,6 +364,12 @@ export async function POST(request: Request) {
       category: formattedCategory,
       type: formattedType,
       images: parseArrayField(body.images),
+      licenses: Array.isArray(body.licenses)
+        ? body.licenses.filter(
+            (license: unknown): license is string =>
+              typeof license === "string" && license.trim() !== ""
+          )
+        : parseArrayField(body.licenses),
       discount: body.discount || undefined,
       author: body.author,
       createdAt: new Date(),
@@ -485,6 +494,7 @@ export async function POST(request: Request) {
       views: savedProduct.views,
       ratingCount: savedProduct.ratingCount,
       images: savedProduct.images,
+      licenses: savedProduct.licenses || [],
       discount: savedProduct.discount,
       author: savedProduct.author,
       tags: savedProduct.tags,
@@ -557,6 +567,9 @@ export async function PUT(request: Request) {
         } catch {
           return [];
         }
+      }
+      if (field === null || field === undefined) {
+        return [];
       }
       return [];
     };
@@ -731,6 +744,12 @@ export async function PUT(request: Request) {
         title: String(tag.title),
         tagsId: String(tag.tagsId),
       })),
+      licenses: Array.isArray(body.licenses)
+        ? body.licenses.filter(
+            (license: unknown): license is string =>
+              typeof license === "string" && license.trim() !== ""
+          )
+        : parseArrayField(body.licenses),
       updatedAt: new Date(),
     };
 
@@ -794,6 +813,7 @@ export async function PUT(request: Request) {
       views: updatedProduct.views,
       ratingCount: updatedProduct.ratingCount,
       images: updatedProduct.images,
+      licenses: updatedProduct.licenses || [],
       discount: updatedProduct.discount,
       author: updatedProduct.author,
       tags: updatedProduct.tags,
