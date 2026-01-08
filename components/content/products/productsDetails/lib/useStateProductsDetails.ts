@@ -43,6 +43,8 @@ export default function useStateProductsDetails({
   const [selectedImage, setSelectedImage] = useState(product.thumbnail);
   const [relatedProducts, setRelatedProducts] = useState<Products[]>([]);
   const [ratings, setRatings] = useState<Rating[]>([]);
+  const [authorProductsCount, setAuthorProductsCount] = useState<number>(0);
+  const [authorAverageRating, setAuthorAverageRating] = useState<number>(0);
 
   const { originalPrice, discountedPrice, activeDiscount, hasActiveDiscount } =
     useDiscount(product.price, product.discount);
@@ -63,7 +65,7 @@ export default function useStateProductsDetails({
   );
 
   useEffect(() => {
-    // Fetch related products by category
+    // Fetch related products by category and count author products
     const loadRelatedProducts = async () => {
       try {
         const products = await fetchProducts();
@@ -76,12 +78,37 @@ export default function useStateProductsDetails({
           )
           .slice(0, 3);
         setRelatedProducts(related);
+
+        // Count all products from the same author and calculate average rating
+        const authorProducts = products.filter(
+          (p) => p.author._id === product.author._id && p.status === "publish"
+        );
+        setAuthorProductsCount(authorProducts.length);
+
+        // Calculate average rating from all author's products
+        const ratingsWithValues = authorProducts
+          .map((p) => p.ratingAverage)
+          .filter(
+            (rating): rating is number =>
+              rating !== undefined && rating !== null && rating > 0
+          );
+
+        if (ratingsWithValues.length > 0) {
+          const totalRating = ratingsWithValues.reduce(
+            (sum: number, rating: number) => sum + rating,
+            0
+          );
+          const averageRating = totalRating / ratingsWithValues.length;
+          setAuthorAverageRating(averageRating);
+        } else {
+          setAuthorAverageRating(0);
+        }
       } catch (error) {
         console.error("Error fetching related products:", error);
       }
     };
     loadRelatedProducts();
-  }, [product.category.categoryId, product.productsId]);
+  }, [product.category.categoryId, product.productsId, product.author._id]);
 
   useEffect(() => {
     // Fetch ratings when reviews tab is active
@@ -146,5 +173,7 @@ export default function useStateProductsDetails({
     allImages,
     handleShare,
     handleBuyNow,
+    authorProductsCount,
+    authorAverageRating,
   };
 }

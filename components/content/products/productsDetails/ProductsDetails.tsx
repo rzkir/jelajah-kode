@@ -12,7 +12,7 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 
-import { Star, Share2, Download } from 'lucide-react'
+import { Star, Share2, Download, Check } from 'lucide-react'
 
 import ProductsCard from '@/components/ui/products/ProductsCard'
 
@@ -46,33 +46,35 @@ export default function ProductsDetails({ product }: ProductsDetailsProps) {
         allImages,
         handleShare,
         handleBuyNow,
+        authorProductsCount,
+        authorAverageRating,
     } = useStateProductsDetails({ product })
 
     return (
-        <section className='min-h-full overflow-visible relative py-8 pt-28 xl:pt-unset md:py-12'>
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <section className='min-h-full overflow-visible relative pb-10 pt-28 md:pt-32'>
+            <div className="container mx-auto px-2 md:px-4">
                 {/* Header Section with Badges */}
-                <div className="mb-6 flex flex-wrap gap-3">
-                    <Badge variant="secondary" className="px-4 py-1.5 text-sm font-medium shadow-sm">
+                <div className="mb-4 sm:mb-6 flex flex-wrap gap-2 sm:gap-3">
+                    <Badge variant="secondary" className="px-3 sm:px-4 py-1 sm:py-1.5 text-xs sm:text-sm font-medium shadow-sm">
                         {product.category.title}
                     </Badge>
-                    <Badge variant="default" className="px-4 py-1.5 text-sm font-medium shadow-sm">
+                    <Badge variant="default" className="px-3 sm:px-4 py-1 sm:py-1.5 text-xs sm:text-sm font-medium shadow-sm">
                         {product.type.title}
                     </Badge>
                     {hasActiveDiscount && activeDiscount && (
-                        <Badge variant="destructive" className="px-4 py-1.5 text-sm font-semibold shadow-md animate-pulse">
+                        <Badge variant="destructive" className="px-3 sm:px-4 py-1 sm:py-1.5 text-xs sm:text-sm font-semibold shadow-md animate-pulse">
                             🔥 -{discountPercentage}% OFF
                         </Badge>
                     )}
                 </div>
 
                 {/* Product Title */}
-                <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6 bg-linear-to-r from-foreground to-foreground/70 bg-clip-text text-transparent leading-tight">
+                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-extrabold mb-4 sm:mb-6 bg-linear-to-r from-foreground to-foreground/70 bg-clip-text text-transparent leading-tight wrap-break-word">
                     {product.title}
                 </h1>
 
                 {/* Short Description */}
-                <div className="mb-8 w-full max-w-full overflow-x-hidden">
+                <div className="mb-4 w-full max-w-full overflow-x-hidden">
                     <TypographyContent
                         html={product.description ? (
                             product.description.length > 200
@@ -84,38 +86,33 @@ export default function ProductsDetails({ product }: ProductsDetailsProps) {
                 </div>
 
                 {/* Rating and Downloads */}
-                <div className="flex flex-wrap items-center gap-6 mb-10 p-4 rounded-xl bg-card/50 backdrop-blur-sm border border-border/50 shadow-sm">
-                    {product.ratingAverage && (
-                        <div className="flex items-center gap-3">
-                            <div className="flex items-center gap-0.5">
-                                {[...Array(5)].map((_, i) => (
-                                    <Star
-                                        key={i}
-                                        className={`w-5 h-5 transition-all ${i < Math.floor(product.ratingAverage || 0)
-                                            ? 'text-yellow-500 fill-yellow-500 drop-shadow-sm'
-                                            : 'text-gray-300 dark:text-gray-600'
-                                            }`}
-                                    />
-                                ))}
-                            </div>
-                            <span className="text-sm font-semibold">
-                                {product.ratingAverage?.toFixed(1)} <span className="text-muted-foreground font-normal">({product.ratingCount || 0} reviews)</span>
-                            </span>
+                <div className="flex flex-wrap items-center gap-3 sm:gap-4 md:gap-6 mb-6 sm:mb-8 md:mb-10">
+                    <div className="flex items-center gap-2 sm:gap-3">
+                        <div className="flex items-center gap-0.5">
+                            <Star
+                                className={`w-4 h-4 sm:w-5 sm:h-5 transition-all ${(product.ratingAverage || 0) > 0
+                                    ? 'text-yellow-500 fill-yellow-500 drop-shadow-sm'
+                                    : 'text-gray-300 dark:text-gray-600'
+                                    }`}
+                            />
                         </div>
-                    )}
+                        <span className="text-xs sm:text-sm font-semibold">
+                            {product.ratingAverage?.toFixed(1)} <span className="text-muted-foreground font-normal">({product.ratingCount || 0} reviews)</span>
+                        </span>
+                    </div>
 
                     {product.downloadCount !== undefined && (
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted/50 px-3 py-1.5 rounded-lg">
-                            <Download className="w-4 h-4" />
+                        <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-muted-foreground bg-muted/50 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg">
+                            <Download className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                             <span className="font-medium">{product.downloadCount.toLocaleString()} downloads</span>
                         </div>
                     )}
                 </div>
 
                 {/* Main Content Grid */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12 mb-16">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 lg:gap-12 mb-8 sm:mb-12 md:mb-16">
                     {/* Left Column - Images and Tabs */}
-                    <div className="lg:col-span-2 space-y-8">
+                    <div className="lg:col-span-2 space-y-4 sm:space-y-6 md:space-y-8">
                         {/* Main Product Image */}
                         <div className="relative aspect-video w-full rounded-2xl overflow-hidden bg-linear-to-br from-muted to-muted/50 border-2 border-border/50 shadow-xl group">
                             <Image
@@ -130,13 +127,13 @@ export default function ProductsDetails({ product }: ProductsDetailsProps) {
 
                         {/* Thumbnail Images */}
                         {allImages.length > 1 && (
-                            <div className="grid grid-cols-3 gap-4">
+                            <div className="grid grid-cols-3 gap-2 sm:gap-3 md:gap-4">
                                 {allImages.slice(0, 3).map((img, idx) => (
                                     <button
                                         key={idx}
                                         onClick={() => setSelectedImage(img)}
-                                        className={`relative aspect-square rounded-xl overflow-hidden border-2 transition-all duration-300 transform hover:scale-105 ${selectedImage === img
-                                            ? 'border-primary ring-4 ring-primary/20 shadow-lg shadow-primary/20 scale-105'
+                                        className={`relative aspect-square rounded-lg sm:rounded-xl overflow-hidden border-2 transition-all duration-300 transform hover:scale-105 ${selectedImage === img
+                                            ? 'border-primary ring-2 sm:ring-4 ring-primary/20 shadow-lg shadow-primary/20 scale-105'
                                             : 'border-border hover:border-primary/50 shadow-md hover:shadow-lg'
                                             }`}
                                     >
@@ -156,28 +153,25 @@ export default function ProductsDetails({ product }: ProductsDetailsProps) {
 
                         {/* Navigation Tabs */}
                         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                            <TabsList className="w-full justify-start bg-muted/50 p-1.5 rounded-xl border border-border/50 shadow-sm">
-                                <TabsTrigger value="overview" className="data-[state=active]:bg-background data-[state=active]:shadow-md transition-all duration-200 rounded-lg px-6 py-2.5 font-medium">
+                            <TabsList className="w-full justify-start bg-muted/50 rounded-lg sm:rounded-xl border border-border/50 shadow-sm p-0.5 sm:p-0 overflow-x-auto overflow-y-hidden">
+                                <TabsTrigger value="overview" className="data-[state=active]:bg-background data-[state=active]:shadow-md transition-all duration-200 rounded-md sm:rounded-lg px-3 sm:px-4 md:px-6 py-2 sm:py-2.5 text-xs sm:text-sm font-medium whitespace-nowrap shrink-0 w-[40%] md:w-[25%]">
                                     Overview
                                 </TabsTrigger>
-                                <TabsTrigger value="tech-stack" className="data-[state=active]:bg-background data-[state=active]:shadow-md transition-all duration-200 rounded-lg px-6 py-2.5 font-medium">
+                                <TabsTrigger value="tech-stack" className="data-[state=active]:bg-background data-[state=active]:shadow-md transition-all duration-200 rounded-md sm:rounded-lg px-3 sm:px-4 md:px-6 py-2 sm:py-2.5 text-xs sm:text-sm font-medium whitespace-nowrap shrink-0 w-[40%] md:w-[25%]">
                                     Tech Stack
                                 </TabsTrigger>
-                                <TabsTrigger value="faqs" className="data-[state=active]:bg-background data-[state=active]:shadow-md transition-all duration-200 rounded-lg px-6 py-2.5 font-medium">
+                                <TabsTrigger value="faqs" className="data-[state=active]:bg-background data-[state=active]:shadow-md transition-all duration-200 rounded-md sm:rounded-lg px-3 sm:px-4 md:px-6 py-2 sm:py-2.5 text-xs sm:text-sm font-medium whitespace-nowrap shrink-0 w-[40%] md:w-[25%]">
                                     FAQs
                                 </TabsTrigger>
-                                <TabsTrigger value="reviews" className="data-[state=active]:bg-background data-[state=active]:shadow-md transition-all duration-200 rounded-lg px-6 py-2.5 font-medium">
+                                <TabsTrigger value="reviews" className="data-[state=active]:bg-background data-[state=active]:shadow-md transition-all duration-200 rounded-md sm:rounded-lg px-3 sm:px-4 md:px-6 py-2 sm:py-2.5 text-xs sm:text-sm font-medium whitespace-nowrap shrink-0 w-[40%] md:w-[25%]">
                                     Reviews
                                 </TabsTrigger>
                             </TabsList>
 
-                            <TabsContent value="overview" className="mt-8">
-                                <div className="space-y-8">
-                                    <div className="bg-card/50 backdrop-blur-sm rounded-2xl p-4 sm:p-6 md:p-8 border border-border/50 shadow-lg w-full overflow-hidden">
-                                        <h3 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 bg-linear-to-r from-foreground to-foreground/70 bg-clip-text text-transparent w-full wrap-break-word">
-                                            Product Description
-                                        </h3>
-                                        <div className="w-full max-w-full overflow-x-hidden">
+                            <TabsContent value="overview" className="mt-3 sm:mt-4">
+                                <div className="space-y-4 sm:space-y-6 md:space-y-8">
+                                    <div className="bg-card/50 backdrop-blur-sm rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 border border-border/50 shadow-lg w-full overflow-hidden">
+                                        <div className="w-full max-w-full">
                                             <TypographyContent
                                                 html={product.description || ''}
                                                 className="text-muted-foreground leading-relaxed w-full"
@@ -189,11 +183,11 @@ export default function ProductsDetails({ product }: ProductsDetailsProps) {
                                     </div>
 
                                     {product.tags && product.tags.length > 0 && (
-                                        <div className="bg-card/50 backdrop-blur-sm rounded-2xl p-6 border border-border/50 shadow-lg">
-                                            <h4 className="font-semibold mb-4 text-lg">Tags</h4>
-                                            <div className="flex flex-wrap gap-2.5">
+                                        <div className="bg-card/50 backdrop-blur-sm rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-border/50 shadow-lg">
+                                            <h4 className="font-semibold mb-3 sm:mb-4 text-base sm:text-lg">Tags</h4>
+                                            <div className="flex flex-wrap gap-2 sm:gap-2.5">
                                                 {product.tags.map((tag, idx) => (
-                                                    <Badge key={idx} variant="secondary" className="text-sm py-2 px-4 font-medium shadow-sm hover:shadow-md transition-shadow">
+                                                    <Badge key={idx} variant="secondary" className="text-xs sm:text-sm py-1.5 sm:py-2 px-3 sm:px-4 font-medium shadow-sm hover:shadow-md transition-shadow">
                                                         {tag.title}
                                                     </Badge>
                                                 ))}
@@ -203,27 +197,27 @@ export default function ProductsDetails({ product }: ProductsDetailsProps) {
                                 </div>
                             </TabsContent>
 
-                            <TabsContent value="tech-stack" className="mt-8">
-                                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                            <TabsContent value="tech-stack" className="mt-3 sm:mt-4">
+                                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
                                     {product.frameworks.map((framework, idx) => (
                                         <Card key={idx} className="overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border-2 border-border/50 group">
-                                            <CardContent className="flex flex-col items-center justify-center gap-3 p-6">
-                                                <div className="relative w-16 h-16 shrink-0 rounded-xl overflow-hidden bg-linear-to-br from-muted to-muted/50 border-2 border-border/30 group-hover:border-primary/50 transition-colors shadow-md group-hover:shadow-lg">
+                                            <CardContent className="flex flex-col items-center justify-center gap-2 sm:gap-3 p-4 sm:p-6">
+                                                <div className="relative w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 shrink-0 rounded-lg sm:rounded-xl overflow-hidden bg-linear-to-br from-muted to-muted/50 border-2 border-border/30 group-hover:border-primary/50 transition-colors shadow-md group-hover:shadow-lg">
                                                     {framework.thumbnail ? (
                                                         <Image
                                                             src={framework.thumbnail}
                                                             alt={framework.title}
                                                             fill
-                                                            className="object-cover p-2 group-hover:scale-110 transition-transform duration-300"
+                                                            className="object-cover p-1.5 sm:p-2 group-hover:scale-110 transition-transform duration-300"
                                                         />
                                                     ) : (
                                                         <div className="w-full h-full flex items-center justify-center">
-                                                            <span className="text-2xl">🔧</span>
+                                                            <span className="text-xl sm:text-2xl">🔧</span>
                                                         </div>
                                                     )}
                                                 </div>
 
-                                                <h3 className="text-sm text-center font-semibold group-hover:text-primary transition-colors">
+                                                <h3 className="text-xs sm:text-sm text-center font-semibold group-hover:text-primary transition-colors wrap-break-word">
                                                     {framework.title}
                                                 </h3>
                                             </CardContent>
@@ -232,24 +226,24 @@ export default function ProductsDetails({ product }: ProductsDetailsProps) {
                                 </div>
                             </TabsContent>
 
-                            <TabsContent value="faqs" className="mt-8">
-                                <div className="bg-card/50 backdrop-blur-sm rounded-2xl p-4 sm:p-6 md:p-8 border border-border/50 shadow-lg w-full overflow-hidden">
+                            <TabsContent value="faqs" className="mt-3 sm:mt-4">
+                                <div className="bg-card/50 backdrop-blur-sm rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 border border-border/50 shadow-lg w-full overflow-hidden">
                                     {product.faqs ? (
                                         <div className="w-full max-w-full overflow-x-hidden">
                                             <TypographyContent
                                                 html={product.faqs}
-                                                className="text-muted-foreground leading-relaxed w-full"
-                                                youtubeWrapperClassName="my-6 sm:my-8 w-full max-w-full"
-                                                youtubeContainerClassName="shadow-xl border-2 border-primary/20 rounded-xl sm:rounded-2xl overflow-hidden w-full max-w-full"
+                                                className="text-muted-foreground leading-relaxed w-full text-sm sm:text-base"
+                                                youtubeWrapperClassName="my-4 sm:my-6 md:my-8 w-full max-w-full"
+                                                youtubeContainerClassName="shadow-xl border-2 border-primary/20 rounded-lg sm:rounded-xl md:rounded-2xl overflow-hidden w-full max-w-full"
                                                 youtubeIframeClassName="rounded-lg sm:rounded-xl w-full"
                                             />
                                         </div>
                                     ) : (
-                                        <div className="text-center py-8 sm:py-12">
-                                            <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-muted mb-4">
-                                                <span className="text-2xl sm:text-3xl">❓</span>
+                                        <div className="text-center py-6 sm:py-8 md:py-12">
+                                            <div className="inline-flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 rounded-full bg-muted mb-3 sm:mb-4">
+                                                <span className="text-xl sm:text-2xl md:text-3xl">❓</span>
                                             </div>
-                                            <p className="text-muted-foreground text-base sm:text-lg font-medium w-full wrap-break-word px-4">
+                                            <p className="text-muted-foreground text-sm sm:text-base md:text-lg font-medium w-full wrap-break-word px-4">
                                                 No FAQs available for this product.
                                             </p>
                                         </div>
@@ -257,78 +251,78 @@ export default function ProductsDetails({ product }: ProductsDetailsProps) {
                                 </div>
                             </TabsContent>
 
-                            <TabsContent value="reviews" className="mt-8">
-                                <div className="space-y-8">
+                            <TabsContent value="reviews" className="mt-3 sm:mt-4">
+                                <div className="space-y-4 sm:space-y-6 md:space-y-8">
                                     {/* Rating Summary */}
-                                    <div className="bg-linear-to-br from-card/80 to-card/50 backdrop-blur-sm rounded-2xl p-8 border border-border/50 shadow-lg">
-                                        <h3 className="text-3xl font-bold mb-6 bg-linear-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+                                    <div className="bg-linear-to-br from-card/80 to-card/50 backdrop-blur-sm rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 border border-border/50 shadow-lg">
+                                        <h3 className="text-xl sm:text-2xl md:text-3xl font-bold mb-4 sm:mb-6 bg-linear-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
                                             Customer Reviews
                                         </h3>
                                         {product.ratingAverage && product.ratingCount ? (
-                                            <div className="flex flex-wrap items-center gap-6">
-                                                <div className="flex items-baseline gap-2">
-                                                    <span className="text-5xl font-extrabold bg-linear-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+                                            <div className="flex flex-wrap items-center gap-3 sm:gap-4 md:gap-6">
+                                                <div className="flex items-baseline gap-1.5 sm:gap-2">
+                                                    <span className="text-3xl sm:text-4xl md:text-5xl font-extrabold bg-linear-to-r from-primary to-primary/70 bg-clip-text text-transparent">
                                                         {product.ratingAverage?.toFixed(1)}
                                                     </span>
-                                                    <span className="text-xl text-muted-foreground">/ 5.0</span>
+                                                    <span className="text-base sm:text-lg md:text-xl text-muted-foreground">/ 5.0</span>
                                                 </div>
-                                                <div className="flex items-center gap-1">
+                                                <div className="flex items-center gap-0.5 sm:gap-1">
                                                     {[...Array(5)].map((_, i) => (
                                                         <Star
                                                             key={i}
-                                                            className={`w-6 h-6 transition-all ${i < Math.floor(product.ratingAverage || 0)
+                                                            className={`w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 transition-all ${i < Math.floor(product.ratingAverage || 0)
                                                                 ? 'text-yellow-500 fill-yellow-500 drop-shadow-sm'
                                                                 : 'text-gray-300 dark:text-gray-600'
                                                                 }`}
                                                         />
                                                     ))}
                                                 </div>
-                                                <div className="px-4 py-2 bg-muted/50 rounded-lg">
-                                                    <span className="text-sm font-semibold text-muted-foreground">
+                                                <div className="px-3 sm:px-4 py-1.5 sm:py-2 bg-muted/50 rounded-lg">
+                                                    <span className="text-xs sm:text-sm font-semibold text-muted-foreground">
                                                         {product.ratingCount} {product.ratingCount === 1 ? 'review' : 'reviews'}
                                                     </span>
                                                 </div>
                                             </div>
                                         ) : (
-                                            <div className="text-center py-8">
-                                                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-muted mb-4">
-                                                    <Star className="w-8 h-8 text-muted-foreground" />
+                                            <div className="text-center py-6 sm:py-8">
+                                                <div className="inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-full bg-muted mb-3 sm:mb-4">
+                                                    <Star className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-muted-foreground" />
                                                 </div>
-                                                <p className="text-muted-foreground text-lg font-medium">No reviews yet</p>
+                                                <p className="text-muted-foreground text-sm sm:text-base md:text-lg font-medium">No reviews yet</p>
                                             </div>
                                         )}
                                     </div>
 
                                     {/* Ratings List */}
-                                    <div className="space-y-4">
+                                    <div className="space-y-3 sm:space-y-4">
                                         {ratings.map((ratingItem) => (
                                             <Card key={ratingItem._id} className="border-2 border-border/50 hover:border-primary/30 transition-all duration-300 hover:shadow-xl">
-                                                <CardContent className="p-6">
-                                                    <div className="flex items-start gap-4">
-                                                        <Avatar className="w-12 h-12 ring-2 ring-border/50 shadow-md">
+                                                <CardContent className="p-4 sm:p-5 md:p-6">
+                                                    <div className="flex items-start gap-3 sm:gap-4">
+                                                        <Avatar className="w-10 h-10 sm:w-12 sm:h-12 ring-2 ring-border/50 shadow-md shrink-0">
                                                             <AvatarImage
                                                                 src={ratingItem.author.picture}
                                                                 alt={ratingItem.author.name}
                                                             />
-                                                            <AvatarFallback className="bg-linear-to-br from-primary/20 to-primary/10 font-semibold">
+                                                            <AvatarFallback className="bg-linear-to-br from-primary/20 to-primary/10 font-semibold text-sm sm:text-base">
                                                                 {ratingItem.author.name.charAt(0).toUpperCase()}
                                                             </AvatarFallback>
                                                         </Avatar>
-                                                        <div className="flex-1 space-y-3">
-                                                            <div className="flex items-start justify-between gap-4">
-                                                                <div className="flex-1">
-                                                                    <p className="font-semibold text-lg mb-1">
+                                                        <div className="flex-1 space-y-2 sm:space-y-3 min-w-0">
+                                                            <div className="flex items-start justify-between gap-2 sm:gap-4 flex-wrap">
+                                                                <div className="flex-1 min-w-0">
+                                                                    <p className="font-semibold text-base sm:text-lg mb-1 wrap-break-word">
                                                                         {ratingItem.author.name}
                                                                     </p>
-                                                                    <p className="text-sm text-muted-foreground">
+                                                                    <p className="text-xs sm:text-sm text-muted-foreground">
                                                                         {formatDate(ratingItem.created_at)}
                                                                     </p>
                                                                 </div>
-                                                                <div className="flex items-center gap-1 bg-muted/50 px-3 py-1.5 rounded-lg">
+                                                                <div className="flex items-center gap-0.5 sm:gap-1 bg-muted/50 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg shrink-0">
                                                                     {[...Array(5)].map((_, i) => (
                                                                         <Star
                                                                             key={i}
-                                                                            className={`w-4 h-4 ${i < ratingItem.rating
+                                                                            className={`w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 ${i < ratingItem.rating
                                                                                 ? 'text-yellow-500 fill-yellow-500'
                                                                                 : 'text-gray-300 dark:text-gray-600'
                                                                                 }`}
@@ -336,7 +330,7 @@ export default function ProductsDetails({ product }: ProductsDetailsProps) {
                                                                     ))}
                                                                 </div>
                                                             </div>
-                                                            <p className="text-muted-foreground whitespace-pre-wrap leading-relaxed">
+                                                            <p className="text-sm sm:text-base text-muted-foreground whitespace-pre-wrap leading-relaxed wrap-break-word">
                                                                 {ratingItem.comment}
                                                             </p>
                                                         </div>
@@ -352,114 +346,153 @@ export default function ProductsDetails({ product }: ProductsDetailsProps) {
 
                     {/* Right Sidebar - Purchase Info */}
                     <div className="lg:col-span-1">
-                        <Card className="sticky top-24 border-2 border-border/50 shadow-2xl bg-linear-to-br from-card to-card/95 backdrop-blur-sm">
-                            <CardContent className="space-y-6 p-6">
+                        <Card className="sticky top-4 sm:top-6 md:top-24 border-2 border-border/50 shadow-2xl bg-linear-to-br from-card to-card/95 backdrop-blur-sm">
+                            <CardContent className="space-y-4 sm:space-y-5 md:space-y-6">
                                 {/* Pricing Section */}
-                                <div className="space-y-5">
-                                    <div className="bg-linear-to-br from-muted/50 to-muted/30 rounded-xl p-5 border border-border/30">
-                                        <h3 className="text-xs font-semibold text-muted-foreground mb-3 uppercase tracking-wider">Regular License</h3>
+                                <div className="space-y-4 sm:space-y-5">
+                                    <div className="bg-linear-to-br from-muted/50 to-muted/30 rounded-lg sm:rounded-xl p-4 sm:p-5 border border-border/30">
                                         {product.paymentType === 'free' ? (
                                             <div className="space-y-2">
-                                                <p className="text-4xl font-extrabold bg-linear-to-r from-green-600 to-green-500 bg-clip-text text-transparent">
+                                                <p className="text-2xl sm:text-3xl md:text-4xl font-extrabold bg-linear-to-r from-green-600 to-green-500 bg-clip-text text-transparent">
                                                     Free
                                                 </p>
-                                                <p className="text-sm text-muted-foreground font-medium">Lifetime access included</p>
+                                                <p className="text-xs sm:text-sm text-muted-foreground font-medium">Lifetime access included</p>
                                             </div>
                                         ) : hasActiveDiscount ? (
-                                            <div className="space-y-3">
-                                                <div className="flex items-baseline gap-3">
-                                                    <p className="text-4xl font-extrabold bg-linear-to-r from-primary to-primary/80 bg-clip-text text-transparent">
+                                            <div className="space-y-2 sm:space-y-3">
+                                                <div className="flex flex-wrap items-baseline gap-2 sm:gap-3">
+                                                    <p className="text-2xl sm:text-3xl md:text-4xl font-extrabold bg-linear-to-r from-primary to-primary/80 bg-clip-text text-transparent wrap-break-word">
                                                         Rp {formatIDR(discountedPrice)}
                                                     </p>
-                                                    <p className="text-lg text-muted-foreground line-through font-medium">
+                                                    <p className="text-base sm:text-lg text-muted-foreground line-through font-medium">
                                                         Rp {formatIDR(originalPrice)}
                                                     </p>
                                                 </div>
-                                                <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-green-500/10 border border-green-500/20 rounded-lg">
-                                                    <p className="text-sm text-green-600 font-bold">
+                                                <div className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 sm:py-1.5 bg-green-500/10 border border-green-500/20 rounded-lg">
+                                                    <p className="text-xs sm:text-sm text-green-600 font-bold wrap-break-word">
                                                         💰 Save Rp {formatIDR(originalPrice - discountedPrice)} ({discountPercentage}%)
                                                     </p>
                                                 </div>
-                                                <p className="text-sm text-muted-foreground font-medium">One-time payment + Lifetime updates</p>
+                                                <p className="text-xs sm:text-sm text-muted-foreground font-medium">One-time payment + Lifetime updates</p>
                                             </div>
                                         ) : (
                                             <div className="space-y-2">
-                                                <p className="text-4xl font-extrabold bg-linear-to-r from-primary to-primary/80 bg-clip-text text-transparent">
+                                                <p className="text-2xl sm:text-3xl md:text-4xl font-extrabold bg-linear-to-r from-primary to-primary/80 bg-clip-text text-transparent wrap-break-word">
                                                     Rp {formatIDR(originalPrice)}
                                                 </p>
-                                                <p className="text-sm text-muted-foreground font-medium">One-time payment + Lifetime updates</p>
+                                                <p className="text-xs sm:text-sm text-muted-foreground font-medium">One-time payment + Lifetime updates</p>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Stock and Sold Info */}
+                                    <div className="flex items-center justify-between gap-3 sm:gap-4 p-3 sm:p-4 bg-muted/30 rounded-lg sm:rounded-xl border border-border/30">
+                                        <div className="flex flex-col gap-1 w-full">
+                                            <span className="text-xs text-muted-foreground font-medium">Stock</span>
+                                            <span className="text-base sm:text-lg font-bold">{product.stock.toLocaleString()}</span>
+                                        </div>
+                                        {product.sold !== undefined && (
+                                            <div className="flex flex-col gap-1 w-full">
+                                                <span className="text-xs text-muted-foreground font-medium">Sold</span>
+                                                <span className="text-base sm:text-lg font-bold">{product.sold.toLocaleString()}</span>
                                             </div>
                                         )}
                                     </div>
 
                                     {/* Action Buttons */}
-                                    <div className="flex flex-col gap-3">
+                                    <div className="flex items-center gap-2 sm:gap-3">
                                         <Button
                                             size="lg"
                                             onClick={handleBuyNow}
-                                            className="w-full h-12 text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]"
+                                            className="flex-1 h-11 sm:h-12 text-sm sm:text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]"
                                         >
                                             Buy Now
                                         </Button>
-                                        <Button
-                                            variant="outline"
-                                            size="lg"
-                                            disabled
-                                            className="w-full h-12 text-base font-semibold border-2"
-                                        >
-                                            Add to Cart
-                                        </Button>
-                                    </div>
-
-                                    {/* Action Icons */}
-                                    <div className="flex items-center justify-center gap-4 pt-2 border-t border-border/50">
                                         <button
                                             onClick={handleShare}
-                                            className="p-3 rounded-full text-muted-foreground hover:text-foreground hover:bg-primary/10 transition-all duration-300 transform hover:scale-110 border border-border/50 hover:border-primary/30"
+                                            className="p-2.5 sm:p-3 h-11 sm:h-12 w-11 sm:w-12 rounded-lg text-muted-foreground hover:text-foreground hover:bg-primary/10 transition-all duration-300 transform hover:scale-110 border border-border/50 hover:border-primary/30 flex items-center justify-center shrink-0"
                                             title="Share"
                                         >
-                                            <Share2 className="w-5 h-5" />
-                                        </button>
-                                        <button
-                                            className="p-3 rounded-full text-muted-foreground hover:text-foreground hover:bg-primary/10 transition-all duration-300 transform hover:scale-110 border border-border/50 hover:border-primary/30"
-                                            title="Download"
-                                        >
-                                            <Download className="w-5 h-5" />
+                                            <Share2 className="w-4 h-4 sm:w-5 sm:h-5" />
                                         </button>
                                     </div>
                                 </div>
 
+                                {/* License */}
+                                <div className="bg-linear-to-br from-muted/40 to-muted/10 rounded-lg sm:rounded-xl md:rounded-2xl p-4 sm:p-5 border border-border/40 shadow-md space-y-3 sm:space-y-4">
+                                    <h4 className="font-bold text-base sm:text-lg">License Details</h4>
+
+                                    <div className="space-y-2 sm:space-y-3">
+                                        {
+                                            product.licenses && product.licenses.length > 0 && (
+                                                <span className="space-y-2">{product.licenses.map((license) => (
+                                                    <span key={license} className="flex items-center gap-2 text-sm sm:text-base">
+                                                        <Check className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 shrink-0" />
+                                                        <span className="wrap-break-word">{license}</span>
+                                                    </span>
+                                                ))}
+                                                </span>
+                                            )
+                                        }
+                                    </div>
+                                </div>
+
                                 {/* About the Author */}
-                                <div className="pt-6 border-t border-border/50 space-y-5">
-                                    <h4 className="font-bold text-lg">About the Author</h4>
-                                    <div className="bg-linear-to-br from-muted/30 to-muted/10 rounded-xl p-5 border border-border/30">
-                                        <div className="flex items-start gap-4">
-                                            <Avatar className="w-14 h-14 ring-2 ring-primary/20 shadow-lg">
-                                                <AvatarImage src={product.author.picture} alt={product.author.name} />
-                                                <AvatarFallback className="bg-linear-to-br from-primary/20 to-primary/10 font-bold text-lg">
-                                                    {product.author.name.charAt(0).toUpperCase()}
-                                                </AvatarFallback>
-                                            </Avatar>
-                                            <div className="flex-1 space-y-2">
-                                                <div>
-                                                    <p className="font-bold text-base">{product.author.name}</p>
-                                                    <p className="text-sm text-muted-foreground font-medium">
+                                <div className="pt-4 sm:pt-5 md:pt-6 border-t border-border/50 space-y-4 sm:space-y-5">
+                                    <div className="bg-linear-to-br from-muted/30 to-muted/10 rounded-lg sm:rounded-xl p-4 sm:p-5 border border-border/30">
+                                        <div className="flex flex-col gap-3 sm:gap-4">
+                                            <div className="flex items-start gap-3 sm:gap-4">
+                                                <Avatar className="w-12 h-12 sm:w-14 sm:h-14 ring-2 ring-primary/20 shadow-lg shrink-0">
+                                                    <AvatarImage src={product.author.picture} alt={product.author.name} />
+                                                    <AvatarFallback className="bg-linear-to-br from-primary/20 to-primary/10 font-bold text-base sm:text-lg">
+                                                        {product.author.name.charAt(0).toUpperCase()}
+                                                    </AvatarFallback>
+                                                </Avatar>
+
+                                                <div className="flex-1 space-y-1 sm:space-y-2 min-w-0">
+                                                    <p className="font-bold text-sm sm:text-base wrap-break-word">{product.author.name}</p>
+                                                    <p className="text-xs sm:text-sm text-muted-foreground font-medium">
                                                         {product.author.role === 'admin' ? '⭐ Elite Author' : 'Author'}
                                                     </p>
                                                 </div>
-                                                <div className="flex items-center gap-4 pt-2">
-                                                    <div className="px-2.5 py-1 bg-background/50 rounded-md border border-border/30">
-                                                        <span className="text-xs font-semibold text-muted-foreground">Products 23</span>
-                                                    </div>
-                                                    <div className="flex items-center gap-1 px-2.5 py-1 bg-background/50 rounded-md border border-border/30">
-                                                        <Star className="w-3.5 h-3.5 text-yellow-500 fill-yellow-500" />
-                                                        <span className="text-xs font-semibold">4.9</span>
+                                            </div>
+
+                                            <div className="flex justify-start gap-3 sm:gap-4 pt-2">
+                                                <div className="flex flex-col gap-1 px-2 sm:px-2.5 py-1 w-full">
+                                                    <h3 className="text-xs sm:text-sm font-semibold text-muted-foreground">Products</h3>
+                                                    <span className="text-xs font-semibold text-muted-foreground">
+                                                        {authorProductsCount} {authorProductsCount === 1 ? 'Product' : 'Products'}
+                                                    </span>
+                                                </div>
+
+                                                <div className="flex flex-col gap-1 px-2 sm:px-2.5 py-1 w-full">
+                                                    <h3 className="text-xs sm:text-sm font-semibold text-muted-foreground">Rating</h3>
+                                                    <div className="flex items-center gap-0.5 sm:gap-1 flex-wrap">
+                                                        {authorAverageRating && authorAverageRating > 0 ? (
+                                                            [...Array(5)].map((_, i) => (
+                                                                <Star
+                                                                    key={i}
+                                                                    className={`w-3 h-3 sm:w-3.5 sm:h-3.5 ${i < Math.floor(authorAverageRating || 0)
+                                                                        ? 'text-yellow-500 fill-yellow-500'
+                                                                        : 'text-gray-300 dark:text-gray-600'
+                                                                        }`}
+                                                                />
+                                                            ))
+                                                        ) : (
+                                                            <Star className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-gray-300 dark:text-gray-600" />
+                                                        )}
+                                                        <span className="text-xs font-semibold text-muted-foreground">
+                                                            ( {authorAverageRating && authorAverageRating > 0
+                                                                ? authorAverageRating.toFixed(1)
+                                                                : 'No rating'} )
+                                                        </span>
                                                     </div>
                                                 </div>
-                                                <Button variant="outline" size="sm" className="mt-3 w-full border-2 hover:bg-primary/10 hover:border-primary/30 transition-all duration-300">
-                                                    View Profile
-                                                </Button>
                                             </div>
+
+                                            <Button variant="outline" size="sm" className="mt-2 sm:mt-3 w-full border-2 hover:bg-primary/10 hover:border-primary/30 transition-all duration-300 text-xs sm:text-sm">
+                                                View Profile
+                                            </Button>
                                         </div>
                                     </div>
                                 </div>
@@ -470,14 +503,14 @@ export default function ProductsDetails({ product }: ProductsDetailsProps) {
 
                 {/* Related Products Section */}
                 {relatedProducts.length > 0 && (
-                    <div className="mt-20 pt-12 border-t border-border/50">
-                        <div className="mb-10">
-                            <h2 className="text-4xl font-extrabold mb-3 bg-linear-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+                    <div className="mt-12 sm:mt-16 md:mt-20 pt-8 sm:pt-10 md:pt-12 border-t border-border/50">
+                        <div className="mb-6 sm:mb-8 md:mb-10">
+                            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold mb-2 sm:mb-3 bg-linear-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
                                 Related Products
                             </h2>
-                            <p className="text-muted-foreground text-lg">Discover more products you might like</p>
+                            <p className="text-muted-foreground text-sm sm:text-base md:text-lg">Discover more products you might like</p>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
                             {relatedProducts.map((item) => (
                                 <ProductsCard key={item.productsId} item={item} />
                             ))}

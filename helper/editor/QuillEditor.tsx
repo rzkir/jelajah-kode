@@ -56,7 +56,7 @@ export default function QuillEditor({
   onChange,
   placeholder = "Enter content...",
   className = "",
-  height = "400px",
+  height = "450px",
 }: QuillEditorProps) {
   useEffect(() => {
     // Add theme-specific styles
