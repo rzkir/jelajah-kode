@@ -1,13 +1,16 @@
-import { ProductsPageMetadata } from "@/helper/meta/Metadata"
+import { generateProductsPageMetadata } from "@/helper/meta/Metadata"
 
 import Products from "@/components/content/products/products/Products"
 
 import { fetchProductsBySearch, fetchProductCategories, fetchProductType } from "@/utils/fetching/FetchProducts"
 
-export const metadata = ProductsPageMetadata
+export async function generateMetadata({ searchParams }: ProductsPageProps) {
+    return generateProductsPageMetadata(searchParams);
+}
 
 interface ProductsPageProps {
     searchParams: Promise<{
+        q?: string;
         page?: string;
         categories?: string;
         types?: string;
@@ -25,7 +28,7 @@ export default async function Page({ searchParams }: ProductsPageProps) {
     const params = await searchParams;
 
     const searchOptions = {
-        q: "", // No search query for products page
+        q: params.q || "",
         page: params.page || "1",
         limit: "10",
         categories: params.categories,

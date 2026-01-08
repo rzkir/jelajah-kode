@@ -62,13 +62,16 @@ export function useStateSearch(
 ) {
   const router = useRouter();
 
-  // Use reducer for all filter states
   const [filters, dispatch] = React.useReducer(
     filterReducer,
     createInitialState(initialFilters, query)
   );
 
-  // Memoized setters
+  const [isCategoriesOpen, setIsCategoriesOpen] = React.useState(false);
+  const [isTypeOpen, setIsTypeOpen] = React.useState(false);
+  const [isRatingsOpen, setIsRatingsOpen] = React.useState(false);
+  const [isTechStackOpen, setIsTechStackOpen] = React.useState(false);
+
   const setSearchQuery = React.useCallback((query: string) => {
     dispatch({ type: "SET_SEARCH_QUERY", payload: query });
   }, []);
@@ -128,7 +131,6 @@ export function useStateSearch(
     dispatch({ type: "SET_SORT_BY", payload: sort });
   }, []);
 
-  // Check if filters are at default
   const isFiltersDefault = React.useMemo(
     () =>
       !filters.searchQuery &&
@@ -143,13 +145,11 @@ export function useStateSearch(
     [filters]
   );
 
-  // Reset all filters
   const handleReset = React.useCallback(() => {
     dispatch({ type: "RESET_FILTERS" });
     router.push("/search");
   }, [router]);
 
-  // Apply filters to URL with debounce
   React.useEffect(() => {
     const timeoutId = setTimeout(() => {
       const params = new URLSearchParams();
@@ -175,7 +175,7 @@ export function useStateSearch(
       if (window.location.pathname + window.location.search !== newUrl) {
         router.push(newUrl);
       }
-    }, 300); // 300ms debounce
+    }, 300);
 
     return () => clearTimeout(timeoutId);
   }, [filters, page, router]);
@@ -193,10 +193,17 @@ export function useStateSearch(
     setSortBy,
     isFiltersDefault,
     handleReset,
+    isCategoriesOpen,
+    setIsCategoriesOpen,
+    isTypeOpen,
+    setIsTypeOpen,
+    isRatingsOpen,
+    setIsRatingsOpen,
+    isTechStackOpen,
+    setIsTechStackOpen,
   };
 }
 
-// Helper hook for filter data transformations and toggle functions
 export function useSearchProductsFilter(
   categoriesData: Array<{ _id?: string; categoryId?: string; title: string }>,
   typesData: Array<{ _id?: string; typeId?: string; title: string }>,
@@ -208,7 +215,6 @@ export function useSearchProductsFilter(
   selectedTechStack: string[],
   setSelectedTechStack: React.Dispatch<React.SetStateAction<string[]>>
 ) {
-  // Transform server data to component format
   const categories = React.useMemo(
     () =>
       categoriesData.map((cat) => ({
@@ -227,7 +233,6 @@ export function useSearchProductsFilter(
     [typesData]
   );
 
-  // Extract unique frameworks from products
   const techStackOptions = React.useMemo(() => {
     const frameworksSet = new Set<string>();
     products.forEach((product) => {
@@ -242,7 +247,6 @@ export function useSearchProductsFilter(
     return Array.from(frameworksSet).sort();
   }, [products]);
 
-  // Toggle functions
   const toggleCategory = React.useCallback(
     (categoryValue: string) => {
       setSelectedCategories((prev: string[]) =>

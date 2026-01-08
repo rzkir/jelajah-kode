@@ -45,6 +45,14 @@ export default function SearchProducts({ products, pagination, query, page, cate
         setSortBy,
         isFiltersDefault,
         handleReset,
+        isCategoriesOpen,
+        setIsCategoriesOpen,
+        isTypeOpen,
+        setIsTypeOpen,
+        isRatingsOpen,
+        setIsRatingsOpen,
+        isTechStackOpen,
+        setIsTechStackOpen,
     } = useStateSearch(initialFilters, query, page)
 
     const filterContent = (
@@ -68,6 +76,14 @@ export default function SearchProducts({ products, pagination, query, page, cate
             products={productsArray}
             categories={categories}
             types={types}
+            isCategoriesOpen={isCategoriesOpen}
+            setIsCategoriesOpen={setIsCategoriesOpen}
+            isTypeOpen={isTypeOpen}
+            setIsTypeOpen={setIsTypeOpen}
+            isRatingsOpen={isRatingsOpen}
+            setIsRatingsOpen={setIsRatingsOpen}
+            isTechStackOpen={isTechStackOpen}
+            setIsTechStackOpen={setIsTechStackOpen}
         />
     )
 

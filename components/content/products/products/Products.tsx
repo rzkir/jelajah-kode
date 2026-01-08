@@ -28,25 +28,6 @@ import {
 
 import { Filter } from "lucide-react"
 
-interface ProductsProps {
-    products: ProductsSearchItem[];
-    pagination: ProductsSearchPagination;
-    categories: Array<{ _id?: string; categoryId?: string; title: string }>;
-    types: Array<{ _id?: string; typeId?: string; title: string }>;
-    initialFilters?: {
-        categories?: string;
-        types?: string;
-        tech?: string;
-        maxPrice?: string;
-        minRating?: string;
-        popular?: string;
-        new?: string;
-        sort?: string;
-        page?: string;
-    };
-    page?: number;
-}
-
 export default function Products({ products, pagination, categories, types, initialFilters, page = 1 }: ProductsProps) {
     const productsArray = React.useMemo(() => Array.isArray(products) ? products : [], [products]);
     const [isSheetOpen, setIsSheetOpen] = React.useState(false)
@@ -64,6 +45,14 @@ export default function Products({ products, pagination, categories, types, init
         setSortBy,
         isFiltersDefault,
         handleReset,
+        isCategoriesOpen,
+        setIsCategoriesOpen,
+        isTypeOpen,
+        setIsTypeOpen,
+        isRatingsOpen,
+        setIsRatingsOpen,
+        isTechStackOpen,
+        setIsTechStackOpen,
     } = useStateProducts(initialFilters, page)
 
     const filterContent = (
@@ -87,6 +76,16 @@ export default function Products({ products, pagination, categories, types, init
             products={productsArray}
             categories={categories}
             types={types}
+            isCategoriesOpen={isCategoriesOpen}
+            setIsCategoriesOpen={setIsCategoriesOpen}
+            isTypeOpen={isTypeOpen}
+            setIsTypeOpen={setIsTypeOpen}
+            isRatingsOpen={isRatingsOpen}
+            setIsRatingsOpen={setIsRatingsOpen}
+            isTechStackOpen={isTechStackOpen}
+            setIsTechStackOpen={setIsTechStackOpen}
+            typeSelectMode="single"
+            categorySelectMode="single"
         />
     )
 
@@ -184,6 +183,7 @@ export default function Products({ products, pagination, categories, types, init
                                     const buildPaginationUrl = (pageNum: number) => {
                                         const params = new URLSearchParams();
                                         params.set("page", pageNum.toString());
+                                        if (initialFilters?.q) params.set("q", initialFilters.q);
                                         if (initialFilters?.categories) params.set("categories", initialFilters.categories);
                                         if (initialFilters?.types) params.set("types", initialFilters.types);
                                         if (initialFilters?.tech) params.set("tech", initialFilters.tech);

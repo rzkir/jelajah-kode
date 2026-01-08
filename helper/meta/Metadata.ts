@@ -7,11 +7,11 @@ import { API_CONFIG } from "@/lib/config";
 //====================================== Products Page Metadata ======================================//
 export const ProductsPageMetadata: Metadata = {
   title: "Products - jelajah Code",
-  description: "Browse and manage products in jelajah Code platform",
+  description: "Browse and discover products on jelajah Code platform",
   openGraph: {
     title: "Products - jelajah Code",
-    description: "Browse and manage products in jelajah Code platform",
-    url: `${API_CONFIG.ENDPOINTS.base}`,
+    description: "Browse and discover products on jelajah Code platform",
+    url: `${API_CONFIG.ENDPOINTS.base}/products`,
     siteName: "jelajah Code",
     images: [
       {
@@ -27,10 +27,196 @@ export const ProductsPageMetadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Products - jelajah Code",
-    description: "Browse and manage products in jelajah Code platform",
+    description: "Browse and discover products on jelajah Code platform",
     images: ["/images/products-og-image.jpg"],
   },
 };
+
+export async function generateProductsPageMetadata(
+  searchParams: Promise<{
+    q?: string;
+    page?: string;
+    categories?: string;
+    types?: string;
+    tech?: string;
+    maxPrice?: string;
+    minRating?: string;
+    popular?: string;
+    discounted?: string;
+    new?: string;
+    sort?: string;
+  }>
+): Promise<Metadata> {
+  const params = await searchParams;
+  const {
+    q,
+    page,
+    categories,
+    types,
+    tech,
+    maxPrice,
+    minRating,
+    popular,
+    discounted,
+    new: isNew,
+    sort,
+  } = params;
+
+  const query = q || "";
+  const pageNumber = page || "1";
+
+  // Build URL with all parameters
+  const urlParams = new URLSearchParams();
+  if (query) urlParams.set("q", query);
+  if (pageNumber !== "1") urlParams.set("page", pageNumber);
+  if (categories) urlParams.set("categories", categories);
+  if (types) urlParams.set("types", types);
+  if (tech) urlParams.set("tech", tech);
+  if (maxPrice) urlParams.set("maxPrice", maxPrice);
+  if (minRating) urlParams.set("minRating", minRating);
+  if (popular) urlParams.set("popular", popular);
+  if (discounted) urlParams.set("discounted", discounted);
+  if (isNew) urlParams.set("new", isNew);
+  if (sort) urlParams.set("sort", sort);
+
+  const productsUrl = `${API_CONFIG.ENDPOINTS.base}/products${
+    urlParams.toString() ? `?${urlParams.toString()}` : ""
+  }`;
+
+  // Build filter description
+  const filters: string[] = [];
+  if (categories) filters.push(`category: ${categories}`);
+  if (types) filters.push(`type: ${types}`);
+  if (tech) filters.push(`tech: ${tech}`);
+  if (maxPrice) filters.push(`max price: $${maxPrice}`);
+  if (minRating) filters.push(`min rating: ${minRating}★`);
+  if (popular === "true") filters.push("popular items");
+  if (discounted === "true") filters.push("discounted items");
+  if (isNew === "true") filters.push("new arrivals");
+
+  if (query || filters.length > 0) {
+    try {
+      const { fetchProductsBySearch } = await import(
+        "@/utils/fetching/FetchProducts"
+      );
+
+      const searchOptions = {
+        q: query,
+        page: pageNumber,
+        limit: "10",
+        categories,
+        types,
+        tech,
+        maxPrice,
+        minRating,
+        popular,
+        discounted,
+        new: isNew,
+        sort,
+      };
+
+      const { pagination } = await fetchProductsBySearch(searchOptions);
+      const resultCount = pagination.total;
+
+      let title = "";
+      let description = "";
+
+      if (query && filters.length > 0) {
+        title = `Products "${query}" (${filters.join(", ")}) - jelajah Code`;
+        description = `Found ${resultCount} product${
+          resultCount !== 1 ? "s" : ""
+        } for "${query}" with filters: ${filters.join(
+          ", "
+        )}. Browse and discover products that match your search.`;
+      } else if (query) {
+        title = `Products "${query}" - jelajah Code`;
+        description = `Found ${resultCount} product${
+          resultCount !== 1 ? "s" : ""
+        } for "${query}" on jelajah Code. Browse and discover products that match your search.`;
+      } else {
+        title = `Products (${filters.join(", ")}) - jelajah Code`;
+        description = `Found ${resultCount} product${
+          resultCount !== 1 ? "s" : ""
+        } matching your filters: ${filters.join(
+          ", "
+        )}. Browse and discover products on jelajah Code.`;
+      }
+
+      return {
+        title,
+        description,
+        openGraph: {
+          title,
+          description,
+          url: productsUrl,
+          siteName: "jelajah Code",
+          images: [
+            {
+              url: "/images/products-og-image.jpg",
+              width: 1200,
+              height: 630,
+              alt: query ? `Products "${query}"` : "Products",
+            },
+          ],
+          locale: "en_US",
+          type: "website",
+        },
+        twitter: {
+          card: "summary_large_image",
+          title,
+          description,
+          images: ["/images/products-og-image.jpg"],
+        },
+      };
+    } catch {
+      // Fallback to default products metadata if fetch fails
+      let fallbackTitle = "";
+      let fallbackDescription = "";
+
+      if (query && filters.length > 0) {
+        fallbackTitle = `Products "${query}" (${filters.join(
+          ", "
+        )}) - jelajah Code`;
+        fallbackDescription = `Browse products for "${query}" with filters on jelajah Code platform`;
+      } else if (query) {
+        fallbackTitle = `Products "${query}" - jelajah Code`;
+        fallbackDescription = `Browse products for "${query}" on jelajah Code platform`;
+      } else {
+        fallbackTitle = `Products (${filters.join(", ")}) - jelajah Code`;
+        fallbackDescription = `Browse products with filters on jelajah Code platform`;
+      }
+
+      return {
+        title: fallbackTitle,
+        description: fallbackDescription,
+        openGraph: {
+          title: fallbackTitle,
+          description: fallbackDescription,
+          url: productsUrl,
+          siteName: "jelajah Code",
+          images: [
+            {
+              url: "/images/products-og-image.jpg",
+              width: 1200,
+              height: 630,
+              alt: query ? `Products "${query}"` : "Products",
+            },
+          ],
+          locale: "en_US",
+          type: "website",
+        },
+        twitter: {
+          card: "summary_large_image",
+          title: fallbackTitle,
+          description: fallbackDescription,
+          images: ["/images/products-og-image.jpg"],
+        },
+      };
+    }
+  }
+
+  return ProductsPageMetadata;
+}
 
 //====================================== Products Create Metadata ======================================//
 

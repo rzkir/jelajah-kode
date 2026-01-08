@@ -5,6 +5,7 @@ import * as React from "react";
 import { useRouter } from "next/navigation";
 
 const createInitialState = (initialFilters?: {
+  q?: string;
   categories?: string;
   types?: string;
   tech?: string;
@@ -14,10 +15,11 @@ const createInitialState = (initialFilters?: {
   new?: string;
   sort?: string;
 }): FilterState => ({
-  searchQuery: "",
-  selectedCategories:
-    initialFilters?.categories?.split(",").filter(Boolean) || [],
-  selectedTypes: initialFilters?.types?.split(",").filter(Boolean) || [],
+  searchQuery: initialFilters?.q || "",
+  selectedCategories: initialFilters?.categories
+    ? [initialFilters.categories]
+    : [],
+  selectedTypes: initialFilters?.types ? [initialFilters.types] : [],
   selectedTechStack: initialFilters?.tech?.split(",").filter(Boolean) || [],
   priceRange: [
     0,
@@ -63,6 +65,7 @@ const filterReducer = (
 
 export function useStateProducts(
   initialFilters?: {
+    q?: string;
     categories?: string;
     types?: string;
     tech?: string;
@@ -76,25 +79,33 @@ export function useStateProducts(
 ) {
   const router = useRouter();
 
-  // Use reducer for all filter states
   const [filters, dispatch] = React.useReducer(
     filterReducer,
     createInitialState(initialFilters)
   );
 
-  // Memoized setters
+  const [isCategoriesOpen, setIsCategoriesOpen] = React.useState(false);
+  const [isTypeOpen, setIsTypeOpen] = React.useState(false);
+  const [isRatingsOpen, setIsRatingsOpen] = React.useState(false);
+  const [isTechStackOpen, setIsTechStackOpen] = React.useState(false);
+
   const setSearchQuery = React.useCallback((query: string) => {
     dispatch({ type: "SET_SEARCH_QUERY", payload: query });
   }, []);
 
   const setSelectedCategories = React.useCallback(
     (categories: React.SetStateAction<string[]>) => {
+      const newCategories =
+        typeof categories === "function"
+          ? categories(filters.selectedCategories)
+          : categories;
+      const singleCategory =
+        Array.isArray(newCategories) && newCategories.length > 0
+          ? [newCategories[0]]
+          : [];
       dispatch({
         type: "SET_CATEGORIES",
-        payload:
-          typeof categories === "function"
-            ? categories(filters.selectedCategories)
-            : categories,
+        payload: singleCategory,
       });
     },
     [filters.selectedCategories]
@@ -102,10 +113,13 @@ export function useStateProducts(
 
   const setSelectedTypes = React.useCallback(
     (types: React.SetStateAction<string[]>) => {
+      const newTypes =
+        typeof types === "function" ? types(filters.selectedTypes) : types;
+      const singleType =
+        Array.isArray(newTypes) && newTypes.length > 0 ? [newTypes[0]] : [];
       dispatch({
         type: "SET_TYPES",
-        payload:
-          typeof types === "function" ? types(filters.selectedTypes) : types,
+        payload: singleType,
       });
     },
     [filters.selectedTypes]
@@ -142,9 +156,9 @@ export function useStateProducts(
     dispatch({ type: "SET_SORT_BY", payload: sort });
   }, []);
 
-  // Check if filters are at default
   const isFiltersDefault = React.useMemo(
     () =>
+      !filters.searchQuery &&
       filters.selectedCategories.length === 0 &&
       filters.selectedTypes.length === 0 &&
       filters.selectedTechStack.length === 0 &&
@@ -156,20 +170,19 @@ export function useStateProducts(
     [filters]
   );
 
-  // Reset all filters
   const handleReset = React.useCallback(() => {
     dispatch({ type: "RESET_FILTERS" });
     router.push("/products");
   }, [router]);
 
-  // Apply filters to URL with debounce
   React.useEffect(() => {
     const timeoutId = setTimeout(() => {
       const params = new URLSearchParams();
+      if (filters.searchQuery) params.set("q", filters.searchQuery);
       if (filters.selectedCategories.length > 0)
-        params.set("categories", filters.selectedCategories.join(","));
+        params.set("categories", filters.selectedCategories[0]);
       if (filters.selectedTypes.length > 0)
-        params.set("types", filters.selectedTypes.join(","));
+        params.set("types", filters.selectedTypes[0]);
       if (filters.selectedTechStack.length > 0)
         params.set("tech", filters.selectedTechStack.join(","));
       if (filters.priceRange[1] < 200)
@@ -187,7 +200,7 @@ export function useStateProducts(
       if (window.location.pathname + window.location.search !== newUrl) {
         router.push(newUrl);
       }
-    }, 300); // 300ms debounce
+    }, 300);
 
     return () => clearTimeout(timeoutId);
   }, [filters, page, router]);
@@ -205,5 +218,13 @@ export function useStateProducts(
     setSortBy,
     isFiltersDefault,
     handleReset,
+    isCategoriesOpen,
+    setIsCategoriesOpen,
+    isTypeOpen,
+    setIsTypeOpen,
+    isRatingsOpen,
+    setIsRatingsOpen,
+    isTechStackOpen,
+    setIsTechStackOpen,
   };
 }

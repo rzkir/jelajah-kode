@@ -1,6 +1,6 @@
 "use client"
 
-import { Star } from "lucide-react"
+import { Star, ChevronDown, ChevronUp } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
@@ -13,6 +13,8 @@ import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 
 import { Button } from "@/components/ui/button"
+
+import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible"
 
 import { useSearchProductsFilter } from "@/components/content/search/lib/useStateSearch"
 
@@ -36,7 +38,20 @@ export default function SearchProductsFilter({
     products,
     categories: categoriesData,
     types: typesData,
-}: SearchProductsFilterProps) {
+    isCategoriesOpen,
+    setIsCategoriesOpen,
+    isTypeOpen,
+    setIsTypeOpen,
+    isRatingsOpen,
+    setIsRatingsOpen,
+    isTechStackOpen,
+    setIsTechStackOpen,
+    typeSelectMode = "multiple",
+    categorySelectMode = "multiple",
+}: SearchProductsFilterProps & {
+    typeSelectMode?: "single" | "multiple";
+    categorySelectMode?: "single" | "multiple";
+}) {
     const {
         categories,
         types,
@@ -72,27 +87,76 @@ export default function SearchProductsFilter({
             </div>
 
             {/* Categories */}
-            <div className="space-y-3">
-                <Label className="text-sm font-medium">Categories</Label>
-                <div className="space-y-2">
-                    {categories.map((category) => (
-                        <Label
-                            key={category.value}
-                            htmlFor={`category-${category.value}`}
-                            className="flex items-center gap-2 cursor-pointer hover:text-blue-600 dark:hover:text-blue-400"
-                        >
-                            <Input
-                                id={`category-${category.value}`}
-                                type="checkbox"
-                                checked={selectedCategories.includes(category.value)}
-                                onChange={() => toggleCategory(category.value)}
-                                className="w-4 h-4 rounded border-gray-300 dark:border-gray-700 text-blue-600 focus:ring-blue-500"
-                            />
-                            <span className="text-sm">{category.label}</span>
-                        </Label>
-                    ))}
+            <Collapsible open={isCategoriesOpen} onOpenChange={setIsCategoriesOpen}>
+                <div className="space-y-3">
+                    <CollapsibleTrigger className="flex items-center justify-between w-full">
+                        <Label className="text-sm font-medium cursor-pointer">Categories</Label>
+                        {isCategoriesOpen ? (
+                            <ChevronUp className="w-4 h-4" />
+                        ) : (
+                            <ChevronDown className="w-4 h-4" />
+                        )}
+                    </CollapsibleTrigger>
+                    <CollapsibleContent>
+                        {categorySelectMode === "single" ? (
+                            <RadioGroup
+                                value={selectedCategories[0] || "all"}
+                                onValueChange={(value) => {
+                                    if (value === "all") {
+                                        setSelectedCategories([]);
+                                    } else if (value) {
+                                        setSelectedCategories([value]);
+                                    } else {
+                                        setSelectedCategories([]);
+                                    }
+                                }}
+                            >
+                                <div className="space-y-2">
+                                    <div className="flex items-center gap-2">
+                                        <RadioGroupItem value="all" id="category-all" />
+                                        <Label
+                                            htmlFor="category-all"
+                                            className="flex items-center gap-2 cursor-pointer hover:text-blue-600 dark:hover:text-blue-400"
+                                        >
+                                            <span className="text-sm">All Categories</span>
+                                        </Label>
+                                    </div>
+                                    {categories.map((category) => (
+                                        <div key={category.value} className="flex items-center gap-2">
+                                            <RadioGroupItem value={category.value} id={`category-${category.value}`} />
+                                            <Label
+                                                htmlFor={`category-${category.value}`}
+                                                className="flex items-center gap-2 cursor-pointer hover:text-blue-600 dark:hover:text-blue-400"
+                                            >
+                                                <span className="text-sm">{category.label}</span>
+                                            </Label>
+                                        </div>
+                                    ))}
+                                </div>
+                            </RadioGroup>
+                        ) : (
+                            <div className="space-y-2">
+                                {categories.map((category) => (
+                                    <Label
+                                        key={category.value}
+                                        htmlFor={`category-${category.value}`}
+                                        className="flex items-center gap-2 cursor-pointer hover:text-blue-600 dark:hover:text-blue-400"
+                                    >
+                                        <Input
+                                            id={`category-${category.value}`}
+                                            type="checkbox"
+                                            checked={selectedCategories.includes(category.value)}
+                                            onChange={() => toggleCategory(category.value)}
+                                            className="w-4 h-4 rounded border-gray-300 dark:border-gray-700 text-blue-600 focus:ring-blue-500"
+                                        />
+                                        <span className="text-sm">{category.label}</span>
+                                    </Label>
+                                ))}
+                            </div>
+                        )}
+                    </CollapsibleContent>
                 </div>
-            </div>
+            </Collapsible>
 
             {/* Price Range */}
             <div className="space-y-3">
@@ -115,72 +179,143 @@ export default function SearchProductsFilter({
             </div>
 
             {/* Tech Stack */}
-            <div className="space-y-3">
-                <Label className="text-sm font-medium">Tech Stack</Label>
-                <div className="flex flex-wrap gap-2">
-                    {techStackOptions.map((tech) => (
-                        <Button
-                            key={tech}
-                            type="button"
-                            variant={selectedTechStack.includes(tech) ? "default" : "outline"}
-                            size="sm"
-                            onClick={() => toggleTechStack(tech)}
-                            className={cn(
-                                selectedTechStack.includes(tech)
-                                    ? "bg-blue-600 text-white border-blue-600 hover:bg-blue-700"
-                                    : ""
-                            )}
-                        >
-                            {tech}
-                        </Button>
-                    ))}
+            <Collapsible open={isTechStackOpen} onOpenChange={setIsTechStackOpen}>
+                <div className="space-y-3">
+                    <CollapsibleTrigger className="flex items-center justify-between w-full">
+                        <Label className="text-sm font-medium cursor-pointer">Tech Stack</Label>
+                        {isTechStackOpen ? (
+                            <ChevronUp className="w-4 h-4" />
+                        ) : (
+                            <ChevronDown className="w-4 h-4" />
+                        )}
+                    </CollapsibleTrigger>
+                    <CollapsibleContent>
+                        <div className="flex flex-wrap gap-2">
+                            {techStackOptions.map((tech) => (
+                                <Button
+                                    key={tech}
+                                    type="button"
+                                    variant={selectedTechStack.includes(tech) ? "default" : "outline"}
+                                    size="sm"
+                                    onClick={() => toggleTechStack(tech)}
+                                    className={cn(
+                                        selectedTechStack.includes(tech)
+                                            ? "bg-blue-600 text-white border-blue-600 hover:bg-blue-700"
+                                            : ""
+                                    )}
+                                >
+                                    {tech}
+                                </Button>
+                            ))}
+                        </div>
+                    </CollapsibleContent>
                 </div>
-            </div>
+            </Collapsible>
 
             {/* Type */}
-            <div className="space-y-3">
-                <Label className="text-sm font-medium">Type</Label>
-                <div className="space-y-2">
-                    {types.map((type) => (
-                        <Label
-                            key={type.value}
-                            htmlFor={`type-${type.value}`}
-                            className="flex items-center gap-2 cursor-pointer hover:text-blue-600 dark:hover:text-blue-400"
-                        >
-                            <Input
-                                id={`type-${type.value}`}
-                                type="checkbox"
-                                checked={selectedTypes.includes(type.value)}
-                                onChange={() => toggleType(type.value)}
-                                className="w-4 h-4 rounded border-gray-300 dark:border-gray-700 text-blue-600 focus:ring-blue-500"
-                            />
-                            <span className="text-sm">{type.label}</span>
-                        </Label>
-                    ))}
+            <Collapsible open={isTypeOpen} onOpenChange={setIsTypeOpen}>
+                <div className="space-y-3">
+                    <CollapsibleTrigger className="flex items-center justify-between w-full">
+                        <Label className="text-sm font-medium cursor-pointer">Type</Label>
+                        {isTypeOpen ? (
+                            <ChevronUp className="w-4 h-4" />
+                        ) : (
+                            <ChevronDown className="w-4 h-4" />
+                        )}
+                    </CollapsibleTrigger>
+                    <CollapsibleContent>
+                        {typeSelectMode === "single" ? (
+                            <RadioGroup
+                                value={selectedTypes[0] || "all"}
+                                onValueChange={(value) => {
+                                    if (value === "all") {
+                                        setSelectedTypes([]);
+                                    } else if (value) {
+                                        setSelectedTypes([value]);
+                                    } else {
+                                        setSelectedTypes([]);
+                                    }
+                                }}
+                            >
+                                <div className="space-y-2">
+                                    <div className="flex items-center gap-2">
+                                        <RadioGroupItem value="all" id="type-all" />
+                                        <Label
+                                            htmlFor="type-all"
+                                            className="flex items-center gap-2 cursor-pointer hover:text-blue-600 dark:hover:text-blue-400"
+                                        >
+                                            <span className="text-sm">All Types</span>
+                                        </Label>
+                                    </div>
+                                    {types.map((type) => (
+                                        <div key={type.value} className="flex items-center gap-2">
+                                            <RadioGroupItem value={type.value} id={`type-${type.value}`} />
+                                            <Label
+                                                htmlFor={`type-${type.value}`}
+                                                className="flex items-center gap-2 cursor-pointer hover:text-blue-600 dark:hover:text-blue-400"
+                                            >
+                                                <span className="text-sm">{type.label}</span>
+                                            </Label>
+                                        </div>
+                                    ))}
+                                </div>
+                            </RadioGroup>
+                        ) : (
+                            <div className="space-y-2">
+                                {types.map((type) => (
+                                    <Label
+                                        key={type.value}
+                                        htmlFor={`type-${type.value}`}
+                                        className="flex items-center gap-2 cursor-pointer hover:text-blue-600 dark:hover:text-blue-400"
+                                    >
+                                        <Input
+                                            id={`type-${type.value}`}
+                                            type="checkbox"
+                                            checked={selectedTypes.includes(type.value)}
+                                            onChange={() => toggleType(type.value)}
+                                            className="w-4 h-4 rounded border-gray-300 dark:border-gray-700 text-blue-600 focus:ring-blue-500"
+                                        />
+                                        <span className="text-sm">{type.label}</span>
+                                    </Label>
+                                ))}
+                            </div>
+                        )}
+                    </CollapsibleContent>
                 </div>
-            </div>
+            </Collapsible>
 
             {/* Minimum Rating */}
-            <div className="space-y-3">
-                <Label className="text-sm font-medium">Minimum Rating</Label>
-                <RadioGroup
-                    value={minRating?.toString() || ""}
-                    onValueChange={(value) => setMinRating(value ? parseInt(value) : null)}
-                >
-                    {[5, 4, 3, 2, 1].map((rating) => (
-                        <div key={rating} className="flex items-center gap-2">
-                            <RadioGroupItem value={rating.toString()} id={`rating-${rating}`} />
-                            <Label
-                                htmlFor={`rating-${rating}`}
-                                className="flex items-center gap-1 cursor-pointer hover:text-blue-600 dark:hover:text-blue-400"
-                            >
-                                <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                                <span className="text-sm">{rating} star{rating > 1 ? "s" : ""} & up</span>
-                            </Label>
-                        </div>
-                    ))}
-                </RadioGroup>
-            </div>
+            <Collapsible open={isRatingsOpen} onOpenChange={setIsRatingsOpen}>
+                <div className="space-y-3">
+                    <CollapsibleTrigger className="flex items-center justify-between w-full">
+                        <Label className="text-sm font-medium cursor-pointer">Minimum Rating</Label>
+                        {isRatingsOpen ? (
+                            <ChevronUp className="w-4 h-4" />
+                        ) : (
+                            <ChevronDown className="w-4 h-4" />
+                        )}
+                    </CollapsibleTrigger>
+                    <CollapsibleContent>
+                        <RadioGroup
+                            value={minRating?.toString() || ""}
+                            onValueChange={(value) => setMinRating(value ? parseInt(value) : null)}
+                        >
+                            {[5, 4, 3, 2, 1].map((rating) => (
+                                <div key={rating} className="flex items-center gap-2">
+                                    <RadioGroupItem value={rating.toString()} id={`rating-${rating}`} />
+                                    <Label
+                                        htmlFor={`rating-${rating}`}
+                                        className="flex items-center gap-1 cursor-pointer hover:text-blue-600 dark:hover:text-blue-400"
+                                    >
+                                        <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                                        <span className="text-sm">{rating} star{rating > 1 ? "s" : ""} & up</span>
+                                    </Label>
+                                </div>
+                            ))}
+                        </RadioGroup>
+                    </CollapsibleContent>
+                </div>
+            </Collapsible>
 
             {/* Additional Filters */}
             <div className="space-y-3">

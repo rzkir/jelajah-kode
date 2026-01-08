@@ -155,6 +155,26 @@ interface EditFormData {
   };
 }
 
+interface ProductsProps {
+  products: ProductsSearchItem[];
+  pagination: ProductsSearchPagination;
+  categories: Array<{ _id?: string; categoryId?: string; title: string }>;
+  types: Array<{ _id?: string; typeId?: string; title: string }>;
+  initialFilters?: {
+    q?: string;
+    categories?: string;
+    types?: string;
+    tech?: string;
+    maxPrice?: string;
+    minRating?: string;
+    popular?: string;
+    new?: string;
+    sort?: string;
+    page?: string;
+  };
+  page?: number;
+}
+
 //====================== Category ======================//
 interface Category {
   _id: string;
@@ -490,6 +510,15 @@ interface SearchProductsFilterProps {
   products: ProductsSearchItem[];
   categories: Array<{ _id?: string; categoryId?: string; title: string }>;
   types: Array<{ _id?: string; typeId?: string; title: string }>;
+  // Collapsible states
+  isCategoriesOpen: boolean;
+  setIsCategoriesOpen: (open: boolean) => void;
+  isTypeOpen: boolean;
+  setIsTypeOpen: (open: boolean) => void;
+  isRatingsOpen: boolean;
+  setIsRatingsOpen: (open: boolean) => void;
+  isTechStackOpen: boolean;
+  setIsTechStackOpen: (open: boolean) => void;
 }
 
 type FilterAction =
