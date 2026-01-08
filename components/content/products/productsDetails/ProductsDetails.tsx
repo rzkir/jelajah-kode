@@ -51,7 +51,7 @@ export default function ProductsDetails({ product }: ProductsDetailsProps) {
     } = useStateProductsDetails({ product })
 
     return (
-        <section className='min-h-full overflow-visible relative pb-10 pt-28 md:pt-32'>
+        <section className='min-h-full overflow-visible relative py-4'>
             <div className="container mx-auto px-2 md:px-4">
                 {/* Header Section with Badges */}
                 <div className="mb-4 sm:mb-6 flex flex-wrap gap-2 sm:gap-3">
@@ -346,7 +346,7 @@ export default function ProductsDetails({ product }: ProductsDetailsProps) {
 
                     {/* Right Sidebar - Purchase Info */}
                     <div className="lg:col-span-1">
-                        <Card className="sticky top-4 sm:top-6 md:top-24 border-2 border-border/50 shadow-2xl bg-linear-to-br from-card to-card/95 backdrop-blur-sm">
+                        <Card className="sticky top-4 sm:top-20 border-2 border-border/50 shadow-2xl bg-linear-to-br from-card to-card/95 backdrop-blur-sm">
                             <CardContent className="space-y-4 sm:space-y-5 md:space-y-6">
                                 {/* Pricing Section */}
                                 <div className="space-y-4 sm:space-y-5">

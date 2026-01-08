@@ -56,13 +56,24 @@ export const fetchProductsById = async (
 };
 
 export const fetchProductsBySearch = async (
-  query: string,
-  page: number = 1,
-  limit: number = 10
+  searchParams: Record<string, string | string[] | undefined>
 ): Promise<ProductsSearchResponse> => {
   try {
+    const params = new URLSearchParams();
+    
+    // Add all search params to URLSearchParams
+    Object.entries(searchParams).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== "") {
+        if (Array.isArray(value)) {
+          params.set(key, value.join(","));
+        } else {
+          params.set(key, value.toString());
+        }
+      }
+    });
+
     const response = await fetch(
-      API_CONFIG.ENDPOINTS.products.search(query, page, limit),
+      API_CONFIG.ENDPOINTS.products.search(params),
       {
         next: { revalidate: 0 },
         headers: {
@@ -90,7 +101,7 @@ export const fetchProductsBySearch = async (
         total: 0,
         pages: 0,
       },
-      query: query,
+      query: searchParams.q?.toString() || "",
     };
   }
 };

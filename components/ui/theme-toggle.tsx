@@ -66,9 +66,7 @@ export function ThemeToggle() {
                     className={cn(
                         "group relative inline-flex items-center justify-center",
                         "h-10 w-10 rounded-xl",
-                        "bg-gray-100/80 dark:bg-gray-800/80",
                         "backdrop-blur-sm",
-                        "border border-gray-200/50 dark:border-gray-700/50",
                         "hover:bg-gray-200/80 dark:hover:bg-gray-700/80",
                         "hover:border-gray-300/50 dark:hover:border-gray-600/50",
                         "transition-all duration-200 ease-in-out",

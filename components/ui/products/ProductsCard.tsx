@@ -54,7 +54,7 @@ export default function ProductsCard({
 
     return (
         <Link href={productHref} className={`group ${className}`}>
-            <Card className="p-0 overflow-hidden h-full transition-all duration-300 hover:shadow-lg hover:scale-[1.02] border-2 hover:border-primary/50">
+            <Card className="p-0 overflow-hidden h-full transition-all duration-300 hover:shadow-lg border-2 hover:border-primary/50">
                 {/* Image Container with Discount Badge */}
                 <div className="relative aspect-video overflow-hidden bg-muted">
                     <Image

@@ -1,10 +1,15 @@
 "use client"
 
 import * as React from "react"
+
 import { useRouter } from "next/navigation"
+
 import { Check, Grid3x3, FileText, Filter as FilterIcon } from "lucide-react"
+
 import { fetchProductsBySearch, fetchProductCategories, fetchProductType } from "@/utils/fetching/FetchProducts"
+
 import { Button } from "@/components/ui/button"
+
 import {
     Command,
     CommandEmpty,
@@ -13,13 +18,17 @@ import {
     CommandItem,
     CommandList,
 } from "@/components/ui/command"
+
 import {
     Popover,
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover"
+
 import { cn } from "@/lib/utils"
+
 import BottomSheet from "@/helper/bottomsheets/BottomShets"
+
 import BottomSheetsFilter from "@/components/content/filter/BottomSheetsFilter"
 
 export default function Filter() {
@@ -32,12 +41,21 @@ export default function Filter() {
     const [searchQuery, setSearchQuery] = React.useState<string>("")
     const [suggestions, setSuggestions] = React.useState<ProductsSearchItem[]>([])
     const [isLoadingSuggestions, setIsLoadingSuggestions] = React.useState(false)
-    const [showSuggestions, setShowSuggestions] = React.useState(false)
     const [selectedIndex, setSelectedIndex] = React.useState(-1)
     const [categories, setCategories] = React.useState<Array<{ value: string; label: string }>>([])
     const [types, setTypes] = React.useState<Array<{ value: string; label: string }>>([])
     const inputRef = React.useRef<HTMLInputElement>(null)
     const suggestionsRef = React.useRef<HTMLDivElement>(null)
+
+    // Derived state: show suggestions when there are suggestions and search query exists
+    const showSuggestions = suggestions.length > 0 && searchQuery.trim().length > 0
+
+    // Helper function to navigate to search page
+    const navigateToSearch = React.useCallback((query: string) => {
+        if (query.trim()) {
+            router.push(`/search?q=${encodeURIComponent(query.trim())}`)
+        }
+    }, [router])
 
     // Fetch categories and types from API
     React.useEffect(() => {
@@ -73,21 +91,19 @@ export default function Filter() {
     React.useEffect(() => {
         if (!searchQuery.trim()) {
             setSuggestions([])
-            setShowSuggestions(false)
+            setSelectedIndex(-1)
             return
         }
 
         const timeoutId = setTimeout(async () => {
             setIsLoadingSuggestions(true)
             try {
-                const results = await fetchProductsBySearch(searchQuery.trim(), 1)
+                const results = await fetchProductsBySearch({ q: searchQuery.trim(), page: "1" })
                 setSuggestions(results.data)
-                setShowSuggestions(results.data.length > 0)
                 setSelectedIndex(-1)
             } catch (error) {
                 console.error("Error fetching suggestions:", error)
                 setSuggestions([])
-                setShowSuggestions(false)
             } finally {
                 setIsLoadingSuggestions(false)
             }
@@ -116,42 +132,34 @@ export default function Filter() {
                 if (selectedIndex >= 0 && selectedIndex < suggestions.length) {
                     handleSelectSuggestion(suggestions[selectedIndex].title)
                 } else {
-                    if (searchQuery.trim()) {
-                        setShowSuggestions(false)
-                        router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`)
-                    }
+                    navigateToSearch(searchQuery)
                 }
                 break
             case "Escape":
-                setShowSuggestions(false)
+                setSuggestions([])
                 setSelectedIndex(-1)
                 break
         }
     }
 
-    const handleSelectSuggestion = (title: string) => {
+    const handleSelectSuggestion = React.useCallback((title: string) => {
         setSearchQuery(title)
-        setShowSuggestions(false)
+        setSuggestions([])
         setSelectedIndex(-1)
-        router.push(`/search?q=${encodeURIComponent(title)}`)
-    }
+        navigateToSearch(title)
+    }, [navigateToSearch])
 
-    const handleSearch = (e: React.FormEvent) => {
+    const handleSearch = React.useCallback((e: React.FormEvent) => {
         e.preventDefault()
-        if (searchQuery.trim()) {
-            setShowSuggestions(false)
-            router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`)
-        }
-    }
+        setSuggestions([])
+        navigateToSearch(searchQuery)
+    }, [searchQuery, navigateToSearch])
 
-    const handleApplyFilters = () => {
+    const handleApplyFilters = React.useCallback(() => {
         setFilterSheetOpen(false)
-        // Trigger search with current filters
-        if (searchQuery.trim()) {
-            setShowSuggestions(false)
-            router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`)
-        }
-    }
+        setSuggestions([])
+        navigateToSearch(searchQuery)
+    }, [searchQuery, navigateToSearch])
 
     // Close suggestions when clicking outside
     React.useEffect(() => {
@@ -162,7 +170,7 @@ export default function Filter() {
                 suggestionsRef.current &&
                 !suggestionsRef.current.contains(event.target as Node)
             ) {
-                setShowSuggestions(false)
+                setSuggestions([])
             }
         }
 
@@ -189,21 +197,13 @@ export default function Filter() {
                         type="text"
                         placeholder="Search..."
                         value={searchQuery}
-                        onChange={(e) => {
-                            setSearchQuery(e.target.value)
-                            setShowSuggestions(true)
-                        }}
+                        onChange={(e) => setSearchQuery(e.target.value)}
                         onKeyDown={handleKeyDown}
-                        onFocus={() => {
-                            if (suggestions.length > 0) {
-                                setShowSuggestions(true)
-                            }
-                        }}
                         className="w-full pl-12 pr-4 py-3 bg-white dark:bg-[#1e1e1e] border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-sm"
                     />
 
                     {/* Suggestions Dropdown */}
-                    {showSuggestions && (searchQuery.trim() || suggestions.length > 0) && (
+                    {showSuggestions && (
                         <div
                             ref={suggestionsRef}
                             className="absolute z-100 w-full mt-2 bg-white dark:bg-[#1e1e1e] border border-gray-300 dark:border-gray-700 rounded-lg shadow-lg max-h-64 overflow-y-auto"
@@ -212,7 +212,7 @@ export default function Filter() {
                                 <div className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">
                                     Mencari...
                                 </div>
-                            ) : suggestions.length > 0 ? (
+                            ) : (
                                 <ul className="py-1">
                                     {suggestions.map((suggestion, index) => (
                                         <li
@@ -234,11 +234,7 @@ export default function Filter() {
                                         </li>
                                     ))}
                                 </ul>
-                            ) : searchQuery.trim() && !isLoadingSuggestions ? (
-                                <div className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">
-                                    Tidak ada hasil ditemukan
-                                </div>
-                            ) : null}
+                            )}
                         </div>
                     )}
                 </div>

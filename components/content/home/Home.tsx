@@ -29,63 +29,6 @@ export default function Page() {
                 </div>
 
                 <Filter />
-
-                {/* Background Pattern */}
-                <div
-                    className="absolute inset-0 opacity-30 dark:opacity-20"
-                    style={{
-                        maskImage: 'radial-gradient(ellipse 80% 50% at center, transparent 30%, black 70%)',
-                        WebkitMaskImage: 'radial-gradient(ellipse 80% 50% at center, transparent 30%, black 70%)',
-                    }}
-                >
-                    <div
-                        className="absolute inset-0"
-                        style={{
-                            backgroundImage: `
-                linear-gradient(to right, rgba(0, 0, 0, 0.03) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(0, 0, 0, 0.03) 1px, transparent 1px)
-              `,
-                            backgroundSize: '40px 40px',
-                        }}
-                    />
-                    <div
-                        className="absolute inset-0 dark:hidden"
-                        style={{
-                            backgroundImage: `
-                radial-gradient(circle, rgba(0, 0, 0, 0.05) 1px, transparent 1px)
-              `,
-                            backgroundSize: '20px 20px',
-                        }}
-                    />
-                    <div
-                        className="absolute inset-0 hidden dark:block"
-                        style={{
-                            backgroundImage: `
-                radial-gradient(circle, rgba(255, 255, 255, 0.05) 1px, transparent 1px)
-              `,
-                            backgroundSize: '20px 20px',
-                        }}
-                    />
-                    {/* Line Pattern */}
-                    <div
-                        className="absolute inset-0"
-                        style={{
-                            backgroundImage: `
-                repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0, 0, 0, 0.02) 10px, rgba(0, 0, 0, 0.02) 20px),
-                repeating-linear-gradient(-45deg, transparent, transparent 10px, rgba(0, 0, 0, 0.02) 10px, rgba(0, 0, 0, 0.02) 20px)
-              `,
-                        }}
-                    />
-                    <div
-                        className="absolute inset-0 hidden dark:block"
-                        style={{
-                            backgroundImage: `
-                repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255, 255, 255, 0.02) 10px, rgba(255, 255, 255, 0.02) 20px),
-                repeating-linear-gradient(-45deg, transparent, transparent 10px, rgba(255, 255, 255, 0.02) 10px, rgba(255, 255, 255, 0.02) 20px)
-              `,
-                        }}
-                    />
-                </div>
             </div>
         </section>
     )

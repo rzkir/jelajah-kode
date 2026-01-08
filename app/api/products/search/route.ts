@@ -19,32 +19,28 @@ export async function GET(request: Request) {
     const q = searchParams.get("q") || "";
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "10");
-
-    // Check if query parameter is empty
-    if (!q || q.trim() === "") {
-      return NextResponse.json(
-        {
-          message:
-            "Parameter 'q' tidak boleh kosong. Silakan masukkan kata kunci pencarian.",
-        },
-        { status: 400 }
-      );
-    }
+    const categories =
+      searchParams.get("categories")?.split(",").filter(Boolean) || [];
+    const types = searchParams.get("types")?.split(",").filter(Boolean) || [];
+    const tech = searchParams.get("tech")?.split(",").filter(Boolean) || [];
+    const maxPrice = searchParams.get("maxPrice");
+    const minRating = searchParams.get("minRating");
+    const popular = searchParams.get("popular") === "true";
+    const newArrivals = searchParams.get("new") === "true";
+    const sort = searchParams.get("sort") || "newest";
 
     // Calculate skip value for pagination
     const skip = (page - 1) * limit;
 
     // Build query object - search by productsId, title, or description
-    const query: {
-      $or?: Array<{ [key: string]: { $regex: string; $options: string } }>;
-      productsId?: { $regex: string; $options: string };
-      status?: string;
-    } = {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const query: any = {
       status: "publish", // Only show published products
     };
 
-    if (q) {
-      // Search in productsId, title, and description
+    // If query is provided, search in productsId, title, and description
+    // If query is empty, show all published products
+    if (q && q.trim() !== "") {
       query.$or = [
         { productsId: { $regex: q, $options: "i" } },
         { title: { $regex: q, $options: "i" } },
@@ -52,11 +48,72 @@ export async function GET(request: Request) {
       ];
     }
 
+    // Filter by categories
+    if (categories.length > 0) {
+      query["category.categoryId"] = { $in: categories };
+    }
+
+    // Filter by types
+    if (types.length > 0) {
+      query["type.typeId"] = { $in: types };
+    }
+
+    // Filter by tech stack (frameworks)
+    if (tech.length > 0) {
+      query["frameworks.title"] = { $in: tech };
+    }
+
+    // Filter by max price
+    if (maxPrice) {
+      query.price = { $lte: parseInt(maxPrice) };
+    }
+
+    // Filter by minimum rating
+    if (minRating) {
+      query.ratingAverage = { $gte: parseFloat(minRating) };
+    }
+
+    // Filter by popular (e.g., high view count or sold count)
+    if (popular) {
+      query.$or = query.$or || [];
+      if (query.$or.length === 0) {
+        delete query.$or;
+      }
+      // Consider popular as having high views or sales
+      query.views = { $gte: 100 };
+    }
+
+    // Filter by new arrivals (last 30 days)
+    if (newArrivals) {
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      query.createdAt = { $gte: thirtyDaysAgo };
+    }
+
+    // Build sort object
+    let sortObj: { [key: string]: 1 | -1 } = { createdAt: -1 };
+    switch (sort) {
+      case "oldest":
+        sortObj = { createdAt: 1 };
+        break;
+      case "price-low":
+        sortObj = { price: 1 };
+        break;
+      case "price-high":
+        sortObj = { price: -1 };
+        break;
+      case "rating":
+        sortObj = { ratingAverage: -1 };
+        break;
+      default:
+        sortObj = { createdAt: -1 };
+    }
+
     // Fetch products with pagination
     const products = await Products.find(query)
       .skip(skip)
       .limit(limit)
-      .sort({ createdAt: -1 });
+      .sort(sortObj);
 
     // Get total count for pagination info
     const totalCount = await Products.countDocuments(query);

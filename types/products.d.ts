@@ -409,7 +409,6 @@ interface ProductsSearchItem {
   created_at: string;
   updated_at: string;
 }
-
 interface ProductsSearchPagination {
   page: number;
   total: number;
@@ -422,6 +421,88 @@ interface ProductsSearchResponse {
   pagination: ProductsSearchPagination;
   query: string;
 }
+
+interface SearchPageProps {
+  searchParams: Promise<{
+    q?: string;
+    page?: string;
+    categories?: string;
+    types?: string;
+    tech?: string;
+    maxPrice?: string;
+    minRating?: string;
+    popular?: string;
+    discounted?: string;
+    new?: string;
+    sort?: string;
+  }>;
+}
+
+interface SearchProductsProps {
+  products: ProductsSearchItem[];
+  pagination: ProductsSearchPagination;
+  query: string;
+  page: number;
+  categories: Array<{ _id?: string; categoryId?: string; title: string }>;
+  types: Array<{ _id?: string; typeId?: string; title: string }>;
+  initialFilters?: {
+    q?: string;
+    categories?: string;
+    types?: string;
+    tech?: string;
+    maxPrice?: string;
+    minRating?: string;
+    popular?: string;
+    new?: string;
+    sort?: string;
+  };
+}
+
+interface FilterState {
+  searchQuery: string;
+  selectedCategories: string[];
+  selectedTypes: string[];
+  selectedTechStack: string[];
+  priceRange: [number, number];
+  minRating: number | null;
+  popularOnly: boolean;
+  newArrivals: boolean;
+  sortBy: string;
+}
+
+interface SearchProductsFilterProps {
+  searchQuery: string;
+  setSearchQuery: (query: string) => void;
+  selectedCategories: string[];
+  setSelectedCategories: React.Dispatch<React.SetStateAction<string[]>>;
+  selectedTypes: string[];
+  setSelectedTypes: React.Dispatch<React.SetStateAction<string[]>>;
+  selectedTechStack: string[];
+  setSelectedTechStack: React.Dispatch<React.SetStateAction<string[]>>;
+  priceRange: [number, number];
+  setPriceRange: (range: [number, number]) => void;
+  minRating: number | null;
+  setMinRating: (rating: number | null) => void;
+  popularOnly: boolean;
+  setPopularOnly: (value: boolean) => void;
+  newArrivals: boolean;
+  setNewArrivals: (value: boolean) => void;
+  products: ProductsSearchItem[];
+  categories: Array<{ _id?: string; categoryId?: string; title: string }>;
+  types: Array<{ _id?: string; typeId?: string; title: string }>;
+}
+
+type FilterAction =
+  | { type: "SET_SEARCH_QUERY"; payload: string }
+  | { type: "SET_CATEGORIES"; payload: string[] }
+  | { type: "SET_TYPES"; payload: string[] }
+  | { type: "SET_TECH_STACK"; payload: string[] }
+  | { type: "SET_PRICE_RANGE"; payload: [number, number] }
+  | { type: "SET_MIN_RATING"; payload: number | null }
+  | { type: "SET_POPULAR_ONLY"; payload: boolean }
+  | { type: "SET_NEW_ARRIVALS"; payload: boolean }
+  | { type: "SET_SORT_BY"; payload: string }
+  | { type: "RESET_FILTERS" };
 
 //====================== Products Discount ======================//
 interface ProductsDiscountItem {

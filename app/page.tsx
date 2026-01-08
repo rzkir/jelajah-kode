@@ -8,14 +8,17 @@ import ProductsNews from "@/components/content/products/news-products/ProductsNe
 
 import ProductsMostSaled from "@/components/content/products/most-saled/ProductsMostSaled";
 
+import ProductsPopular from "@/components/content/products/popular-products/ProductsPopular";
+
 import Services from "@/components/content/services/Services";
 
-import { fetchProducts, fetchProductsDiscount, fetchProductsMostSaled } from "@/utils/fetching/FetchProducts";
+import { fetchProducts, fetchProductsDiscount, fetchProductsMostSaled, fetchProductsPopular } from "@/utils/fetching/FetchProducts";
 
 export default async function Page() {
   const products = await fetchProducts();
   const productsDiscount = await fetchProductsDiscount();
   const productsMostSaled = await fetchProductsMostSaled();
+  const productsPopular = await fetchProductsPopular();
   return (
     <Fragment>
       <Home />
@@ -23,6 +26,7 @@ export default async function Page() {
       <ProductsDiscount productsDiscount={productsDiscount} />
       <ProductsNews products={products} />
       <ProductsMostSaled productsMostSaled={productsMostSaled} />
+      <ProductsPopular productsPopular={productsPopular} />
     </Fragment>
   )
 }

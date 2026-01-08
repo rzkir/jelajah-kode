@@ -1,9 +1,11 @@
 "use client"
 
-import * as React from "react"
 import { Check } from "lucide-react"
+
 import { Button } from "@/components/ui/button"
+
 import { ScrollArea } from "@/components/ui/scroll-area"
+
 import { cn } from "@/lib/utils"
 
 interface BottomSheetsFilterProps {
