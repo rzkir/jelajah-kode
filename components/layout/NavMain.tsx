@@ -10,20 +10,21 @@ export default function NavMain() {
             <div className="px-4 container mx-auto">
                 <div className="flex items-center justify-between h-10 text-xs">
                     {/* Left side - Contact Info */}
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2 md:gap-4">
                         <Link
                             href="/contact"
-                            className="flex items-center gap-1.5 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                            className="hidden sm:flex items-center gap-1.5 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                         >
                             <Phone className="size-3.5" />
                             <span className="hidden sm:inline">Hubungi Kami</span>
                         </Link>
+
                         <Link
                             href="mailto:admin@jelajahkode.biz.id"
                             className="flex items-center gap-1.5 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                         >
                             <Mail className="size-3.5" />
-                            <span className="hidden md:inline">admin@jelajahkode.biz.id</span>
+                            <span className="inline">admin@jelajahkode.biz.id</span>
                         </Link>
                         <Link
                             href="/artikel"
@@ -35,7 +36,7 @@ export default function NavMain() {
                     </div>
 
                     {/* Right side - Language Selector */}
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2 md:gap-3">
                         <button
                             className="flex items-center gap-1.5 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                             aria-label="Switch to Indonesian"

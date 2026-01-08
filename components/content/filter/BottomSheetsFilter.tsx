@@ -8,16 +8,6 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 
 import { cn } from "@/lib/utils"
 
-interface BottomSheetsFilterProps {
-    selectedCategory: string
-    setSelectedCategory: (category: string) => void
-    selectedType: string
-    setSelectedType: (type: string) => void
-    handleApplyFilters: () => void
-    categories: Array<{ value: string; label: string }>
-    types: Array<{ value: string; label: string }>
-}
-
 export default function BottomSheetsFilter({
     selectedCategory,
     setSelectedCategory,

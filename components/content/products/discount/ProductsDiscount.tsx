@@ -12,8 +12,8 @@ export default function ProductsDiscount({ productsDiscount }: { productsDiscoun
     const { productsArray, earliestEndDate, mounted, timeLeft } = useStateProductsDiscount(productsDiscount);
 
     return (
-        <section className="py-4">
-            <div className="container mx-auto px-4 space-y-6">
+        <section>
+            <div className="container mx-auto px-2 md:px-4 py-4 md:py-6 space-y-6">
                 {/* Header Section */}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
                     {/* Heading */}

@@ -8,6 +8,8 @@ import Header from "@/components/layout/Header";
 
 import Footer from "@/components/layout/Footer";
 
+import BottomNavigation from "@/components/layout/BottomNavigation";
+
 import { Toaster } from "sonner";
 
 const Pathname = ({ children }: { children: React.ReactNode }) => {
@@ -35,8 +37,11 @@ const Pathname = ({ children }: { children: React.ReactNode }) => {
         }}
       />
       {!isRoute && <Header />}
-      {children}
+      <div className="pb-14 md:pb-0">
+        {children}
+      </div>
       {!isRoute && <Footer />}
+      {!isRoute && <BottomNavigation />}
     </Fragment>
   );
 };

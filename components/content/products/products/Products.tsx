@@ -6,7 +6,7 @@ import ProductsCard from "@/components/ui/products/ProductsCard"
 
 import SearchProductsFilter from "@/components/content/search/SearchProductsFilter"
 
-import { useStateSearch } from "@/components/content/search/lib/useStateSearch"
+import { useStateProducts } from "@/components/content/products/products/lib/useStateProducts"
 
 import {
     Select,
@@ -28,7 +28,26 @@ import {
 
 import { Filter } from "lucide-react"
 
-export default function SearchProducts({ products, pagination, query, page, categories, types, initialFilters }: SearchProductsProps) {
+interface ProductsProps {
+    products: ProductsSearchItem[];
+    pagination: ProductsSearchPagination;
+    categories: Array<{ _id?: string; categoryId?: string; title: string }>;
+    types: Array<{ _id?: string; typeId?: string; title: string }>;
+    initialFilters?: {
+        categories?: string;
+        types?: string;
+        tech?: string;
+        maxPrice?: string;
+        minRating?: string;
+        popular?: string;
+        new?: string;
+        sort?: string;
+        page?: string;
+    };
+    page?: number;
+}
+
+export default function Products({ products, pagination, categories, types, initialFilters, page = 1 }: ProductsProps) {
     const productsArray = React.useMemo(() => Array.isArray(products) ? products : [], [products]);
     const [isSheetOpen, setIsSheetOpen] = React.useState(false)
 
@@ -45,7 +64,7 @@ export default function SearchProducts({ products, pagination, query, page, cate
         setSortBy,
         isFiltersDefault,
         handleReset,
-    } = useStateSearch(initialFilters, query, page)
+    } = useStateProducts(initialFilters, page)
 
     const filterContent = (
         <SearchProductsFilter
@@ -88,7 +107,7 @@ export default function SearchProducts({ products, pagination, query, page, cate
                         <div className="sticky top-14 z-50 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 lg:static lg:bg-transparent lg:backdrop-blur-0 mb-6 pb-4 lg:pb-0 border-b lg:border-b-0">
                             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pt-4 lg:pt-0">
                                 <div className="hidden sm:block">
-                                    <h1 className="text-2xl font-bold mb-2">Search Products</h1>
+                                    <h1 className="text-2xl font-bold mb-2">Products</h1>
                                     <p className="text-sm text-gray-600 dark:text-gray-400">
                                         Showing {productsArray.length} of {pagination.total} products
                                     </p>
@@ -141,7 +160,7 @@ export default function SearchProducts({ products, pagination, query, page, cate
                             </div>
                             {/* Mobile Title & Count */}
                             <div className="sm:hidden mt-4">
-                                <h1 className="text-xl font-bold mb-1">Search Products</h1>
+                                <h1 className="text-xl font-bold mb-1">Products</h1>
                                 <p className="text-xs text-gray-600 dark:text-gray-400">
                                     Showing {productsArray.length} of {pagination.total} products
                                 </p>
@@ -161,46 +180,54 @@ export default function SearchProducts({ products, pagination, query, page, cate
                                 </div>
 
                                 {/* Pagination */}
-                                {pagination.pages > 1 && (
-                                    <div className="flex justify-center items-center gap-2 mt-8 pt-6 border-t border-gray-200 dark:border-gray-800">
-                                        <a
-                                            href={`/search?q=${encodeURIComponent(query)}&page=${Math.max(
-                                                1,
-                                                page - 1
-                                            )}`}
-                                            className={`px-4 py-2 rounded-md border transition-colors ${page === 1
-                                                ? "opacity-50 cursor-not-allowed"
-                                                : "hover:bg-gray-100 dark:hover:bg-gray-800"
-                                                }`}
-                                            aria-disabled={page === 1}
-                                        >
-                                            Previous
-                                        </a>
-                                        <span className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400">
-                                            Page {pagination.page} of {pagination.pages}
-                                        </span>
-                                        <a
-                                            href={`/search?q=${encodeURIComponent(query)}&page=${Math.min(
-                                                pagination.pages,
-                                                page + 1
-                                            )}`}
-                                            className={`px-4 py-2 rounded-md border transition-colors ${page === pagination.pages
-                                                ? "opacity-50 cursor-not-allowed"
-                                                : "hover:bg-gray-100 dark:hover:bg-gray-800"
-                                                }`}
-                                            aria-disabled={page === pagination.pages}
-                                        >
-                                            Next
-                                        </a>
-                                    </div>
-                                )}
+                                {pagination.pages > 1 && (() => {
+                                    const buildPaginationUrl = (pageNum: number) => {
+                                        const params = new URLSearchParams();
+                                        params.set("page", pageNum.toString());
+                                        if (initialFilters?.categories) params.set("categories", initialFilters.categories);
+                                        if (initialFilters?.types) params.set("types", initialFilters.types);
+                                        if (initialFilters?.tech) params.set("tech", initialFilters.tech);
+                                        if (initialFilters?.maxPrice) params.set("maxPrice", initialFilters.maxPrice);
+                                        if (initialFilters?.minRating) params.set("minRating", initialFilters.minRating);
+                                        if (initialFilters?.popular) params.set("popular", initialFilters.popular);
+                                        if (initialFilters?.new) params.set("new", initialFilters.new);
+                                        if (initialFilters?.sort) params.set("sort", initialFilters.sort);
+                                        return `/products?${params.toString()}`;
+                                    };
+
+                                    return (
+                                        <div className="flex justify-center items-center gap-2 mt-8 pt-6 border-t border-gray-200 dark:border-gray-800">
+                                            <a
+                                                href={buildPaginationUrl(Math.max(1, page - 1))}
+                                                className={`px-4 py-2 rounded-md border transition-colors ${page === 1
+                                                    ? "opacity-50 cursor-not-allowed"
+                                                    : "hover:bg-gray-100 dark:hover:bg-gray-800"
+                                                    }`}
+                                                aria-disabled={page === 1}
+                                            >
+                                                Previous
+                                            </a>
+                                            <span className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400">
+                                                Page {pagination.page} of {pagination.pages}
+                                            </span>
+                                            <a
+                                                href={buildPaginationUrl(Math.min(pagination.pages, page + 1))}
+                                                className={`px-4 py-2 rounded-md border transition-colors ${page === pagination.pages
+                                                    ? "opacity-50 cursor-not-allowed"
+                                                    : "hover:bg-gray-100 dark:hover:bg-gray-800"
+                                                    }`}
+                                                aria-disabled={page === pagination.pages}
+                                            >
+                                                Next
+                                            </a>
+                                        </div>
+                                    );
+                                })()}
                             </>
                         ) : (
                             <div className="text-center py-12">
                                 <p className="text-muted-foreground text-lg">
-                                    {query
-                                        ? `No products found for "${query}"`
-                                        : "No products available"}
+                                    No products available
                                 </p>
                             </div>
                         )}

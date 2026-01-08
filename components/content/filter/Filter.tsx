@@ -1,12 +1,6 @@
 "use client"
 
-import * as React from "react"
-
-import { useRouter } from "next/navigation"
-
 import { Check, Grid3x3, FileText, Filter as FilterIcon } from "lucide-react"
-
-import { fetchProductsBySearch, fetchProductCategories, fetchProductType } from "@/utils/fetching/FetchProducts"
 
 import { Button } from "@/components/ui/button"
 
@@ -31,152 +25,37 @@ import BottomSheet from "@/helper/bottomsheets/BottomShets"
 
 import BottomSheetsFilter from "@/components/content/filter/BottomSheetsFilter"
 
+import { useStateFilter } from "@/components/content/filter/lib/useStateFilter"
+
+const filterButtonClassName = "w-12 h-12 bg-white dark:bg-[#1e1e1e] border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-[#2d2d2d]"
+
 export default function Filter() {
-    const router = useRouter()
-    const [categoryOpen, setCategoryOpen] = React.useState(false)
-    const [typeOpen, setTypeOpen] = React.useState(false)
-    const [filterSheetOpen, setFilterSheetOpen] = React.useState(false)
-    const [selectedCategory, setSelectedCategory] = React.useState<string>("")
-    const [selectedType, setSelectedType] = React.useState<string>("")
-    const [searchQuery, setSearchQuery] = React.useState<string>("")
-    const [suggestions, setSuggestions] = React.useState<ProductsSearchItem[]>([])
-    const [isLoadingSuggestions, setIsLoadingSuggestions] = React.useState(false)
-    const [selectedIndex, setSelectedIndex] = React.useState(-1)
-    const [categories, setCategories] = React.useState<Array<{ value: string; label: string }>>([])
-    const [types, setTypes] = React.useState<Array<{ value: string; label: string }>>([])
-    const inputRef = React.useRef<HTMLInputElement>(null)
-    const suggestionsRef = React.useRef<HTMLDivElement>(null)
-
-    // Derived state: show suggestions when there are suggestions and search query exists
-    const showSuggestions = suggestions.length > 0 && searchQuery.trim().length > 0
-
-    // Helper function to navigate to search page
-    const navigateToSearch = React.useCallback((query: string) => {
-        if (query.trim()) {
-            router.push(`/search?q=${encodeURIComponent(query.trim())}`)
-        }
-    }, [router])
-
-    // Fetch categories and types from API
-    React.useEffect(() => {
-        const fetchCategoriesAndTypes = async () => {
-            try {
-                const [categoriesData, typesData] = await Promise.all([
-                    fetchProductCategories(),
-                    fetchProductType(),
-                ])
-
-                setCategories(
-                    categoriesData.map((cat) => ({
-                        value: cat.categoryId || cat._id,
-                        label: cat.title,
-                    }))
-                )
-
-                setTypes(
-                    typesData.map((type) => ({
-                        value: type.typeId || type._id,
-                        label: type.title,
-                    }))
-                )
-            } catch (error) {
-                console.error("Error fetching categories and types:", error)
-            }
-        }
-
-        fetchCategoriesAndTypes()
-    }, [])
-
-    // Debounce untuk fetch suggestions
-    React.useEffect(() => {
-        if (!searchQuery.trim()) {
-            setSuggestions([])
-            setSelectedIndex(-1)
-            return
-        }
-
-        const timeoutId = setTimeout(async () => {
-            setIsLoadingSuggestions(true)
-            try {
-                const results = await fetchProductsBySearch({ q: searchQuery.trim(), page: "1" })
-                setSuggestions(results.data)
-                setSelectedIndex(-1)
-            } catch (error) {
-                console.error("Error fetching suggestions:", error)
-                setSuggestions([])
-            } finally {
-                setIsLoadingSuggestions(false)
-            }
-        }, 300)
-
-        return () => clearTimeout(timeoutId)
-    }, [searchQuery])
-
-    // Handle keyboard navigation
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (!showSuggestions || suggestions.length === 0) return
-
-        switch (e.key) {
-            case "ArrowDown":
-                e.preventDefault()
-                setSelectedIndex((prev) =>
-                    prev < suggestions.length - 1 ? prev + 1 : prev
-                )
-                break
-            case "ArrowUp":
-                e.preventDefault()
-                setSelectedIndex((prev) => (prev > 0 ? prev - 1 : -1))
-                break
-            case "Enter":
-                e.preventDefault()
-                if (selectedIndex >= 0 && selectedIndex < suggestions.length) {
-                    handleSelectSuggestion(suggestions[selectedIndex].title)
-                } else {
-                    navigateToSearch(searchQuery)
-                }
-                break
-            case "Escape":
-                setSuggestions([])
-                setSelectedIndex(-1)
-                break
-        }
-    }
-
-    const handleSelectSuggestion = React.useCallback((title: string) => {
-        setSearchQuery(title)
-        setSuggestions([])
-        setSelectedIndex(-1)
-        navigateToSearch(title)
-    }, [navigateToSearch])
-
-    const handleSearch = React.useCallback((e: React.FormEvent) => {
-        e.preventDefault()
-        setSuggestions([])
-        navigateToSearch(searchQuery)
-    }, [searchQuery, navigateToSearch])
-
-    const handleApplyFilters = React.useCallback(() => {
-        setFilterSheetOpen(false)
-        setSuggestions([])
-        navigateToSearch(searchQuery)
-    }, [searchQuery, navigateToSearch])
-
-    // Close suggestions when clicking outside
-    React.useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (
-                inputRef.current &&
-                !inputRef.current.contains(event.target as Node) &&
-                suggestionsRef.current &&
-                !suggestionsRef.current.contains(event.target as Node)
-            ) {
-                setSuggestions([])
-            }
-        }
-
-        document.addEventListener("mousedown", handleClickOutside)
-        return () => document.removeEventListener("mousedown", handleClickOutside)
-    }, [])
+    const {
+        categoryOpen,
+        setCategoryOpen,
+        typeOpen,
+        setTypeOpen,
+        filterSheetOpen,
+        setFilterSheetOpen,
+        selectedCategory,
+        setSelectedCategory,
+        selectedType,
+        setSelectedType,
+        searchQuery,
+        setSearchQuery,
+        suggestions,
+        isLoadingSuggestions,
+        selectedIndex,
+        showSuggestions,
+        categories,
+        types,
+        inputRef,
+        suggestionsRef,
+        handleKeyDown,
+        handleSelectSuggestion,
+        handleSearch,
+        handleApplyFilters,
+    } = useStateFilter()
 
     return (
         <div className="relative z-10 w-full max-w-3xl mx-auto mt-14">
@@ -249,7 +128,7 @@ export default function Filter() {
                                 type="button"
                                 variant="outline"
                                 size="icon"
-                                className="w-12 h-12 bg-white dark:bg-[#1e1e1e] border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-[#2d2d2d]"
+                                className={filterButtonClassName}
                             >
                                 <FilterIcon className="h-5 w-5" />
                             </Button>
@@ -281,7 +160,7 @@ export default function Filter() {
                                 type="button"
                                 variant="outline"
                                 size="icon"
-                                className="w-12 h-12 bg-white dark:bg-[#1e1e1e] border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-[#2d2d2d]"
+                                className={filterButtonClassName}
                             >
                                 <Grid3x3 className="h-5 w-5" />
                             </Button>
@@ -338,7 +217,7 @@ export default function Filter() {
                                 type="button"
                                 variant="outline"
                                 size="icon"
-                                className="w-12 h-12 bg-white dark:bg-[#1e1e1e] border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-[#2d2d2d]"
+                                className={filterButtonClassName}
                             >
                                 <FileText className="h-5 w-5" />
                             </Button>
@@ -390,7 +269,8 @@ export default function Filter() {
 
                     {/* Apply Button */}
                     <Button
-                        type="submit"
+                        type="button"
+                        onClick={handleSearch}
                         className="w-auto px-6 py-5.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-all shadow-sm"
                     >
                         Terapkan

@@ -4,7 +4,7 @@ import Filter from "@/components/content/filter/Filter"
 
 export default function Page() {
     return (
-        <section className="min-h-full overflow-visible relative py-14 pt-32 xl:pt-unset md:py-36">
+        <section className="min-h-full overflow-visible relative py-14 pt-20 md:pt-32 xl:pt-unset md:py-36">
             <div className="container mx-auto px-4">
                 {/* Content */}
                 <div className="relative z-10 max-w-4xl mx-auto text-center space-y-8">
@@ -24,7 +24,6 @@ export default function Page() {
 
                     <p className="text-xl text-gray-600 max-w-2xl mx-auto dark:text-gray-400">
                         Jumpstart your development process with production-ready source code, templates, and components from top developers.
-
                     </p>
                 </div>
 

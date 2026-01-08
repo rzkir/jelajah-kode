@@ -30,6 +30,16 @@ interface BottomSheetProps {
   responsive?: boolean;
 }
 
+interface BottomSheetsFilterProps {
+  selectedCategory: string;
+  setSelectedCategory: (category: string) => void;
+  selectedType: string;
+  setSelectedType: (type: string) => void;
+  handleApplyFilters: () => void;
+  categories: Array<{ value: string; label: string }>;
+  types: Array<{ value: string; label: string }>;
+}
+
 //=================== Countdown ===================//
 
 interface CountdownTime {
