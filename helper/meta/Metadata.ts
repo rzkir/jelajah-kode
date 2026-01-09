@@ -465,7 +465,6 @@ export async function generateCheckoutStatusMetadata(
 }
 
 //====================================== Search Page Metadata ======================================//
-
 export const SearchPageMetadata: Metadata = {
   title: "Search Products - jelajah Code",
   description: "Search and discover products on jelajah Code platform",
@@ -679,4 +678,306 @@ export async function generateSearchPageMetadata(
   }
 
   return SearchPageMetadata;
+}
+
+//====================================== Products By Category Metadata ======================================//
+export async function generateProductsCategoryMetadata(
+  params: Promise<{ categoryId: string }>,
+  searchParams: Promise<{
+    page?: string;
+    sort?: string;
+  }>
+): Promise<Metadata> {
+  const { categoryId } = await params;
+  const searchParamsData = await searchParams;
+  const page = searchParamsData.page || "1";
+  const sort = searchParamsData.sort || "newest";
+
+  try {
+    const { fetchProductsByCategory, fetchProductCategories } = await import(
+      "@/utils/fetching/FetchProducts"
+    );
+
+    const [{ pagination }, categories] = await Promise.all([
+      fetchProductsByCategory(categoryId, parseInt(page, 10), 10, sort),
+      fetchProductCategories(),
+    ]);
+
+    const category = categories.find((cat) => cat.categoryId === categoryId);
+    const categoryTitle = category?.title || categoryId;
+    const resultCount = pagination.total;
+
+    const urlParams = new URLSearchParams();
+    if (page !== "1") urlParams.set("page", page);
+    if (sort !== "newest") urlParams.set("sort", sort);
+
+    const categoryUrl = `${
+      API_CONFIG.ENDPOINTS.base
+    }/products/category/${categoryId}${
+      urlParams.toString() ? `?${urlParams.toString()}` : ""
+    }`;
+
+    const title = `Products - ${categoryTitle} - jelajah Code`;
+    const description = `Browse ${resultCount} product${
+      resultCount !== 1 ? "s" : ""
+    } in ${categoryTitle} category on jelajah Code. Discover and explore products that match your interests.`;
+
+    return {
+      title,
+      description,
+      openGraph: {
+        title,
+        description,
+        url: categoryUrl,
+        siteName: "jelajah Code",
+        images: [
+          {
+            url: "/images/products-og-image.jpg",
+            width: 1200,
+            height: 630,
+            alt: `Products - ${categoryTitle}`,
+          },
+        ],
+        locale: "en_US",
+        type: "website",
+      },
+      twitter: {
+        card: "summary_large_image",
+        title,
+        description,
+        images: ["/images/products-og-image.jpg"],
+      },
+    };
+  } catch {
+    // Fallback metadata if fetch fails
+    const categoryUrl = `${API_CONFIG.ENDPOINTS.base}/products/category/${categoryId}`;
+    const fallbackTitle = `Products - ${categoryId} - jelajah Code`;
+    const fallbackDescription = `Browse products in ${categoryId} category on jelajah Code platform`;
+
+    return {
+      title: fallbackTitle,
+      description: fallbackDescription,
+      openGraph: {
+        title: fallbackTitle,
+        description: fallbackDescription,
+        url: categoryUrl,
+        siteName: "jelajah Code",
+        images: [
+          {
+            url: "/images/products-og-image.jpg",
+            width: 1200,
+            height: 630,
+            alt: `Products - ${categoryId}`,
+          },
+        ],
+        locale: "en_US",
+        type: "website",
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: fallbackTitle,
+        description: fallbackDescription,
+        images: ["/images/products-og-image.jpg"],
+      },
+    };
+  }
+}
+
+//====================================== Products By Type Metadata ======================================//
+export async function generateProductsTypeMetadata(
+  params: Promise<{ typeId: string }>,
+  searchParams: Promise<{
+    page?: string;
+    sort?: string;
+  }>
+): Promise<Metadata> {
+  const { typeId } = await params;
+  const searchParamsData = await searchParams;
+  const page = searchParamsData.page || "1";
+  const sort = searchParamsData.sort || "newest";
+
+  try {
+    const { fetchProductsByType, fetchProductType } = await import(
+      "@/utils/fetching/FetchProducts"
+    );
+
+    const [{ pagination }, types] = await Promise.all([
+      fetchProductsByType(typeId, parseInt(page, 10), 10, sort),
+      fetchProductType(),
+    ]);
+
+    const type = types.find((t) => t.typeId === typeId);
+    const typeTitle = type?.title || typeId;
+    const resultCount = pagination.total;
+
+    const urlParams = new URLSearchParams();
+    if (page !== "1") urlParams.set("page", page);
+    if (sort !== "newest") urlParams.set("sort", sort);
+
+    const typeUrl = `${API_CONFIG.ENDPOINTS.base}/products/type/${typeId}${
+      urlParams.toString() ? `?${urlParams.toString()}` : ""
+    }`;
+
+    const title = `Products - ${typeTitle} - jelajah Code`;
+    const description = `Browse ${resultCount} product${
+      resultCount !== 1 ? "s" : ""
+    } in ${typeTitle} type on jelajah Code. Discover and explore products that match your interests.`;
+
+    return {
+      title,
+      description,
+      openGraph: {
+        title,
+        description,
+        url: typeUrl,
+        siteName: "jelajah Code",
+        images: [
+          {
+            url: "/images/products-og-image.jpg",
+            width: 1200,
+            height: 630,
+            alt: `Products - ${typeTitle}`,
+          },
+        ],
+        locale: "en_US",
+        type: "website",
+      },
+      twitter: {
+        card: "summary_large_image",
+        title,
+        description,
+        images: ["/images/products-og-image.jpg"],
+      },
+    };
+  } catch {
+    // Fallback metadata if fetch fails
+    const typeUrl = `${API_CONFIG.ENDPOINTS.base}/products/type/${typeId}`;
+    const fallbackTitle = `Products - ${typeId} - jelajah Code`;
+    const fallbackDescription = `Browse products in ${typeId} type on jelajah Code platform`;
+
+    return {
+      title: fallbackTitle,
+      description: fallbackDescription,
+      openGraph: {
+        title: fallbackTitle,
+        description: fallbackDescription,
+        url: typeUrl,
+        siteName: "jelajah Code",
+        images: [
+          {
+            url: "/images/products-og-image.jpg",
+            width: 1200,
+            height: 630,
+            alt: `Products - ${typeId}`,
+          },
+        ],
+        locale: "en_US",
+        type: "website",
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: fallbackTitle,
+        description: fallbackDescription,
+        images: ["/images/products-og-image.jpg"],
+      },
+    };
+  }
+}
+
+//====================================== Products By Tags Metadata ======================================//
+export async function generateProductsTagsMetadata(
+  params: Promise<{ tagsId: string }>,
+  searchParams: Promise<{
+    page?: string;
+    sort?: string;
+  }>
+): Promise<Metadata> {
+  const { tagsId } = await params;
+  const searchParamsData = await searchParams;
+  const page = searchParamsData.page || "1";
+  const sort = searchParamsData.sort || "newest";
+
+  try {
+    const { fetchProductsByTags } = await import(
+      "@/utils/fetching/FetchProducts"
+    );
+
+    const [{ pagination }] = await Promise.all([
+      fetchProductsByTags(tagsId, parseInt(page, 10), 10, sort),
+    ]);
+
+    const resultCount = pagination.total;
+
+    const urlParams = new URLSearchParams();
+    if (page !== "1") urlParams.set("page", page);
+    if (sort !== "newest") urlParams.set("sort", sort);
+
+    const tagsUrl = `${API_CONFIG.ENDPOINTS.base}/products/tags/${tagsId}${
+      urlParams.toString() ? `?${urlParams.toString()}` : ""
+    }`;
+
+    const title = `Products - ${tagsId} - jelajah Code`;
+    const description = `Browse ${resultCount} product${
+      resultCount !== 1 ? "s" : ""
+    } tagged with ${tagsId} on jelajah Code. Discover and explore products that match your interests.`;
+
+    return {
+      title,
+      description,
+      openGraph: {
+        title,
+        description,
+        url: tagsUrl,
+        siteName: "jelajah Code",
+        images: [
+          {
+            url: "/images/products-og-image.jpg",
+            width: 1200,
+            height: 630,
+            alt: `Products - ${tagsId}`,
+          },
+        ],
+        locale: "en_US",
+        type: "website",
+      },
+      twitter: {
+        card: "summary_large_image",
+        title,
+        description,
+        images: ["/images/products-og-image.jpg"],
+      },
+    };
+  } catch {
+    // Fallback metadata if fetch fails
+    const tagsUrl = `${API_CONFIG.ENDPOINTS.base}/products/tags/${tagsId}`;
+    const fallbackTitle = `Products - ${tagsId} - jelajah Code`;
+    const fallbackDescription = `Browse products tagged with ${tagsId} on jelajah Code platform`;
+
+    return {
+      title: fallbackTitle,
+      description: fallbackDescription,
+      openGraph: {
+        title: fallbackTitle,
+        description: fallbackDescription,
+        url: tagsUrl,
+        siteName: "jelajah Code",
+        images: [
+          {
+            url: "/images/products-og-image.jpg",
+            width: 1200,
+            height: 630,
+            alt: `Products - ${tagsId}`,
+          },
+        ],
+        locale: "en_US",
+        type: "website",
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: fallbackTitle,
+        description: fallbackDescription,
+        images: ["/images/products-og-image.jpg"],
+      },
+    };
+  }
 }

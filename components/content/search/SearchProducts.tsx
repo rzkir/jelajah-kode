@@ -26,7 +26,9 @@ import {
     SheetTrigger,
 } from "@/components/ui/sheet"
 
-import { Filter } from "lucide-react"
+import { Filter, PanelLeft } from "lucide-react"
+
+import { cn } from "@/lib/utils"
 
 export default function SearchProducts({ products, pagination, query, page, categories, types, initialFilters }: SearchProductsProps) {
     const productsArray = React.useMemo(() => Array.isArray(products) ? products : [], [products]);
@@ -53,6 +55,8 @@ export default function SearchProducts({ products, pagination, query, page, cate
         setIsRatingsOpen,
         isTechStackOpen,
         setIsTechStackOpen,
+        isFilterOpen,
+        setIsFilterOpen,
     } = useStateSearch(initialFilters, query, page)
 
     const filterContent = (
@@ -84,6 +88,8 @@ export default function SearchProducts({ products, pagination, query, page, cate
             setIsRatingsOpen={setIsRatingsOpen}
             isTechStackOpen={isTechStackOpen}
             setIsTechStackOpen={setIsTechStackOpen}
+            isFilterOpen={isFilterOpen}
+            setIsFilterOpen={setIsFilterOpen}
         />
     )
 
@@ -92,10 +98,30 @@ export default function SearchProducts({ products, pagination, query, page, cate
             <div className="container mx-auto px-2 md:px-4 py-2 md:py-4">
                 <div className="flex flex-col lg:flex-row gap-8">
                     {/* Filter Sidebar - Desktop */}
-                    <aside className="hidden lg:block lg:sticky lg:top-8 lg:h-fit">
-                        <div className="">
+                    <aside className={cn(
+                        "hidden lg:block lg:sticky lg:top-8 lg:h-fit transition-all duration-300 ease-in-out relative",
+                        isFilterOpen ? "lg:w-80" : "lg:w-12"
+                    )}>
+                        <div className={cn(
+                            "transition-opacity duration-300",
+                            isFilterOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+                        )}>
                             {filterContent}
                         </div>
+                        {/* Icon Toggle - Always Visible When Collapsed */}
+                        {!isFilterOpen && (
+                            <div className="absolute top-0 left-0 flex items-start justify-center w-12 pt-2">
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => setIsFilterOpen(!isFilterOpen)}
+                                    className="size-7"
+                                >
+                                    <PanelLeft className="h-4 w-4" />
+                                    <span className="sr-only">Toggle Filters</span>
+                                </Button>
+                            </div>
+                        )}
                     </aside>
 
                     {/* Main Content */}

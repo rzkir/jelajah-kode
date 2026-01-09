@@ -173,6 +173,8 @@ interface ProductsProps {
     page?: string;
   };
   page?: number;
+  disabledCategories?: boolean;
+  disabledTypes?: boolean;
 }
 
 //====================== Category ======================//
@@ -377,7 +379,6 @@ interface ProductsDetails {
     value: number;
     until?: string;
   };
-  views?: number;
   ratingCount?: number;
   ratingAverage?: number;
   category: ProductsCategory;
@@ -660,4 +661,139 @@ interface ProductsPopularPagination {
 interface ProductsPopularResponse {
   data: ProductsPopularItem[];
   pagination: ProductsPopularPagination;
+}
+
+//====================== Products By Category ======================//
+interface ProductsByCategoryItem {
+  _id: string;
+  productsId: string;
+  title: string;
+  thumbnail: string;
+  frameworks: Productsframeworks[];
+  price: number;
+  stock: number;
+  sold: number;
+  downloadCount: number;
+  category: ProductsCategory;
+  type: ProductsType;
+  rating: number;
+  ratingAverage: number;
+  ratingCount: number;
+  discount?: {
+    type: "percentage" | "fixed";
+    value: number;
+    until?: string;
+  };
+  author: {
+    _id: string;
+    name: string;
+    picture?: string;
+    role: UserRole;
+  };
+  paymentType: "free" | "paid";
+  status: "publish" | "draft";
+  created_at: string;
+  updated_at: string;
+}
+
+interface ProductsByCategoryPagination {
+  page: number;
+  limit: number;
+  total: number;
+  pages: number;
+}
+
+interface ProductsByCategoryResponse {
+  data: ProductsByCategoryItem[];
+  pagination: ProductsByCategoryPagination;
+}
+
+//====================== Products By Type ======================//
+interface ProductsByTypeItem {
+  _id: string;
+  productsId: string;
+  title: string;
+  thumbnail: string;
+  frameworks: Productsframeworks[];
+  price: number;
+  stock: number;
+  sold: number;
+  downloadCount: number;
+  category: ProductsCategory;
+  type: ProductsType;
+  rating: number;
+  ratingAverage: number;
+  ratingCount: number;
+  discount?: {
+    type: "percentage" | "fixed";
+    value: number;
+    until?: string;
+  };
+  author: {
+    _id: string;
+    name: string;
+    picture?: string;
+    role: UserRole;
+  };
+  paymentType: "free" | "paid";
+  status: "publish" | "draft";
+  created_at: string;
+  updated_at: string;
+}
+
+interface ProductsByTypePagination {
+  page: number;
+  limit: number;
+  total: number;
+  pages: number;
+}
+
+interface ProductsByTypeResponse {
+  data: ProductsByTypeItem[];
+  pagination: ProductsByTypePagination;
+}
+
+//====================== Products By Tags ======================//
+interface ProductsByTagsItem {
+  _id: string;
+  productsId: string;
+  title: string;
+  thumbnail: string;
+  frameworks: Productsframeworks[];
+  price: number;
+  stock: number;
+  sold: number;
+  downloadCount: number;
+  category: ProductsCategory;
+  type: ProductsType;
+  rating: number;
+  ratingAverage: number;
+  ratingCount: number;
+  discount?: {
+    type: "percentage" | "fixed";
+    value: number;
+    until?: string;
+  };
+  author: {
+    _id: string;
+    name: string;
+    picture?: string;
+    role: UserRole;
+  };
+  paymentType: "free" | "paid";
+  status: "publish" | "draft";
+  created_at: string;
+  updated_at: string;
+}
+
+interface ProductsByTagsPagination {
+  page: number;
+  limit: number;
+  total: number;
+  pages: number;
+}
+
+interface ProductsByTagsResponse {
+  data: ProductsByTagsItem[];
+  pagination: ProductsByTagsPagination;
 }

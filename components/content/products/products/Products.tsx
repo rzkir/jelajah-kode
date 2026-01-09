@@ -26,9 +26,11 @@ import {
     SheetTrigger,
 } from "@/components/ui/sheet"
 
-import { Filter } from "lucide-react"
+import { Filter, PanelLeft } from "lucide-react"
 
-export default function Products({ products, pagination, categories, types, initialFilters, page = 1 }: ProductsProps) {
+import { cn } from "@/lib/utils"
+
+export default function Products({ products, pagination, categories, types, initialFilters, page = 1, disabledCategories = false, disabledTypes = false }: ProductsProps) {
     const productsArray = React.useMemo(() => Array.isArray(products) ? products : [], [products]);
     const [isSheetOpen, setIsSheetOpen] = React.useState(false)
 
@@ -53,6 +55,8 @@ export default function Products({ products, pagination, categories, types, init
         setIsRatingsOpen,
         isTechStackOpen,
         setIsTechStackOpen,
+        isFilterOpen,
+        setIsFilterOpen,
     } = useStateProducts(initialFilters, page)
 
     const filterContent = (
@@ -84,8 +88,12 @@ export default function Products({ products, pagination, categories, types, init
             setIsRatingsOpen={setIsRatingsOpen}
             isTechStackOpen={isTechStackOpen}
             setIsTechStackOpen={setIsTechStackOpen}
+            isFilterOpen={isFilterOpen}
+            setIsFilterOpen={setIsFilterOpen}
             typeSelectMode="single"
             categorySelectMode="single"
+            disabledCategories={disabledCategories}
+            disabledTypes={disabledTypes}
         />
     )
 
@@ -93,14 +101,31 @@ export default function Products({ products, pagination, categories, types, init
         <section className="min-h-screen">
             <div className="container mx-auto px-2 md:px-4 py-2 md:py-4">
                 <div className="flex flex-col lg:flex-row gap-8">
-                    {/* Filter Sidebar - Desktop */}
-                    <aside className="hidden lg:block lg:sticky lg:top-8 lg:h-fit">
-                        <div className="">
+                    <aside className={cn(
+                        "hidden lg:block lg:sticky lg:top-8 lg:h-fit transition-all duration-300 ease-in-out relative",
+                        isFilterOpen ? "lg:w-80" : "lg:w-12"
+                    )}>
+                        <div className={cn(
+                            "transition-opacity duration-300",
+                            isFilterOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+                        )}>
                             {filterContent}
                         </div>
+                        {!isFilterOpen && (
+                            <div className="absolute top-0 left-0 flex items-start justify-center w-12 pt-2">
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => setIsFilterOpen(!isFilterOpen)}
+                                    className="size-7"
+                                >
+                                    <PanelLeft className="h-4 w-4" />
+                                    <span className="sr-only">Toggle Filters</span>
+                                </Button>
+                            </div>
+                        )}
                     </aside>
 
-                    {/* Main Content */}
                     <main className="flex-1">
                         {/* Header */}
                         <div className="sticky top-14 z-50 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 lg:static lg:bg-transparent lg:backdrop-blur-0 mb-6 pb-4 lg:pb-0 border-b lg:border-b-0">
@@ -169,7 +194,7 @@ export default function Products({ products, pagination, categories, types, init
                         {/* Products Grid */}
                         {productsArray.length > 0 ? (
                             <>
-                                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                                <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-3 gap-6">
                                     {productsArray.map((item, idx) => (
                                         <ProductsCard
                                             key={item.productsId || item._id || `product-${idx}`}

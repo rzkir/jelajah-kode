@@ -60,7 +60,7 @@ export const fetchProductsBySearch = async (
 ): Promise<ProductsSearchResponse> => {
   try {
     const params = new URLSearchParams();
-    
+
     // Add all search params to URLSearchParams
     Object.entries(searchParams).forEach(([key, value]) => {
       if (value !== undefined && value !== null && value !== "") {
@@ -72,16 +72,13 @@ export const fetchProductsBySearch = async (
       }
     });
 
-    const response = await fetch(
-      API_CONFIG.ENDPOINTS.products.search(params),
-      {
-        next: { revalidate: 0 },
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${API_CONFIG.SECRET}`,
-        },
-      }
-    );
+    const response = await fetch(API_CONFIG.ENDPOINTS.products.search(params), {
+      next: { revalidate: 0 },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${API_CONFIG.SECRET}`,
+      },
+    });
 
     if (!response.ok) {
       throw new Error(`Failed to search products: ${response.statusText}`);
@@ -304,5 +301,128 @@ export const fetchProductsRatings = async (
       console.error("Error fetching products ratings:", error);
     }
     return [] as unknown as Ratings[];
+  }
+};
+
+export const fetchProductsByCategory = async (
+  categoryId: string,
+  page: number = 1,
+  limit: number = 10,
+  sort: string = "newest"
+): Promise<ProductsByCategoryResponse> => {
+  try {
+    const response = await fetch(
+      API_CONFIG.ENDPOINTS.products.byCategory(categoryId, page, limit, sort),
+      {
+        next: { revalidate: 0 },
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        `Failed to fetch products by category: ${response.statusText}`
+      );
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    if (process.env.NODE_ENV !== "production") {
+      console.error("Error fetching products by category:", error);
+    }
+    return {
+      data: [],
+      pagination: {
+        page: 1,
+        limit: 10,
+        total: 0,
+        pages: 0,
+      },
+    };
+  }
+};
+
+export const fetchProductsByType = async (
+  typeId: string,
+  page: number = 1,
+  limit: number = 10,
+  sort: string = "newest"
+): Promise<ProductsByTypeResponse> => {
+  try {
+    const response = await fetch(
+      API_CONFIG.ENDPOINTS.products.byType(typeId, page, limit, sort),
+      {
+        next: { revalidate: 0 },
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        `Failed to fetch products by type: ${response.statusText}`
+      );
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    if (process.env.NODE_ENV !== "production") {
+      console.error("Error fetching products by type:", error);
+    }
+    return {
+      data: [],
+      pagination: {
+        page: 1,
+        limit: 10,
+        total: 0,
+        pages: 0,
+      },
+    };
+  }
+};
+
+export const fetchProductsByTags = async (
+  tagsId: string,
+  page: number = 1,
+  limit: number = 10,
+  sort: string = "newest"
+): Promise<ProductsByTagsResponse> => {
+  try {
+    const response = await fetch(
+      API_CONFIG.ENDPOINTS.products.byTags(tagsId, page, limit, sort),
+      {
+        next: { revalidate: 0 },
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        `Failed to fetch products by tags: ${response.statusText}`
+      );
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    if (process.env.NODE_ENV !== "production") {
+      console.error("Error fetching products by tags:", error);
+    }
+    return {
+      data: [],
+      pagination: {
+        page: 1,
+        limit: 10,
+        total: 0,
+        pages: 0,
+      },
+    };
   }
 };

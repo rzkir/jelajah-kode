@@ -88,6 +88,7 @@ export function useStateProducts(
   const [isTypeOpen, setIsTypeOpen] = React.useState(false);
   const [isRatingsOpen, setIsRatingsOpen] = React.useState(false);
   const [isTechStackOpen, setIsTechStackOpen] = React.useState(false);
+  const [isFilterOpen, setIsFilterOpen] = React.useState(true);
 
   const setSearchQuery = React.useCallback((query: string) => {
     dispatch({ type: "SET_SEARCH_QUERY", payload: query });
@@ -205,6 +206,24 @@ export function useStateProducts(
     return () => clearTimeout(timeoutId);
   }, [filters, page, router]);
 
+  // Keyboard shortcut to toggle filter sidebar (Ctrl+B or Cmd+B)
+  React.useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (
+        event.key === "b" &&
+        (event.metaKey || event.ctrlKey) &&
+        !event.shiftKey &&
+        !event.altKey
+      ) {
+        event.preventDefault();
+        setIsFilterOpen((prev) => !prev);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [setIsFilterOpen]);
+
   return {
     filters,
     setSearchQuery,
@@ -226,5 +245,7 @@ export function useStateProducts(
     setIsRatingsOpen,
     isTechStackOpen,
     setIsTechStackOpen,
+    isFilterOpen,
+    setIsFilterOpen,
   };
 }

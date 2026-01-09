@@ -24,6 +24,8 @@ import useFormatDate from '@/hooks/FormatDate'
 
 import useStateProductsDetails from '@/components/content/products/productsDetails/lib/useStateProductsDetails'
 
+import Link from 'next/link'
+
 interface ProductsDetailsProps {
     product: ProductsDetails
 }
@@ -55,12 +57,16 @@ export default function ProductsDetails({ product }: ProductsDetailsProps) {
             <div className="container mx-auto px-2 md:px-4">
                 {/* Header Section with Badges */}
                 <div className="mb-4 sm:mb-6 flex flex-wrap gap-2 sm:gap-3">
-                    <Badge variant="secondary" className="px-3 sm:px-4 py-1 sm:py-1.5 text-xs sm:text-sm font-medium shadow-sm">
-                        {product.category.title}
-                    </Badge>
-                    <Badge variant="default" className="px-3 sm:px-4 py-1 sm:py-1.5 text-xs sm:text-sm font-medium shadow-sm">
-                        {product.type.title}
-                    </Badge>
+                    <Link href={`/products/categories/${product.category.categoryId}`}>
+                        <Badge variant="secondary" className="px-3 sm:px-4 py-1 sm:py-1.5 text-xs sm:text-sm font-medium shadow-sm">
+                            {product.category.title}
+                        </Badge>
+                    </Link>
+                    <Link href={`/products/types/${product.type.typeId}`}>
+                        <Badge variant="default" className="px-3 sm:px-4 py-1 sm:py-1.5 text-xs sm:text-sm font-medium shadow-sm">
+                            {product.type.title}
+                        </Badge>
+                    </Link>
                     {hasActiveDiscount && activeDiscount && (
                         <Badge variant="destructive" className="px-3 sm:px-4 py-1 sm:py-1.5 text-xs sm:text-sm font-semibold shadow-md animate-pulse">
                             🔥 -{discountPercentage}% OFF
@@ -187,9 +193,11 @@ export default function ProductsDetails({ product }: ProductsDetailsProps) {
                                             <h4 className="font-semibold mb-3 sm:mb-4 text-base sm:text-lg">Tags</h4>
                                             <div className="flex flex-wrap gap-2 sm:gap-2.5">
                                                 {product.tags.map((tag, idx) => (
-                                                    <Badge key={idx} variant="secondary" className="text-xs sm:text-sm py-1.5 sm:py-2 px-3 sm:px-4 font-medium shadow-sm hover:shadow-md transition-shadow">
-                                                        {tag.title}
-                                                    </Badge>
+                                                    <Link href={`/products/tags/${tag.tagsId}`} key={idx}>
+                                                        <Badge variant="secondary" className="text-xs sm:text-sm py-1.5 sm:py-2 px-3 sm:px-4 font-medium shadow-sm hover:shadow-md transition-shadow">
+                                                            {tag.title}
+                                                        </Badge>
+                                                    </Link>
                                                 ))}
                                             </div>
                                         </div>

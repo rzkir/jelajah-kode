@@ -1,6 +1,6 @@
 "use client"
 
-import { Star, ChevronDown, ChevronUp } from "lucide-react"
+import { Star, ChevronDown, ChevronUp, PanelLeft } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
@@ -46,11 +46,19 @@ export default function SearchProductsFilter({
     setIsRatingsOpen,
     isTechStackOpen,
     setIsTechStackOpen,
+    isFilterOpen,
+    setIsFilterOpen,
     typeSelectMode = "multiple",
     categorySelectMode = "multiple",
+    disabledCategories = false,
+    disabledTypes = false,
 }: SearchProductsFilterProps & {
     typeSelectMode?: "single" | "multiple";
     categorySelectMode?: "single" | "multiple";
+    isFilterOpen?: boolean;
+    setIsFilterOpen?: (open: boolean) => void;
+    disabledCategories?: boolean;
+    disabledTypes?: boolean;
 }) {
     const {
         categories,
@@ -73,7 +81,20 @@ export default function SearchProductsFilter({
 
     return (
         <div className="w-full lg:w-80 space-y-6">
-            <h2 className="text-xl font-semibold mb-6 hidden lg:block">Filters</h2>
+            <div className="hidden lg:flex items-center justify-between mb-6">
+                <h2 className="text-xl font-semibold">Filters</h2>
+                {setIsFilterOpen && isFilterOpen && (
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => setIsFilterOpen(!isFilterOpen)}
+                        className="size-7"
+                    >
+                        <PanelLeft className="h-4 w-4" />
+                        <span className="sr-only">Toggle Filters</span>
+                    </Button>
+                )}
+            </div>
 
             {/* Search Input */}
             <div className="space-y-2">
@@ -89,8 +110,8 @@ export default function SearchProductsFilter({
             {/* Categories */}
             <Collapsible open={isCategoriesOpen} onOpenChange={setIsCategoriesOpen}>
                 <div className="space-y-3">
-                    <CollapsibleTrigger className="flex items-center justify-between w-full">
-                        <Label className="text-sm font-medium cursor-pointer">Categories</Label>
+                    <CollapsibleTrigger className="flex items-center justify-between w-full" disabled={disabledCategories}>
+                        <Label className={cn("text-sm font-medium", disabledCategories ? "cursor-not-allowed opacity-50" : "cursor-pointer")}>Categories</Label>
                         {isCategoriesOpen ? (
                             <ChevronUp className="w-4 h-4" />
                         ) : (
@@ -102,6 +123,7 @@ export default function SearchProductsFilter({
                             <RadioGroup
                                 value={selectedCategories[0] || "all"}
                                 onValueChange={(value) => {
+                                    if (disabledCategories) return;
                                     if (value === "all") {
                                         setSelectedCategories([]);
                                     } else if (value) {
@@ -110,23 +132,24 @@ export default function SearchProductsFilter({
                                         setSelectedCategories([]);
                                     }
                                 }}
+                                disabled={disabledCategories}
                             >
                                 <div className="space-y-2">
                                     <div className="flex items-center gap-2">
-                                        <RadioGroupItem value="all" id="category-all" />
+                                        <RadioGroupItem value="all" id="category-all" disabled={disabledCategories} />
                                         <Label
                                             htmlFor="category-all"
-                                            className="flex items-center gap-2 cursor-pointer hover:text-blue-600 dark:hover:text-blue-400"
+                                            className={cn("flex items-center gap-2", disabledCategories ? "cursor-not-allowed opacity-50" : "cursor-pointer hover:text-blue-600 dark:hover:text-blue-400")}
                                         >
                                             <span className="text-sm">All Categories</span>
                                         </Label>
                                     </div>
                                     {categories.map((category) => (
                                         <div key={category.value} className="flex items-center gap-2">
-                                            <RadioGroupItem value={category.value} id={`category-${category.value}`} />
+                                            <RadioGroupItem value={category.value} id={`category-${category.value}`} disabled={disabledCategories} />
                                             <Label
                                                 htmlFor={`category-${category.value}`}
-                                                className="flex items-center gap-2 cursor-pointer hover:text-blue-600 dark:hover:text-blue-400"
+                                                className={cn("flex items-center gap-2", disabledCategories ? "cursor-not-allowed opacity-50" : "cursor-pointer hover:text-blue-600 dark:hover:text-blue-400")}
                                             >
                                                 <span className="text-sm">{category.label}</span>
                                             </Label>
@@ -140,13 +163,14 @@ export default function SearchProductsFilter({
                                     <Label
                                         key={category.value}
                                         htmlFor={`category-${category.value}`}
-                                        className="flex items-center gap-2 cursor-pointer hover:text-blue-600 dark:hover:text-blue-400"
+                                        className={cn("flex items-center gap-2", disabledCategories ? "cursor-not-allowed opacity-50" : "cursor-pointer hover:text-blue-600 dark:hover:text-blue-400")}
                                     >
                                         <Input
                                             id={`category-${category.value}`}
                                             type="checkbox"
                                             checked={selectedCategories.includes(category.value)}
-                                            onChange={() => toggleCategory(category.value)}
+                                            onChange={() => !disabledCategories && toggleCategory(category.value)}
+                                            disabled={disabledCategories}
                                             className="w-4 h-4 rounded border-gray-300 dark:border-gray-700 text-blue-600 focus:ring-blue-500"
                                         />
                                         <span className="text-sm">{category.label}</span>
@@ -215,8 +239,8 @@ export default function SearchProductsFilter({
             {/* Type */}
             <Collapsible open={isTypeOpen} onOpenChange={setIsTypeOpen}>
                 <div className="space-y-3">
-                    <CollapsibleTrigger className="flex items-center justify-between w-full">
-                        <Label className="text-sm font-medium cursor-pointer">Type</Label>
+                    <CollapsibleTrigger className="flex items-center justify-between w-full" disabled={disabledTypes}>
+                        <Label className={cn("text-sm font-medium", disabledTypes ? "cursor-not-allowed opacity-50" : "cursor-pointer")}>Type</Label>
                         {isTypeOpen ? (
                             <ChevronUp className="w-4 h-4" />
                         ) : (
@@ -228,6 +252,7 @@ export default function SearchProductsFilter({
                             <RadioGroup
                                 value={selectedTypes[0] || "all"}
                                 onValueChange={(value) => {
+                                    if (disabledTypes) return;
                                     if (value === "all") {
                                         setSelectedTypes([]);
                                     } else if (value) {
@@ -236,23 +261,24 @@ export default function SearchProductsFilter({
                                         setSelectedTypes([]);
                                     }
                                 }}
+                                disabled={disabledTypes}
                             >
                                 <div className="space-y-2">
                                     <div className="flex items-center gap-2">
-                                        <RadioGroupItem value="all" id="type-all" />
+                                        <RadioGroupItem value="all" id="type-all" disabled={disabledTypes} />
                                         <Label
                                             htmlFor="type-all"
-                                            className="flex items-center gap-2 cursor-pointer hover:text-blue-600 dark:hover:text-blue-400"
+                                            className={cn("flex items-center gap-2", disabledTypes ? "cursor-not-allowed opacity-50" : "cursor-pointer hover:text-blue-600 dark:hover:text-blue-400")}
                                         >
                                             <span className="text-sm">All Types</span>
                                         </Label>
                                     </div>
                                     {types.map((type) => (
                                         <div key={type.value} className="flex items-center gap-2">
-                                            <RadioGroupItem value={type.value} id={`type-${type.value}`} />
+                                            <RadioGroupItem value={type.value} id={`type-${type.value}`} disabled={disabledTypes} />
                                             <Label
                                                 htmlFor={`type-${type.value}`}
-                                                className="flex items-center gap-2 cursor-pointer hover:text-blue-600 dark:hover:text-blue-400"
+                                                className={cn("flex items-center gap-2", disabledTypes ? "cursor-not-allowed opacity-50" : "cursor-pointer hover:text-blue-600 dark:hover:text-blue-400")}
                                             >
                                                 <span className="text-sm">{type.label}</span>
                                             </Label>
@@ -266,13 +292,14 @@ export default function SearchProductsFilter({
                                     <Label
                                         key={type.value}
                                         htmlFor={`type-${type.value}`}
-                                        className="flex items-center gap-2 cursor-pointer hover:text-blue-600 dark:hover:text-blue-400"
+                                        className={cn("flex items-center gap-2", disabledTypes ? "cursor-not-allowed opacity-50" : "cursor-pointer hover:text-blue-600 dark:hover:text-blue-400")}
                                     >
                                         <Input
                                             id={`type-${type.value}`}
                                             type="checkbox"
                                             checked={selectedTypes.includes(type.value)}
-                                            onChange={() => toggleType(type.value)}
+                                            onChange={() => !disabledTypes && toggleType(type.value)}
+                                            disabled={disabledTypes}
                                             className="w-4 h-4 rounded border-gray-300 dark:border-gray-700 text-blue-600 focus:ring-blue-500"
                                         />
                                         <span className="text-sm">{type.label}</span>

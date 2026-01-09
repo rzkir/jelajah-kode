@@ -37,6 +37,12 @@ export const API_CONFIG = {
         `${API_BASE_URL}/api/products/popular?page=${page}&limit=${limit}`,
       ratings: (productsId: string, page: number = 1, limit: number = 10) =>
         `${API_BASE_URL}/api/ratings/${productsId}?page=${page}&limit=${limit}`,
+      byCategory: (categoryId: string, page: number = 1, limit: number = 10, sort: string = "newest") =>
+        `${API_BASE_URL}/api/products/categories/${categoryId}?page=${page}&limit=${limit}&sort=${sort}`,
+      byType: (typeId: string, page: number = 1, limit: number = 10, sort: string = "newest") =>
+        `${API_BASE_URL}/api/products/type/${typeId}?page=${page}&limit=${limit}&sort=${sort}`,
+      byTags: (tagsId: string, page: number = 1, limit: number = 10, sort: string = "newest") =>
+        `${API_BASE_URL}/api/products/tags/${tagsId}?page=${page}&limit=${limit}&sort=${sort}`,
     },
     checkout: `${API_BASE_URL}/api/checkout`,
     transactions: `${API_BASE_URL}/api/transactions`,
