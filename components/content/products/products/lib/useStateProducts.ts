@@ -2,19 +2,9 @@
 
 import * as React from "react";
 
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
-const createInitialState = (initialFilters?: {
-  q?: string;
-  categories?: string;
-  types?: string;
-  tech?: string;
-  maxPrice?: string;
-  minRating?: string;
-  popular?: string;
-  new?: string;
-  sort?: string;
-}): FilterState => ({
+const createInitialState = (initialFilters?: InitialFilters): FilterState => ({
   searchQuery: initialFilters?.q || "",
   selectedCategories: initialFilters?.categories
     ? [initialFilters.categories]
@@ -32,6 +22,47 @@ const createInitialState = (initialFilters?: {
   newArrivals: initialFilters?.new === "true",
   sortBy: initialFilters?.sort || "newest",
 });
+
+// Helper function to build URL params from filters
+const buildFilterParams = (
+  filters: FilterState,
+  page?: number,
+  excludeCategories = false,
+  excludeTypes = false
+): URLSearchParams => {
+  const params = new URLSearchParams();
+
+  if (filters.searchQuery) params.set("q", filters.searchQuery);
+  if (!excludeCategories && filters.selectedCategories.length > 0) {
+    params.set("categories", filters.selectedCategories[0]);
+  }
+  if (!excludeTypes && filters.selectedTypes.length > 0) {
+    params.set("types", filters.selectedTypes[0]);
+  }
+  if (filters.selectedTechStack.length > 0) {
+    params.set("tech", filters.selectedTechStack.join(","));
+  }
+  if (filters.priceRange[1] < 200) {
+    params.set("maxPrice", filters.priceRange[1].toString());
+  }
+  if (filters.minRating) {
+    params.set("minRating", filters.minRating.toString());
+  }
+  if (filters.popularOnly) params.set("popular", "true");
+  if (filters.newArrivals) params.set("new", "true");
+  if (filters.sortBy !== "newest") params.set("sort", filters.sortBy);
+  if (page && page > 1) params.set("page", page.toString());
+
+  return params;
+};
+
+// Helper function to build redirect URL
+const buildRedirectUrl = (
+  basePath: string,
+  params: URLSearchParams
+): string => {
+  return `${basePath}${params.toString() ? `?${params.toString()}` : ""}`;
+};
 
 const filterReducer = (
   state: FilterState,
@@ -64,28 +95,29 @@ const filterReducer = (
 };
 
 export function useStateProducts(
-  initialFilters?: {
-    q?: string;
-    categories?: string;
-    types?: string;
-    tech?: string;
-    maxPrice?: string;
-    minRating?: string;
-    popular?: string;
-    new?: string;
-    sort?: string;
-  },
+  initialFilters?: InitialFilters,
   page?: number
 ) {
   const router = useRouter();
+  const pathname = usePathname();
 
   const [filters, dispatch] = React.useReducer(
     filterReducer,
     createInitialState(initialFilters)
   );
 
-  const [isCategoriesOpen, setIsCategoriesOpen] = React.useState(false);
-  const [isTypeOpen, setIsTypeOpen] = React.useState(false);
+  // Auto-open collapsed sections if category/type is selected from pathname or initialFilters
+  const hasCategoryFromPath = pathname?.startsWith("/products/categories/");
+  const hasTypeFromPath = pathname?.startsWith("/products/types/");
+  const hasCategoryFromFilter = Boolean(initialFilters?.categories);
+  const hasTypeFromFilter = Boolean(initialFilters?.types);
+
+  const [isCategoriesOpen, setIsCategoriesOpen] = React.useState(
+    hasCategoryFromPath || hasCategoryFromFilter
+  );
+  const [isTypeOpen, setIsTypeOpen] = React.useState(
+    hasTypeFromPath || hasTypeFromFilter
+  );
   const [isRatingsOpen, setIsRatingsOpen] = React.useState(false);
   const [isTechStackOpen, setIsTechStackOpen] = React.useState(false);
   const [isFilterOpen, setIsFilterOpen] = React.useState(true);
@@ -173,38 +205,96 @@ export function useStateProducts(
 
   const handleReset = React.useCallback(() => {
     dispatch({ type: "RESET_FILTERS" });
-    router.push("/products");
-  }, [router]);
+    // Reset to /products only if we're on a filter page (tags, categories, types)
+    const currentPath = pathname || "/products";
+    if (
+      currentPath.startsWith("/products/tags") ||
+      currentPath.startsWith("/products/categories") ||
+      currentPath.startsWith("/products/types")
+    ) {
+      router.push("/products");
+    } else {
+      router.push(currentPath);
+    }
+  }, [router, pathname]);
 
   React.useEffect(() => {
     const timeoutId = setTimeout(() => {
-      const params = new URLSearchParams();
-      if (filters.searchQuery) params.set("q", filters.searchQuery);
-      if (filters.selectedCategories.length > 0)
-        params.set("categories", filters.selectedCategories[0]);
-      if (filters.selectedTypes.length > 0)
-        params.set("types", filters.selectedTypes[0]);
-      if (filters.selectedTechStack.length > 0)
-        params.set("tech", filters.selectedTechStack.join(","));
-      if (filters.priceRange[1] < 200)
-        params.set("maxPrice", filters.priceRange[1].toString());
-      if (filters.minRating)
-        params.set("minRating", filters.minRating.toString());
-      if (filters.popularOnly) params.set("popular", "true");
-      if (filters.newArrivals) params.set("new", "true");
-      if (filters.sortBy !== "newest") params.set("sort", filters.sortBy);
-      if (page && page > 1) params.set("page", page.toString());
+      const isOnCategoryPage = pathname?.startsWith("/products/categories/");
+      const isOnTypePage = pathname?.startsWith("/products/types/");
+      const isOnTagsPage = pathname?.startsWith("/products/tags/");
 
-      const newUrl = `/products${
-        params.toString() ? `?${params.toString()}` : ""
-      }`;
-      if (window.location.pathname + window.location.search !== newUrl) {
+      // If on tags page, redirect to /products with all filters
+      if (isOnTagsPage) {
+        const newParams = buildFilterParams(filters, page);
+        const newUrl = buildRedirectUrl("/products", newParams);
+        const currentUrl = window.location.pathname + window.location.search;
+        if (currentUrl !== newUrl) {
+          router.push(newUrl);
+          return;
+        }
+      }
+
+      // If on category page, handle category changes
+      if (isOnCategoryPage) {
+        const currentCategoryId = pathname
+          ?.split("/products/categories/")[1]
+          ?.split("?")[0];
+        const newCategoryId = filters.selectedCategories[0];
+
+        // If category changed or cleared, redirect to /products
+        if (newCategoryId !== currentCategoryId) {
+          const newParams = buildFilterParams(filters, page);
+          const newUrl = buildRedirectUrl("/products", newParams);
+          router.push(newUrl);
+          return;
+        }
+      }
+
+      // If on type page, handle type changes
+      if (isOnTypePage) {
+        const currentTypeId = pathname
+          ?.split("/products/types/")[1]
+          ?.split("?")[0];
+        const newTypeId = filters.selectedTypes[0];
+
+        // If type changed or cleared, redirect to /products
+        if (newTypeId !== currentTypeId) {
+          const newParams = buildFilterParams(filters, page);
+          const newUrl = buildRedirectUrl("/products", newParams);
+          router.push(newUrl);
+          return;
+        }
+      }
+
+      // Normal flow: build params for current page
+      const params = buildFilterParams(
+        filters,
+        page,
+        isOnCategoryPage,
+        isOnTypePage
+      );
+      const basePath = pathname || "/products";
+      const newUrl = buildRedirectUrl(basePath, params);
+      const currentUrl = window.location.pathname + window.location.search;
+
+      if (currentUrl !== newUrl) {
         router.push(newUrl);
       }
     }, 300);
 
     return () => clearTimeout(timeoutId);
-  }, [filters, page, router]);
+  }, [filters, page, router, pathname]);
+
+  // Auto-open collapsed sections when pathname changes
+  React.useEffect(() => {
+    if (pathname?.startsWith("/products/categories/")) {
+      setIsCategoriesOpen(true);
+    }
+    if (pathname?.startsWith("/products/types/")) {
+      setIsTypeOpen(true);
+    }
+  }, [pathname]);
 
   // Keyboard shortcut to toggle filter sidebar (Ctrl+B or Cmd+B)
   React.useEffect(() => {

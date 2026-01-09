@@ -2,6 +2,8 @@
 
 import * as React from "react"
 
+import { usePathname } from "next/navigation"
+
 import ProductsCard from "@/components/ui/products/ProductsCard"
 
 import SearchProductsFilter from "@/components/content/search/SearchProductsFilter"
@@ -33,6 +35,7 @@ import { cn } from "@/lib/utils"
 export default function Products({ products, pagination, categories, types, initialFilters, page = 1, disabledCategories = false, disabledTypes = false }: ProductsProps) {
     const productsArray = React.useMemo(() => Array.isArray(products) ? products : [], [products]);
     const [isSheetOpen, setIsSheetOpen] = React.useState(false)
+    const pathname = usePathname()
 
     const {
         filters,
@@ -209,15 +212,27 @@ export default function Products({ products, pagination, categories, types, init
                                         const params = new URLSearchParams();
                                         params.set("page", pageNum.toString());
                                         if (initialFilters?.q) params.set("q", initialFilters.q);
-                                        if (initialFilters?.categories) params.set("categories", initialFilters.categories);
-                                        if (initialFilters?.types) params.set("types", initialFilters.types);
+
+                                        // Don't add categories query param if we're on a category page (already in pathname)
+                                        const isOnCategoryPage = pathname?.startsWith("/products/categories/");
+                                        if (initialFilters?.categories && !isOnCategoryPage) {
+                                            params.set("categories", initialFilters.categories);
+                                        }
+
+                                        // Don't add types query param if we're on a type page (already in pathname)
+                                        const isOnTypePage = pathname?.startsWith("/products/types/");
+                                        if (initialFilters?.types && !isOnTypePage) {
+                                            params.set("types", initialFilters.types);
+                                        }
+
                                         if (initialFilters?.tech) params.set("tech", initialFilters.tech);
                                         if (initialFilters?.maxPrice) params.set("maxPrice", initialFilters.maxPrice);
                                         if (initialFilters?.minRating) params.set("minRating", initialFilters.minRating);
                                         if (initialFilters?.popular) params.set("popular", initialFilters.popular);
                                         if (initialFilters?.new) params.set("new", initialFilters.new);
                                         if (initialFilters?.sort) params.set("sort", initialFilters.sort);
-                                        return `/products?${params.toString()}`;
+                                        const basePath = pathname || "/products";
+                                        return `${basePath}${params.toString() ? `?${params.toString()}` : ""}`;
                                     };
 
                                     return (

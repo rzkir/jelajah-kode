@@ -15,14 +15,6 @@ export async function generateMetadata({
     return generateProductsTypeMetadata(params, searchParams);
 }
 
-interface ProductsTypePageProps {
-    params: Promise<{ typeId: string }>;
-    searchParams: Promise<{
-        page?: string;
-        sort?: string;
-    }>;
-}
-
 export default async function Page({
     params,
     searchParams,
@@ -80,7 +72,6 @@ export default async function Page({
                 sort,
             }}
             page={page}
-            disabledTypes={true}
         />
     );
 }

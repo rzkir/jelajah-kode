@@ -175,6 +175,7 @@ interface ProductsProps {
   page?: number;
   disabledCategories?: boolean;
   disabledTypes?: boolean;
+  basePath?: string;
 }
 
 //====================== Category ======================//
@@ -358,6 +359,18 @@ type FormModalProductsTypeProps = {
   handleSubmit: (e: React.FormEvent) => Promise<void> | void;
   resetForm: () => void;
   useTriggerButton?: boolean;
+};
+
+type InitialFilters = {
+  q?: string;
+  categories?: string;
+  types?: string;
+  tech?: string;
+  maxPrice?: string;
+  minRating?: string;
+  popular?: string;
+  new?: string;
+  sort?: string;
 };
 
 //====================== Products Details ======================//
@@ -708,6 +721,14 @@ interface ProductsByCategoryResponse {
   pagination: ProductsByCategoryPagination;
 }
 
+interface ProductsCategoryPageProps {
+  params: Promise<{ categoryId: string }>;
+  searchParams: Promise<{
+    page?: string;
+    sort?: string;
+  }>;
+}
+
 //====================== Products By Type ======================//
 interface ProductsByTypeItem {
   _id: string;
@@ -753,6 +774,14 @@ interface ProductsByTypeResponse {
   pagination: ProductsByTypePagination;
 }
 
+interface ProductsTypePageProps {
+  params: Promise<{ typeId: string }>;
+  searchParams: Promise<{
+    page?: string;
+    sort?: string;
+  }>;
+}
+
 //====================== Products By Tags ======================//
 interface ProductsByTagsItem {
   _id: string;
@@ -796,4 +825,12 @@ interface ProductsByTagsPagination {
 interface ProductsByTagsResponse {
   data: ProductsByTagsItem[];
   pagination: ProductsByTagsPagination;
+}
+
+interface ProductsTagsPageProps {
+  params: Promise<{ tagsId: string }>;
+  searchParams: Promise<{
+    page?: string;
+    sort?: string;
+  }>;
 }

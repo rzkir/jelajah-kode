@@ -15,14 +15,6 @@ export async function generateMetadata({
     return generateProductsCategoryMetadata(params, searchParams);
 }
 
-interface ProductsCategoryPageProps {
-    params: Promise<{ categoryId: string }>;
-    searchParams: Promise<{
-        page?: string;
-        sort?: string;
-    }>;
-}
-
 export default async function Page({
     params,
     searchParams,
@@ -81,7 +73,6 @@ export default async function Page({
                 sort,
             }}
             page={page}
-            disabledCategories={true}
         />
     );
 }
