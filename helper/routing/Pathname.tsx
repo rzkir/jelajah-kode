@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 
 import Header from "@/components/layout/Header";
 
-import Footer from "@/components/layout/Footer";
+import { Footer } from "@/components/layout/Footer";
 
 import BottomNavigation from "@/components/layout/BottomNavigation";
 

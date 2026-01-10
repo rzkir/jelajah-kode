@@ -18,25 +18,13 @@ export default function Articles({ articles, categories, pagination, initialFilt
         <section className="min-h-screen">
             <div className="container mx-auto px-4 py-2 md:py-4">
                 {/* Header */}
-                <div className="sticky top-14 z-50 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 lg:static lg:bg-transparent lg:backdrop-blur-0 mb-6 pb-4 lg:pb-0 border-b lg:border-b-0">
-                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pt-4 lg:pt-0">
-                        <div className="hidden sm:block">
-                            <p className="text-sm text-muted-foreground mb-1">
-                                {pagination ? `Showing ${filteredArticles.length} of ${pagination.total} articles` : `${filteredArticles.length} Articles`}
-                            </p>
-                            <h1 className="text-3xl font-bold mb-2">Developer Resources</h1>
-                            <p className="text-sm text-muted-foreground">
-                                Learn from detailed guides, tutorials, and best practices for modern web development.
-                            </p>
-                        </div>
-                    </div>
-                    {/* Mobile Title & Count */}
-                    <div className="sm:hidden mt-4">
-                        <p className="text-xs text-muted-foreground mb-1">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pt-4 lg:pt-0">
+                    <div className="hidden sm:block">
+                        <p className="text-sm text-muted-foreground mb-1">
                             {pagination ? `Showing ${filteredArticles.length} of ${pagination.total} articles` : `${filteredArticles.length} Articles`}
                         </p>
-                        <h1 className="text-2xl font-bold mb-2">Developer Resources</h1>
-                        <p className="text-xs text-muted-foreground">
+                        <h1 className="text-3xl font-bold mb-2">Developer Resources</h1>
+                        <p className="text-sm text-muted-foreground">
                             Learn from detailed guides, tutorials, and best practices for modern web development.
                         </p>
                     </div>

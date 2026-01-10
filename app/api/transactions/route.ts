@@ -43,11 +43,48 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const orderId = searchParams.get("order_id");
 
+    // If no order_id, return all transactions for the user
     if (!orderId) {
-      return NextResponse.json(
-        { error: "Order ID is required" },
-        { status: 400 }
+      const allTransactions = await Transactions.find({
+        "user._id": user._id.toString(),
+      })
+        .sort({ createdAt: -1 })
+        .limit(100);
+
+      const transactionsList = allTransactions.map(
+        (txn: { toObject: () => unknown }) => {
+          const txnObj = txn.toObject() as {
+            _id: { toString(): string };
+            products: unknown[];
+            user: { _id: { toString(): string } };
+            paymentMethod: string;
+            status: string;
+            total_amount?: number;
+            order_id?: string;
+            snap_token?: string;
+            payment_details?: unknown;
+            createdAt?: Date;
+            updatedAt?: Date;
+          };
+          return {
+            _id: txnObj._id.toString(),
+            products: txnObj.products,
+            user: txnObj.user,
+            paymentMethod: txnObj.paymentMethod,
+            status: txnObj.status,
+            total_amount: txnObj.total_amount,
+            order_id: txnObj.order_id,
+            snap_token: txnObj.snap_token || null,
+            payment_details: txnObj.payment_details || null,
+            created_at:
+              txnObj.createdAt?.toISOString() || new Date().toISOString(),
+            updated_at:
+              txnObj.updatedAt?.toISOString() || new Date().toISOString(),
+          };
+        }
       );
+
+      return NextResponse.json(transactionsList, { status: 200 });
     }
 
     // Find transaction by order_id

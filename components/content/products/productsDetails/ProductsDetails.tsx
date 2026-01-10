@@ -498,9 +498,11 @@ export default function ProductsDetails({ product }: ProductsDetailsProps) {
                                                 </div>
                                             </div>
 
-                                            <Button variant="outline" size="sm" className="mt-2 sm:mt-3 w-full border-2 hover:bg-primary/10 hover:border-primary/30 transition-all duration-300 text-xs sm:text-sm">
-                                                View Profile
-                                            </Button>
+                                            <Link href={`/${product.author._id}`}>
+                                                <Button variant="outline" size="sm" className="mt-2 sm:mt-3 w-full border-2 hover:bg-primary/10 hover:border-primary/30 transition-all duration-300 text-xs sm:text-sm">
+                                                    View Profile
+                                                </Button>
+                                            </Link>
                                         </div>
                                     </div>
                                 </div>

@@ -31,7 +31,13 @@ const publicPaths = [
   "/forget-password",
   "/reset-password",
   "/products",
+  "/articles",
   "/search",
+  "/contact",
+  "/license-agreement",
+  "/privacy-policy",
+  "/refund-policy",
+  "/terms-of-service",
 ];
 
 // Define admin-only paths
@@ -89,9 +95,8 @@ export default function proxy(request: NextRequest) {
       // If token is invalid or expired, remove it
       const response = NextResponse.next();
       response.cookies.delete("token");
-      if (!isPublicPath) {
-        return NextResponse.redirect(new URL("/signin", request.url));
-      }
+      // Don't redirect if it's a public path or public content page
+      // The checks below will handle the redirect if needed
       return response;
     }
   }
@@ -115,9 +120,30 @@ export default function proxy(request: NextRequest) {
     }
   }
 
-  // Allow access to product detail pages without authentication (check before public path check)
+  // Allow access to public content pages without authentication
+  // Product detail pages
   if (pathname.startsWith("/products/")) {
-    // Allow access to product detail pages without requiring login
+    return NextResponse.next();
+  }
+
+  // Article pages (list and detail)
+  if (pathname.startsWith("/articles")) {
+    return NextResponse.next();
+  }
+
+  // Admin profile pages (public access)
+  if (pathname.startsWith("/admins/") || pathname.match(/^\/[a-f0-9]{24}$/)) {
+    // Allow access to admin profile pages using MongoDB ObjectId format
+    return NextResponse.next();
+  }
+
+  // Rules/legal pages
+  if (
+    pathname.startsWith("/license-agreement") ||
+    pathname.startsWith("/privacy-policy") ||
+    pathname.startsWith("/refund-policy") ||
+    pathname.startsWith("/terms-of-service")
+  ) {
     return NextResponse.next();
   }
 
@@ -139,8 +165,23 @@ export default function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // If user is not on a public path and not authenticated, redirect to signin
-  if (!isPublicPath && !isAuthenticated) {
+  // Only redirect to signin if:
+  // 1. User is not authenticated
+  // 2. Path is not public
+  // 3. Path is not one of the explicitly allowed public content pages above
+  // 4. Path is not checkout (already handled above)
+  // 5. Path is not admin dashboard (already handled above)
+  const isExplicitlyPublicContent =
+    pathname.startsWith("/products/") ||
+    pathname.startsWith("/articles") ||
+    pathname.startsWith("/admins/") ||
+    pathname.match(/^\/[a-f0-9]{24}$/) ||
+    pathname.startsWith("/license-agreement") ||
+    pathname.startsWith("/privacy-policy") ||
+    pathname.startsWith("/refund-policy") ||
+    pathname.startsWith("/terms-of-service");
+
+  if (!isPublicPath && !isAuthenticated && !isExplicitlyPublicContent) {
     return NextResponse.redirect(new URL("/signin", request.url));
   }
 

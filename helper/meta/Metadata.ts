@@ -1339,3 +1339,101 @@ export async function generateArticlesDetailsMetadata(
     };
   }
 }
+
+//====================================== Profile Page Metadata ======================================//
+export const ProfilePageMetadata: Metadata = {
+  title: "Profile - jelajah Code",
+  description:
+    "Manage your profile, view transactions, and update your account settings on jelajah Code",
+  openGraph: {
+    title: "Profile - jelajah Code",
+    description:
+      "Manage your profile, view transactions, and update your account settings on jelajah Code",
+    url: `${API_CONFIG.ENDPOINTS.base}/profile`,
+    siteName: "jelajah Code",
+    images: [
+      {
+        url: "/images/profile-og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Profile - jelajah Code",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Profile - jelajah Code",
+    description:
+      "Manage your profile, view transactions, and update your account settings on jelajah Code",
+    images: ["/images/profile-og-image.jpg"],
+  },
+};
+
+export async function generateProfileMetadata(): Promise<Metadata> {
+  try {
+    const { cookies } = await import("next/headers");
+    const { connectMongoDB } = await import("@/lib/mongodb");
+    const { Account } = await import("@/models/Account");
+    const { verifyJWT } = await import("@/hooks/jwt");
+
+    await connectMongoDB();
+
+    // Get token from cookies
+    const cookieStore = await cookies();
+    const token = cookieStore.get("token")?.value;
+
+    if (token) {
+      try {
+        const decodedToken = await verifyJWT(token);
+        const user = await Account.findById(decodedToken._id);
+
+        if (user) {
+          const userObj = user.toObject() as {
+            name: string;
+            picture?: string;
+          };
+
+          const userName = userObj.name || "User";
+          const userPicture = userObj.picture || "/images/profile-og-image.jpg";
+          const title = `${userName}'s Profile - jelajah Code`;
+          const description = `Manage ${userName}'s profile, view transactions, and update account settings on jelajah Code`;
+
+          return {
+            title,
+            description,
+            openGraph: {
+              title,
+              description,
+              url: `${API_CONFIG.ENDPOINTS.base}/profile`,
+              siteName: "jelajah Code",
+              images: [
+                {
+                  url: userPicture,
+                  width: 1200,
+                  height: 630,
+                  alt: `${userName}'s Profile`,
+                },
+              ],
+              locale: "en_US",
+              type: "profile",
+            },
+            twitter: {
+              card: "summary_large_image",
+              title,
+              description,
+              images: [userPicture],
+            },
+          };
+        }
+      } catch {
+        // If token is invalid or user not found, fallback to default
+      }
+    }
+  } catch {
+    // Fallback to default metadata if fetch fails
+  }
+
+  return ProfilePageMetadata;
+}
