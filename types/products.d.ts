@@ -179,6 +179,23 @@ interface ProductsProps {
   basePath?: string;
 }
 
+interface ProductsPageProps {
+  searchParams: Promise<{
+    q?: string;
+    page?: string;
+    categories?: string;
+    types?: string;
+    tech?: string;
+    minPrice?: string;
+    maxPrice?: string;
+    minRating?: string;
+    popular?: string;
+    discounted?: string;
+    new?: string;
+    sort?: string;
+  }>;
+}
+
 //====================== Category ======================//
 interface Category {
   _id: string;

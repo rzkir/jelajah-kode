@@ -79,6 +79,8 @@ export const API_CONFIG = {
     checkout: `${API_BASE_URL}/api/checkout`,
     transactions: `${API_BASE_URL}/api/transactions`,
     transactionsUpdate: `${API_BASE_URL}/api/transactions/update`,
+    transactionsSendEmail: `${API_BASE_URL}/api/transactions/send-email`,
+    transactionsDelete: `${API_BASE_URL}/api/transactions/delete`,
     ratings: `${API_BASE_URL}/api/ratings`,
     chat: {
       academia: `${API_CHAT_BASE_URL}/academia`,

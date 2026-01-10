@@ -23,6 +23,7 @@ const Pathname = ({ children }: { children: React.ReactNode }) => {
     pathname?.includes("/change-password") ||
     pathname?.includes("/reset-password") ||
     pathname?.includes("/checkout") ||
+    pathname?.includes("/profile/") ||
     pathname?.includes("/dashboard") ||
     false;
 
@@ -37,9 +38,7 @@ const Pathname = ({ children }: { children: React.ReactNode }) => {
         }}
       />
       {!isRoute && <Header />}
-      <div className="pb-14 md:pb-0">
-        {children}
-      </div>
+      {children}
       {!isRoute && <Footer />}
       {!isRoute && <BottomNavigation />}
     </Fragment>

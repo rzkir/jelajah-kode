@@ -4,6 +4,8 @@ import { generateVerificationEmailTemplate } from "@/hooks/template-message";
 
 import { generatePasswordResetEmailTemplate } from "@/hooks/template-message";
 
+import { generateTransactionPendingEmailTemplate } from "@/hooks/template-message";
+
 class EmailService {
   private transporter: nodemailer.Transporter;
 
@@ -32,6 +34,29 @@ class EmailService {
       subject: "Password Reset Code",
       text,
       html,
+    });
+  }
+
+  async sendTransactionPendingEmail(
+    to: string,
+    orderId: string,
+    userName: string,
+    totalAmount: number,
+    products: Array<{ title: string; quantity: number; price: number }>
+  ): Promise<void> {
+    const { html, text } = generateTransactionPendingEmailTemplate(
+      orderId,
+      userName,
+      totalAmount,
+      products
+    );
+
+    await this.transporter.sendMail({
+      from: `"Jelajah Kode" <${process.env.EMAIL_ADMIN}>`,
+      to,
+      subject: "Transaksi Pending - Menunggu Pembayaran",
+      html,
+      text,
     });
   }
 

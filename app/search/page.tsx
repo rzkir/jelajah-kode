@@ -1,4 +1,4 @@
-import SearchProducts from "@/components/content/search/SearchProducts";
+import SearchProducts from "@/components/pages/search/SearchProducts";
 
 import { generateSearchPageMetadata } from "@/helper/meta/Metadata";
 

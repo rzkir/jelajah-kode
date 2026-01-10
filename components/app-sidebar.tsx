@@ -3,23 +3,29 @@
 import * as React from "react";
 
 import {
-  BookOpen,
-  Bot,
+  ArrowLeftRight,
   Command,
   Frame,
   LifeBuoy,
   Map,
   PieChart,
   Send,
-  Settings2,
+  Newspaper,
   LayoutDashboard,
+  SquareUser,
   BriefcaseBusiness,
 } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
+
 import { NavProjects } from "@/components/nav-projects";
+
 import { NavSecondary } from "@/components/nav-secondary";
+
+import Link from "next/link";
+
 import { NavUser } from "@/components/nav-user";
+
 import {
   Sidebar,
   SidebarContent,
@@ -69,7 +75,7 @@ const data = {
     {
       title: "Articles",
       url: "/dashboard/articles",
-      icon: Bot,
+      icon: Newspaper,
       items: [
         {
           title: "Articles",
@@ -86,48 +92,52 @@ const data = {
       ],
     },
     {
-      title: "Documentation",
-      url: "#",
-      icon: BookOpen,
+      title: "Transactions",
+      url: "dashboard/transactions",
+      icon: ArrowLeftRight,
       items: [
         {
-          title: "Introduction",
-          url: "#",
+          title: "Transactions",
+          url: "/dashboard/transactions/transactions",
         },
         {
-          title: "Get Started",
-          url: "#",
+          title: "Pending",
+          url: "/dashboard/transactions/pending",
         },
         {
-          title: "Tutorials",
-          url: "#",
+          title: "Success",
+          url: "/dashboard/transactions/success",
         },
         {
-          title: "Changelog",
-          url: "#",
+          title: "Canceled",
+          url: "/dashboard/transactions/canceled",
+        },
+        {
+          title: "Expired",
+          url: "/dashboard/transactions/expired",
         },
       ],
     },
     {
-      title: "Settings",
-      url: "#",
-      icon: Settings2,
+      title: "Management Users",
+      url: "dashboard/management-users",
+      icon: SquareUser,
       items: [
         {
           title: "General",
-          url: "#",
+          url: "dashboard/management-users/users",
         },
         {
           title: "Team",
-          url: "#",
+          url: "dashboard/management-users/verified",
         },
         {
           title: "Billing",
-          url: "#",
+          url: "dashboard/management-users/active",
         },
         {
           title: "Limits",
-          url: "#",
+          url: "dashboard/management-users/inactive",
         },
       ],
     },
@@ -181,15 +191,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <a href="#">
+              <Link href="/dashboard">
                 <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
                   <Command className="size-4" />
                 </div>
+
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">Acme Inc</span>
+                  <span className="truncate font-medium">Jelajah Kode</span>
                   <span className="truncate text-xs">Enterprise</span>
                 </div>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

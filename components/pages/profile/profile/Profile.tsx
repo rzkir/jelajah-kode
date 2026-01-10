@@ -5,13 +5,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { User, ShoppingBag, MessageSquare, Settings, LogOut, Mail, Calendar } from "lucide-react"
-import { useState, useEffect } from "react"
+import { User, ShoppingBag, MessageSquare, Settings, LogOut, Mail, Calendar, CreditCard, Loader2, EyeIcon, Camera } from "lucide-react"
+import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/utils/context/AuthContext"
 import { toast } from "sonner"
 import { API_CONFIG } from "@/lib/config"
 import Image from "next/image"
+import ProfileLoading from "@/helper/loading/ProfileLoading"
+
 export default function ProfilePage() {
     const { user, loading, signOut, refreshUserData } = useAuth()
     const router = useRouter()
@@ -19,12 +21,12 @@ export default function ProfilePage() {
     const [isUpdating, setIsUpdating] = useState(false)
     const [transactions, setTransactions] = useState<Transaction[]>([])
     const [transactionsLoading, setTransactionsLoading] = useState(false)
+    const [continuingPayment, setContinuingPayment] = useState<Set<string>>(new Set())
+    const [isUploadingPicture, setIsUploadingPicture] = useState(false)
+    const fileInputRef = useRef<HTMLInputElement>(null)
     const [formData, setFormData] = useState({
         name: "",
         email: "",
-        phone: "",
-        location: "",
-        bio: "",
     })
 
     // Redirect if not authenticated
@@ -40,9 +42,6 @@ export default function ProfilePage() {
             setFormData({
                 name: user.name || "",
                 email: user.email || "",
-                phone: "",
-                location: "",
-                bio: "",
             })
         }
     }, [user])
@@ -78,6 +77,28 @@ export default function ProfilePage() {
 
         fetchTransactions()
     }, [user])
+
+    // Refresh transactions after payment
+    const refreshTransactions = async () => {
+        if (!user) return
+
+        try {
+            const response = await fetch(API_CONFIG.ENDPOINTS.transactions, {
+                method: "GET",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            })
+
+            if (response.ok) {
+                const data = await response.json()
+                setTransactions(Array.isArray(data) ? data : [])
+            }
+        } catch (error) {
+            console.error("Error refreshing transactions:", error)
+        }
+    }
 
     // Format date helper
     const formatDate = (dateString?: string) => {
@@ -186,16 +207,193 @@ export default function ProfilePage() {
         await signOut()
     }
 
+    // Handle picture upload
+    const handleEditPicture = () => {
+        fileInputRef.current?.click()
+    }
+
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0]
+        if (!file) return
+
+        // Validate file type
+        if (!file.type.startsWith("image/")) {
+            toast.error("Please select an image file")
+            return
+        }
+
+        // Validate file size (max 5MB)
+        const maxSize = 5 * 1024 * 1024 // 5MB
+        if (file.size > maxSize) {
+            toast.error("File size must be less than 5MB")
+            return
+        }
+
+        setIsUploadingPicture(true)
+
+        try {
+            // Upload to ImageKit
+            const formData = new FormData()
+            formData.append("file", file)
+
+            const uploadResponse = await fetch(API_CONFIG.ENDPOINTS.uploadPicture, {
+                method: "POST",
+                body: formData,
+                credentials: "include",
+            })
+
+            if (!uploadResponse.ok) {
+                const errorData = await uploadResponse.json()
+                throw new Error(errorData.error || "Failed to upload image")
+            }
+
+            const uploadResult = await uploadResponse.json()
+
+            // Update user profile with new picture URL
+            const updateResponse = await fetch(API_CONFIG.ENDPOINTS.me, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                credentials: "include",
+                body: JSON.stringify({
+                    picture: uploadResult.url,
+                }),
+            })
+
+            if (!updateResponse.ok) {
+                const errorData = await updateResponse.json()
+                throw new Error(errorData.error || "Failed to update profile")
+            }
+
+            // Refresh user data
+            await refreshUserData()
+
+            toast.success("Profile picture updated successfully!")
+        } catch (error) {
+            console.error("Error uploading picture:", error)
+            toast.error(
+                error instanceof Error
+                    ? error.message
+                    : "Failed to upload picture. Please try again."
+            )
+        } finally {
+            setIsUploadingPicture(false)
+            // Reset file input
+            if (fileInputRef.current) {
+                fileInputRef.current.value = ""
+            }
+        }
+    }
+
+    // Handle continue payment
+    const handleContinuePayment = async (transaction: Transaction) => {
+        if (!transaction.snap_token) {
+            toast.error("Payment token tidak tersedia")
+            return
+        }
+
+        if (!transaction.order_id) {
+            toast.error("Order ID tidak ditemukan")
+            return
+        }
+
+        setContinuingPayment((prev) => new Set(prev).add(transaction.order_id || transaction._id))
+
+        let retryCount = 0
+        const maxRetries = 50
+
+        const openSnapPayment = () => {
+            if (typeof window === "undefined" || !window.snap) {
+                retryCount++
+                if (retryCount >= maxRetries) {
+                    toast.error("Payment gateway gagal dimuat. Silakan refresh halaman.")
+                    console.error("Snap script not available after timeout")
+                    setContinuingPayment((prev) => {
+                        const newSet = new Set(prev)
+                        newSet.delete(transaction.order_id || transaction._id)
+                        return newSet
+                    })
+                    return
+                }
+                setTimeout(openSnapPayment, 100)
+                return
+            }
+
+            try {
+                if (!transaction.snap_token) {
+                    throw new Error("Snap token tidak tersedia")
+                }
+
+                window.snap.pay(transaction.snap_token, {
+                    onSuccess: async (result: { order_id: string }) => {
+                        setContinuingPayment((prev) => {
+                            const newSet = new Set(prev)
+                            newSet.delete(transaction.order_id || transaction._id)
+                            return newSet
+                        })
+
+                        await new Promise((resolve) => setTimeout(resolve, 1000))
+
+                        // Refresh transactions
+                        await refreshTransactions()
+
+                        toast.success("Pembayaran berhasil!")
+                        setTimeout(() => {
+                            router.push(`/checkout/success?order_id=${result.order_id}`)
+                        }, 1500)
+                    },
+                    onPending: async (result: { order_id: string }) => {
+                        setContinuingPayment((prev) => {
+                            const newSet = new Set(prev)
+                            newSet.delete(transaction.order_id || transaction._id)
+                            return newSet
+                        })
+
+                        await new Promise((resolve) => setTimeout(resolve, 1000))
+
+                        // Refresh transactions
+                        await refreshTransactions()
+
+                        toast.info("Pembayaran pending. Silakan selesaikan pembayaran.")
+                        setTimeout(() => {
+                            router.push(`/checkout/pending?order_id=${result.order_id}`)
+                        }, 1500)
+                    },
+                    onError: () => {
+                        setContinuingPayment((prev) => {
+                            const newSet = new Set(prev)
+                            newSet.delete(transaction.order_id || transaction._id)
+                            return newSet
+                        })
+                        toast.error("Pembayaran gagal. Silakan coba lagi.")
+                    },
+                    onClose: () => {
+                        setContinuingPayment((prev) => {
+                            const newSet = new Set(prev)
+                            newSet.delete(transaction.order_id || transaction._id)
+                            return newSet
+                        })
+                        toast.info("Jendela pembayaran ditutup")
+                    },
+                })
+            } catch (error) {
+                console.error("Error opening Snap payment:", error)
+                toast.error("Gagal membuka payment gateway. Silakan coba lagi.")
+                setContinuingPayment((prev) => {
+                    const newSet = new Set(prev)
+                    newSet.delete(transaction.order_id || transaction._id)
+                    return newSet
+                })
+            }
+        }
+
+        openSnapPayment()
+    }
+
     // Show loading state
     if (loading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-                    <p className="text-muted-foreground">Loading profile...</p>
-                </div>
-            </div>
-        )
+        return <ProfileLoading />
     }
 
     // Show nothing if no user (will redirect)
@@ -249,10 +447,29 @@ export default function ProfilePage() {
                 {/* Profile Header */}
                 <div className="mb-12">
                     <div className="flex flex-col md:flex-row gap-8 items-start md:items-center mb-8">
-                        <Avatar className="w-24 h-24 border-2 border-border">
-                            <AvatarImage src={user.picture || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`} />
-                            <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
-                        </Avatar>
+                        <div className="relative group cursor-pointer" onClick={handleEditPicture}>
+                            <Avatar className="w-24 h-24 border-2 border-border">
+                                <AvatarImage src={user.picture || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`} />
+                                <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
+                            </Avatar>
+                            {!isUploadingPicture && (
+                                <div className="absolute inset-0 bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                    <Camera className="h-6 w-6 text-white" />
+                                </div>
+                            )}
+                            {isUploadingPicture && (
+                                <div className="absolute inset-0 bg-black/70 rounded-full flex items-center justify-center">
+                                    <Loader2 className="h-6 w-6 text-white animate-spin" />
+                                </div>
+                            )}
+                            <input
+                                ref={fileInputRef}
+                                type="file"
+                                accept="image/*"
+                                onChange={handleFileChange}
+                                className="hidden"
+                            />
+                        </div>
                         <div className="flex-1">
                             <h1 className="text-3xl font-bold mb-2">{user.name}</h1>
                             <p className="text-muted-foreground mb-4">
@@ -357,36 +574,6 @@ export default function ProfilePage() {
                                         />
                                         <p className="text-xs text-muted-foreground mt-1">Email cannot be changed</p>
                                     </div>
-                                    <div>
-                                        <label className="text-sm font-semibold block mb-2">Phone</label>
-                                        <input
-                                            type="tel"
-                                            value={formData.phone}
-                                            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                                            className="w-full px-3 py-2 border border-border rounded-lg bg-background"
-                                            placeholder="Enter your phone number"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="text-sm font-semibold block mb-2">Location</label>
-                                        <input
-                                            type="text"
-                                            value={formData.location}
-                                            onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                                            className="w-full px-3 py-2 border border-border rounded-lg bg-background"
-                                            placeholder="Enter your location"
-                                        />
-                                    </div>
-                                </div>
-                                <div>
-                                    <label className="text-sm font-semibold block mb-2">Bio</label>
-                                    <textarea
-                                        value={formData.bio}
-                                        onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-                                        className="w-full px-3 py-2 border border-border rounded-lg bg-background"
-                                        rows={4}
-                                        placeholder="Tell us about yourself..."
-                                    />
                                 </div>
                                 <Button
                                     onClick={handleUpdateProfile}
@@ -447,6 +634,42 @@ export default function ProfilePage() {
                                                         </p>
                                                     </div>
                                                 </div>
+                                                {txn.status === "pending" && txn.paymentMethod === "paid" && txn.snap_token && (
+                                                    <div className="mt-3 pt-3 border-t border-border">
+                                                        <Button
+                                                            variant="default"
+                                                            size="sm"
+                                                            onClick={() => handleContinuePayment(txn)}
+                                                            disabled={continuingPayment.has(txn.order_id || txn._id)}
+                                                            className="w-full gap-2"
+                                                        >
+                                                            {continuingPayment.has(txn.order_id || txn._id) ? (
+                                                                <>
+                                                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                                                    Memproses...
+                                                                </>
+                                                            ) : (
+                                                                <>
+                                                                    <CreditCard className="h-4 w-4" />
+                                                                    Lanjutkan Pembayaran
+                                                                </>
+                                                            )}
+                                                        </Button>
+                                                    </div>
+                                                )}
+                                                {txn.status === "success" && (
+                                                    <div className="mt-3 pt-3 border-t border-border">
+                                                        <Button
+                                                            variant="outline"
+                                                            size="sm"
+                                                            onClick={() => router.push(`/profile/${txn.order_id}`)}
+                                                            className="w-full gap-2"
+                                                        >
+                                                            <EyeIcon className="h-4 w-4" />
+                                                            Lihat Detail
+                                                        </Button>
+                                                    </div>
+                                                )}
                                                 <div className="space-y-2 mt-3 pt-3 border-t border-border">
                                                     {txn.products.map((product: TransactionProduct, idx: number) => (
                                                         <div

@@ -43,11 +43,13 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const orderId = searchParams.get("order_id");
 
-    // If no order_id, return all transactions for the user
+    // If no order_id, return transactions
+    // If user is admin, return all transactions; otherwise return only user's transactions
     if (!orderId) {
-      const allTransactions = await Transactions.find({
-        "user._id": user._id.toString(),
-      })
+      const queryFilter =
+        user.role === "admins" ? {} : { "user._id": user._id.toString() };
+
+      const allTransactions = await Transactions.find(queryFilter)
         .sort({ createdAt: -1 })
         .limit(100);
 

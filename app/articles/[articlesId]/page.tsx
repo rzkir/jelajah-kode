@@ -1,6 +1,6 @@
 import { fetchArticlesDetailsById } from "@/utils/fetching/FetchArticles"
 
-import ArticlesDetails from "@/components/content/articles/details/ArticlesDetails"
+import ArticlesDetails from "@/components/pages/articles/details/ArticlesDetails"
 
 import { generateArticlesDetailsMetadata } from "@/helper/meta/Metadata"
 

@@ -3,7 +3,9 @@
 import type React from "react"
 
 import Link from "next/link"
-import { Mail, Github, Linkedin, Twitter } from "lucide-react"
+
+import { Facebook, Github, Linkedin, Music2 } from "lucide-react"
+
 import { useState } from "react"
 
 export function Footer() {
@@ -31,10 +33,8 @@ export function Footer() {
     {
       title: "Resources",
       links: [
-        { label: "Articles", href: "/articles" },
-        { label: "Documentation", href: "/articles?category=documentation" },
+        { label: "Documentation", href: "/documentation" },
         { label: "Tutorials", href: "/articles?category=tutorials" },
-        { label: "Contact Us", href: "/contact" },
       ],
     },
     {
@@ -42,8 +42,7 @@ export function Footer() {
       links: [
         { label: "About", href: "/about" },
         { label: "Articles", href: "/articles" },
-        { label: "Careers", href: "#" },
-        { label: "Press", href: "#" },
+        { label: "Contact Us", href: "/contact" },
       ],
     },
     {
@@ -123,34 +122,34 @@ export function Footer() {
 
           {/* Social Links */}
           <div className="flex gap-4">
-            <a
-              href="#"
+            <Link
+              href={process.env.NEXT_PUBLIC_GITHUB_URL as string}
               className="p-2 rounded-lg bg-secondary text-muted-foreground hover:text-foreground transition-colors"
               aria-label="GitHub"
             >
               <Github size={18} />
-            </a>
-            <a
-              href="#"
+            </Link>
+            <Link
+              href={process.env.NEXT_PUBLIC_TIKTOK_URL as string}
               className="p-2 rounded-lg bg-secondary text-muted-foreground hover:text-foreground transition-colors"
               aria-label="Twitter"
             >
-              <Twitter size={18} />
-            </a>
-            <a
+              <Music2 size={18} />
+            </Link>
+            <Link
               href="#"
               className="p-2 rounded-lg bg-secondary text-muted-foreground hover:text-foreground transition-colors"
               aria-label="LinkedIn"
             >
               <Linkedin size={18} />
-            </a>
-            <a
-              href="mailto:support@codemarket.com"
+            </Link>
+            <Link
+              href={process.env.NEXT_PUBLIC_FACEBOOK_URL as string}
               className="p-2 rounded-lg bg-secondary text-muted-foreground hover:text-foreground transition-colors"
               aria-label="Email"
             >
-              <Mail size={18} />
-            </a>
+              <Facebook size={18} />
+            </Link>
           </div>
         </div>
 

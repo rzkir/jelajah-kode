@@ -1,4 +1,4 @@
-import Profile from "@/components/profile/Profile"
+import Profile from "@/components/pages/profile/profile/Profile"
 
 import { generateProfileMetadata } from "@/helper/meta/Metadata"
 

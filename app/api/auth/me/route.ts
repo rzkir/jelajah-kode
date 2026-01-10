@@ -56,7 +56,6 @@ export async function GET() {
       status: userObj.status,
       isVerified: userObj.isVerified,
       emailVerified: userObj.emailVerified,
-
       created_at: userObj.createdAt?.toISOString() || new Date().toISOString(),
       updated_at: userObj.updatedAt?.toISOString() || new Date().toISOString(),
     };
@@ -89,9 +88,9 @@ export async function PUT(request: Request) {
       return NextResponse.json({ error: "Invalid token" }, { status: 401 });
     }
 
-    const user = await Account.findById(decodedToken._id);
-
-    if (!user) {
+    // Check if user exists
+    const existingUser = await Account.findById(decodedToken._id);
+    if (!existingUser) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
@@ -99,15 +98,29 @@ export async function PUT(request: Request) {
     const body = await request.json();
     const { picture, name } = body;
 
+    // Prepare update object
+    const updateData: {
+      picture?: string;
+      name?: string;
+    } = {};
+
     // Update user fields
     if (picture !== undefined) {
-      user.picture = picture;
+      updateData.picture = picture;
     }
     if (name !== undefined && name.trim() !== "") {
-      user.name = name.trim();
+      updateData.name = name.trim();
     }
 
-    await user.save();
+    // Update user using findByIdAndUpdate to ensure fields are saved
+    const user = await Account.findByIdAndUpdate(decodedToken._id, updateData, {
+      new: true,
+      runValidators: true,
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
 
     // Convert to plain object to access timestamps safely
     const userObj = user.toObject() as {

@@ -1,4 +1,4 @@
-import AdminProfile from "@/components/content/admins/AdminProfile"
+import AdminProfile from "@/components/pages/admins/AdminProfile"
 
 import { fetchAdminById, fetchAdminProducts, fetchAdminArticles } from "@/utils/fetching/FetchAdmins"
 

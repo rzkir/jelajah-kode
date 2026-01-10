@@ -1,31 +1,6 @@
-import { Github, Linkedin, Twitter } from "lucide-react"
-
 import Link from "next/link"
 
-import Image from "next/image"
-
 export default function AboutPage() {
-    const team = [
-        {
-            name: "Alex Johnson",
-            role: "Founder & CEO",
-            bio: "Full-stack developer with 10+ years of experience building web applications.",
-            image: "/professional-man.png",
-        },
-        {
-            name: "Sarah Chen",
-            role: "Head of Operations",
-            bio: "Operations specialist focused on creating seamless user experiences.",
-            image: "/professional-woman.png",
-        },
-        {
-            name: "Mike Davis",
-            role: "Lead Developer",
-            bio: "Expert in full-stack development and cloud infrastructure.",
-            image: "/professional-man-developer.jpg",
-        },
-    ]
-
     return (
         <div className="min-h-screen">
             <section className="border-b border-border bg-muted/30">
@@ -83,62 +58,6 @@ export default function AboutPage() {
                                 We believe in the power of community. Our platform connects creators with developers who appreciate
                                 their work.
                             </p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* Team Section */}
-            <section className="py-16 border-b border-border">
-                <div className="container mx-auto px-4">
-                    <h2 className="text-3xl font-bold mb-12">Our Team</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        {team.map((member) => (
-                            <div key={member.name} className="text-center">
-                                <Image
-                                    src={member.image || "/placeholder.svg"}
-                                    alt={member.name}
-                                    className="w-48 h-48 rounded-lg mx-auto mb-4 object-cover"
-                                />
-                                <h3 className="text-xl font-semibold">{member.name}</h3>
-                                <p className="text-primary font-medium mb-3">{member.role}</p>
-                                <p className="text-muted-foreground mb-4">{member.bio}</p>
-                                <div className="flex justify-center gap-3">
-                                    <a href="#" className="p-2 rounded-lg bg-secondary hover:bg-muted transition-colors">
-                                        <Github size={18} />
-                                    </a>
-                                    <a href="#" className="p-2 rounded-lg bg-secondary hover:bg-muted transition-colors">
-                                        <Linkedin size={18} />
-                                    </a>
-                                    <a href="#" className="p-2 rounded-lg bg-secondary hover:bg-muted transition-colors">
-                                        <Twitter size={18} />
-                                    </a>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* Stats Section */}
-            <section className="py-16 bg-muted/30 border-b border-border">
-                <div className="container mx-auto px-4">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-                        <div className="text-center">
-                            <div className="text-4xl font-bold text-primary mb-2">2500+</div>
-                            <p className="text-muted-foreground">Products Available</p>
-                        </div>
-                        <div className="text-center">
-                            <div className="text-4xl font-bold text-primary mb-2">50K+</div>
-                            <p className="text-muted-foreground">Active Users</p>
-                        </div>
-                        <div className="text-center">
-                            <div className="text-4xl font-bold text-primary mb-2">500+</div>
-                            <p className="text-muted-foreground">Creators</p>
-                        </div>
-                        <div className="text-center">
-                            <div className="text-4xl font-bold text-primary mb-2">98%</div>
-                            <p className="text-muted-foreground">Satisfaction Rate</p>
                         </div>
                     </div>
                 </div>

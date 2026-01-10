@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button"
 
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible"
 
-import { useSearchProductsFilter } from "@/components/content/search/lib/useStateSearch"
+import { useSearchProductsFilter } from "@/components/pages/search/lib/useStateSearch"
 
 import { formatIDR } from "@/hooks/FormatPrice"
 

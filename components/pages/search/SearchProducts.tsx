@@ -4,9 +4,9 @@ import * as React from "react"
 
 import ProductsCard from "@/components/ui/products/ProductsCard"
 
-import SearchProductsFilter from "@/components/content/search/SearchProductsFilter"
+import SearchProductsFilter from "@/components/pages/search/SearchProductsFilter"
 
-import { useStateSearch } from "@/components/content/search/lib/useStateSearch"
+import { useStateSearch } from "@/components/pages/search/lib/useStateSearch"
 
 import {
     Select,

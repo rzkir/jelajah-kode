@@ -8,23 +8,6 @@ export async function generateMetadata({ searchParams }: ProductsPageProps) {
     return generateProductsPageMetadata(searchParams);
 }
 
-interface ProductsPageProps {
-    searchParams: Promise<{
-        q?: string;
-        page?: string;
-        categories?: string;
-        types?: string;
-        tech?: string;
-        minPrice?: string;
-        maxPrice?: string;
-        minRating?: string;
-        popular?: string;
-        discounted?: string;
-        new?: string;
-        sort?: string;
-    }>;
-}
-
 export default async function Page({ searchParams }: ProductsPageProps) {
     const params = await searchParams;
 

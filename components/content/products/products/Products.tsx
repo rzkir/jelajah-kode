@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation"
 
 import ProductsCard from "@/components/ui/products/ProductsCard"
 
-import SearchProductsFilter from "@/components/content/search/SearchProductsFilter"
+import SearchProductsFilter from "@/components/pages/search/SearchProductsFilter"
 
 import { useStateProducts } from "@/components/content/products/products/lib/useStateProducts"
 

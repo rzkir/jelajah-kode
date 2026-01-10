@@ -177,3 +177,155 @@ export function generatePasswordResetEmailTemplate(otp: string): {
 
   return { html, text };
 }
+
+export function generateTransactionPendingEmailTemplate(
+  orderId: string,
+  userName: string,
+  totalAmount: number,
+  products: Array<{ title: string; quantity: number; price: number }>
+): {
+  html: string;
+  text: string;
+} {
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      minimumFractionDigits: 0,
+    }).format(amount);
+  };
+
+  const productsList = products
+    .map(
+      (product) =>
+        `<tr>
+          <td style="padding:12px; border-bottom:1px solid rgba(255,255,255,0.08);">
+            <div style="font-family:Arial, sans-serif; font-size:14px; color:#ffffff; font-weight:500;">${
+              product.title
+            }</div>
+            <div style="font-family:Arial, sans-serif; font-size:12px; color:#9aa4c7; margin-top:4px;">
+              Qty: ${product.quantity} × ${formatCurrency(product.price)}
+            </div>
+          </td>
+        </tr>`
+    )
+    .join("");
+
+  const html = `
+    <!doctype html>
+    <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+      <title>Transaction Pending</title>
+      <!--[if mso]>
+      <style type="text/css">
+        body, table, td {font-family: Arial, sans-serif !important;}
+      </style>
+      <![endif]-->
+    </head>
+    <body style="margin:0; padding:0; background-color:#0b1220;">
+      <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="background:#0b1220;">
+        <tr>
+          <td align="center" style="padding:24px;">
+            <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="max-width:600px; background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03)); border:1px solid rgba(255,255,255,0.08); border-radius:16px;">
+              <tr>
+                <td align="center" style="padding:40px 24px 20px 24px;">
+                  <div style="height:48px; width:48px; border-radius:12px; background:#fff3cd; color:#856404; display:inline-block; text-align:center; line-height:48px; font-weight:700; font-family:Arial, sans-serif; font-size:24px;">⏳</div>
+                </td>
+              </tr>
+              <tr>
+                <td align="center" style="padding:8px 24px;">
+                  <h1 style="margin:0; font-family:Arial, sans-serif; font-size:22px; line-height:1.3; color:#ffffff;">Transaksi Pending</h1>
+                </td>
+              </tr>
+              <tr>
+                <td align="center" style="padding:12px 24px 20px;">
+                  <p style="margin:0; font-family:Arial, sans-serif; font-size:14px; line-height:1.6; color:#c9d2f0;">Halo ${userName}, transaksi Anda sedang menunggu pembayaran.</p>
+                </td>
+              </tr>
+
+              <tr>
+                <td style="padding:0 24px 24px;">
+                  <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="background:rgba(255,255,255,0.04); border-radius:12px; border:1px solid rgba(255,255,255,0.08);">
+                    <tr>
+                      <td style="padding:20px;">
+                        <div style="font-family:Arial, sans-serif; font-size:12px; color:#9aa4c7; margin-bottom:8px;">Order ID</div>
+                        <div style="font-family:Arial, sans-serif; font-size:16px; color:#ffffff; font-weight:600; font-family:'Courier New', monospace;">${orderId}</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:0 20px 20px;">
+                        <div style="font-family:Arial, sans-serif; font-size:12px; color:#9aa4c7; margin-bottom:12px;">Produk</div>
+                        <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+                          ${productsList}
+                        </table>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:0 20px 20px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; padding-top:16px; border-top:1px solid rgba(255,255,255,0.08);">
+                          <div style="font-family:Arial, sans-serif; font-size:16px; color:#ffffff; font-weight:600;">Total</div>
+                          <div style="font-family:Arial, sans-serif; font-size:18px; color:#ffffff; font-weight:700;">${formatCurrency(
+                            totalAmount
+                          )}</div>
+                        </div>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+
+              <tr>
+                <td align="center" style="padding:0 24px 24px;">
+                  <p style="margin:0; font-family:Arial, sans-serif; font-size:14px; line-height:1.6; color:#c9d2f0;">Silakan selesaikan pembayaran untuk melanjutkan proses transaksi Anda.</p>
+                </td>
+              </tr>
+              <tr>
+                <td align="center" style="padding:0 24px 24px;">
+                  <p style="margin:0; font-family:Arial, sans-serif; font-size:12px; color:#7781a5;">Jika Anda memiliki pertanyaan, silakan hubungi tim support kami.</p>
+                </td>
+              </tr>
+            </table>
+
+            <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="max-width:600px;">
+              <tr>
+                <td align="center" style="padding:20px 8px;">
+                  <p style="margin:0; font-family:Arial, sans-serif; font-size:11px; color:#6b7280;">© ${new Date().getFullYear()} — Jelajah Kode</p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </body>
+    </html>
+  `;
+
+  const productsText = products
+    .map(
+      (product) =>
+        `- ${product.title} (Qty: ${product.quantity} × ${formatCurrency(
+          product.price
+        )})`
+    )
+    .join("\n");
+
+  const text = `Transaksi Pending
+
+Halo ${userName}, transaksi Anda sedang menunggu pembayaran.
+
+Order ID: ${orderId}
+
+Produk:
+${productsText}
+
+Total: ${formatCurrency(totalAmount)}
+
+Silakan selesaikan pembayaran untuk melanjutkan proses transaksi Anda.
+
+Jika Anda memiliki pertanyaan, silakan hubungi tim support kami.`;
+
+  return { html, text };
+}

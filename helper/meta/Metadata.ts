@@ -4,21 +4,54 @@ import { fetchProductsById } from "@/utils/fetching/FetchProducts";
 
 import { API_CONFIG } from "@/lib/config";
 
+//====================================== Home Page Metadata ======================================//
+export const HomePageMetadata: Metadata = {
+  title: "Jelajah Kode - Temukan Template yang Sesuai",
+  description:
+    "Mulai langkah awal pengembangan dengan kode sumber siap pakai, template, dan komponen dari pengembang terbaik. Jelajahi 1000+ kode sumber premium di platform Jelajah Kode untuk proyek Anda.",
+  openGraph: {
+    title: "Jelajah Kode - Temukan Template yang Sesuai untuk Proyek Anda",
+    description:
+      "Mulai langkah awal pengembangan dengan kode sumber siap pakai, template, dan komponen dari pengembang terbaik. Jelajahi 1000+ kode sumber premium di platform Jelajah Kode.",
+    url: `${API_CONFIG.ENDPOINTS.base}`,
+    siteName: "Jelajah Kode - Temukan Template yang Sesuai untuk Proyek Anda",
+    images: [
+      {
+        url: "/images/home-og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Jelajah Kode - Temukan Template yang Sesuai",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Jelajah Kode - Temukan Template yang Sesuai",
+    description:
+      "Mulai langkah awal pengembangan dengan kode sumber siap pakai, template, dan komponen dari pengembang terbaik. Jelajahi 1000+ kode sumber premium di platform Jelajah Kode.",
+    images: ["/images/home-og-image.jpg"],
+  },
+};
+
 //====================================== Products Page Metadata ======================================//
 export const ProductsPageMetadata: Metadata = {
   title: "Products - jelajah Code",
-  description: "Browse and discover products on jelajah Code platform",
+  description:
+    "Jelajahi 1000+ kode sumber premium di platform Jelajah Kode untuk proyek Anda.",
   openGraph: {
     title: "Products - jelajah Code",
-    description: "Browse and discover products on jelajah Code platform",
+    description:
+      "Jelajahi 1000+ kode sumber premium di platform Jelajah Kode untuk proyek Anda.",
     url: `${API_CONFIG.ENDPOINTS.base}/products`,
-    siteName: "jelajah Code",
+    siteName: "Jelajah Kode - Temukan Template yang Sesuai untuk Proyek Anda",
     images: [
       {
         url: "/images/products-og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "jelajah Code Products",
+        alt: "Jelajah Kode - Temukan Template yang Sesuai untuk Proyek Anda",
       },
     ],
     locale: "en_US",
@@ -27,7 +60,8 @@ export const ProductsPageMetadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Products - jelajah Code",
-    description: "Browse and discover products on jelajah Code platform",
+    description:
+      "Jelajahi 1000+ kode sumber premium di platform Jelajah Kode untuk proyek Anda.",
     images: ["/images/products-og-image.jpg"],
   },
 };
@@ -1437,3 +1471,283 @@ export async function generateProfileMetadata(): Promise<Metadata> {
 
   return ProfilePageMetadata;
 }
+
+//====================================== Order Details Metadata ======================================//
+export const OrderDetailsPageMetadata: Metadata = {
+  title: "Order Details - jelajah Code",
+  description:
+    "View your order details, transaction status, and download purchased products on jelajah Code",
+  openGraph: {
+    title: "Order Details - jelajah Code",
+    description:
+      "View your order details, transaction status, and download purchased products on jelajah Code",
+    url: `${API_CONFIG.ENDPOINTS.base}/profile`,
+    siteName: "jelajah Code",
+    images: [
+      {
+        url: "/images/profile-og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Order Details - jelajah Code",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Order Details - jelajah Code",
+    description:
+      "View your order details, transaction status, and download purchased products on jelajah Code",
+    images: ["/images/profile-og-image.jpg"],
+  },
+};
+
+export async function generateOrderDetailsMetadata(
+  params: Promise<{ order_id: string }>
+): Promise<Metadata> {
+  const { order_id } = await params;
+
+  try {
+    const { cookies } = await import("next/headers");
+    const { connectMongoDB } = await import("@/lib/mongodb");
+    const { Account } = await import("@/models/Account");
+    const Transactions = (await import("@/models/Transactions")).default;
+    const { verifyJWT } = await import("@/hooks/jwt");
+
+    await connectMongoDB();
+
+    // Get token from cookies
+    const cookieStore = await cookies();
+    const token = cookieStore.get("token")?.value;
+
+    if (token) {
+      try {
+        const decodedToken = await verifyJWT(token);
+        const user = await Account.findById(decodedToken._id);
+
+        if (user) {
+          // Find transaction by order_id
+          const transaction = await Transactions.findOne({ order_id });
+
+          if (transaction) {
+            // Verify that the transaction belongs to the current user
+            const transactionObj = transaction.toObject() as {
+              user: { _id: string; name: string };
+              products: Array<{ title: string; thumbnail: string }>;
+              status: string;
+              total_amount: number;
+            };
+
+            if (transactionObj.user._id.toString() === user._id.toString()) {
+              const productTitles =
+                transactionObj.products
+                  .map((p) => p.title)
+                  .slice(0, 3)
+                  .join(", ") || "Products";
+              const productCount = transactionObj.products.length;
+              const status = transactionObj.status || "pending";
+              const statusCapitalized =
+                status.charAt(0).toUpperCase() + status.slice(1);
+              const thumbnail =
+                transactionObj.products[0]?.thumbnail ||
+                "/images/profile-og-image.jpg";
+
+              const title = `Order ${order_id} - ${statusCapitalized} - jelajah Code`;
+              const description = `View order details for ${productCount} product${
+                productCount !== 1 ? "s" : ""
+              }: ${productTitles}${
+                productCount > 3 ? "..." : ""
+              }. Status: ${statusCapitalized}. Total: Rp ${
+                transactionObj.total_amount?.toLocaleString("id-ID") || "0"
+              }`;
+
+              return {
+                title,
+                description,
+                openGraph: {
+                  title,
+                  description,
+                  url: `${API_CONFIG.ENDPOINTS.base}/profile/${order_id}`,
+                  siteName: "jelajah Code",
+                  images: [
+                    {
+                      url: thumbnail,
+                      width: 1200,
+                      height: 630,
+                      alt: `Order ${order_id}`,
+                    },
+                  ],
+                  locale: "en_US",
+                  type: "website",
+                },
+                twitter: {
+                  card: "summary_large_image",
+                  title,
+                  description,
+                  images: [thumbnail],
+                },
+              };
+            }
+          }
+        }
+      } catch {
+        // If token is invalid or transaction not found, fallback to default
+      }
+    }
+  } catch {
+    // Fallback to default metadata if fetch fails
+  }
+
+  // Fallback metadata
+  return {
+    title: `Order ${order_id} - jelajah Code`,
+    description: `View order details for order ${order_id} on jelajah Code platform`,
+    openGraph: {
+      title: `Order ${order_id} - jelajah Code`,
+      description: `View order details for order ${order_id} on jelajah Code platform`,
+      url: `${API_CONFIG.ENDPOINTS.base}/profile/${order_id}`,
+      siteName: "jelajah Code",
+      images: [
+        {
+          url: "/images/profile-og-image.jpg",
+          width: 1200,
+          height: 630,
+          alt: `Order ${order_id}`,
+        },
+      ],
+      locale: "en_US",
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `Order ${order_id} - jelajah Code`,
+      description: `View order details for order ${order_id} on jelajah Code platform`,
+      images: ["/images/profile-og-image.jpg"],
+    },
+  };
+}
+
+//====================================== Privacy Policy Metadata ======================================//
+export const PrivacyPolicyMetadata: Metadata = {
+  title: "Privacy Policy - jelajah Code",
+  description:
+    "Learn about how jelajah Code collects, uses, and protects your personal data. Read our comprehensive privacy policy to understand your rights and our data protection practices.",
+  openGraph: {
+    title: "Privacy Policy - jelajah Code",
+    description:
+      "Learn about how jelajah Code collects, uses, and protects your personal data. Read our comprehensive privacy policy to understand your rights and our data protection practices.",
+    url: `${API_CONFIG.ENDPOINTS.base}/privacy-policy`,
+    siteName: "jelajah Code",
+    images: [
+      {
+        url: "/images/privacy-policy-og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Privacy Policy - jelajah Code",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Privacy Policy - jelajah Code",
+    description:
+      "Learn about how jelajah Code collects, uses, and protects your personal data. Read our comprehensive privacy policy to understand your rights and our data protection practices.",
+    images: ["/images/privacy-policy-og-image.jpg"],
+  },
+};
+
+//====================================== Refund Policy Metadata ======================================//
+export const RefundPolicyMetadata: Metadata = {
+  title: "Refund Policy - jelajah Code",
+  description:
+    "Learn about jelajah Code's refund policy, eligibility requirements, and refund process. Understand your rights when requesting a refund for purchased products.",
+  openGraph: {
+    title: "Refund Policy - jelajah Code",
+    description:
+      "Learn about jelajah Code's refund policy, eligibility requirements, and refund process. Understand your rights when requesting a refund for purchased products.",
+    url: `${API_CONFIG.ENDPOINTS.base}/refund-policy`,
+    siteName: "jelajah Code",
+    images: [
+      {
+        url: "/images/refund-policy-og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Refund Policy - jelajah Code",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Refund Policy - jelajah Code",
+    description:
+      "Learn about jelajah Code's refund policy, eligibility requirements, and refund process. Understand your rights when requesting a refund for purchased products.",
+    images: ["/images/refund-policy-og-image.jpg"],
+  },
+};
+
+//====================================== Terms of Service Metadata ======================================//
+export const TermsOfServiceMetadata: Metadata = {
+  title: "Terms of Service - jelajah Code",
+  description:
+    "Read jelajah Code's terms of service to understand the rules and regulations for using our platform. Learn about your rights and responsibilities as a user.",
+  openGraph: {
+    title: "Terms of Service - jelajah Code",
+    description:
+      "Read jelajah Code's terms of service to understand the rules and regulations for using our platform. Learn about your rights and responsibilities as a user.",
+    url: `${API_CONFIG.ENDPOINTS.base}/terms-of-service`,
+    siteName: "jelajah Code",
+    images: [
+      {
+        url: "/images/terms-of-service-og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Terms of Service - jelajah Code",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Terms of Service - jelajah Code",
+    description:
+      "Read jelajah Code's terms of service to understand the rules and regulations for using our platform. Learn about your rights and responsibilities as a user.",
+    images: ["/images/terms-of-service-og-image.jpg"],
+  },
+};
+
+//====================================== License Agreement Metadata ======================================//
+export const LicenseAgreementMetadata: Metadata = {
+  title: "License Agreement - jelajah Code",
+  description:
+    "Understand the license agreement for using jelajah Code's source code products. Learn about permitted usage, restrictions, and intellectual property rights.",
+  openGraph: {
+    title: "License Agreement - jelajah Code",
+    description:
+      "Understand the license agreement for using jelajah Code's source code products. Learn about permitted usage, restrictions, and intellectual property rights.",
+    url: `${API_CONFIG.ENDPOINTS.base}/license-agreement`,
+    siteName: "jelajah Code",
+    images: [
+      {
+        url: "/images/license-agreement-og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "License Agreement - jelajah Code",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "License Agreement - jelajah Code",
+    description:
+      "Understand the license agreement for using jelajah Code's source code products. Learn about permitted usage, restrictions, and intellectual property rights.",
+    images: ["/images/license-agreement-og-image.jpg"],
+  },
+};

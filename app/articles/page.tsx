@@ -1,6 +1,6 @@
 import { fetchArticles, fetchArticlesCategories } from "@/utils/fetching/FetchArticles"
 
-import Articles from "@/components/content/articles/articles/Articles"
+import Articles from "@/components/pages/articles/articles/Articles"
 
 import { generateArticlesPageMetadata } from "@/helper/meta/Metadata"
 

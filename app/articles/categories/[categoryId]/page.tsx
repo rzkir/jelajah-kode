@@ -1,4 +1,4 @@
-import Articles from "@/components/content/articles/articles/Articles";
+import Articles from "@/components/pages/articles/articles/Articles";
 
 import { fetchArticlesByCategory, fetchArticlesCategories } from "@/utils/fetching/FetchArticles";
 
