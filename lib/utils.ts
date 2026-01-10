@@ -19,7 +19,7 @@ export function processImageUrls(content: string): string {
   processed = processed.replace(markdownImageRegex, (match, alt, url) => {
     const cleanUrl = url.trim();
     const cleanAlt = alt.trim() || "Image";
-    return `<img src="${cleanUrl}" alt="${cleanAlt}" style="max-width: 100%; height: auto;" />`;
+    return `<img src="${cleanUrl}" alt="${cleanAlt}" class="aspect-auto object-contain" style="max-width: 100%; height: auto;" />`;
   });
 
   // Convert plain image URLs (not already in img tags) to <img> tags
@@ -86,7 +86,7 @@ export function processImageUrls(content: string): string {
           }
 
           // Convert to img tag
-          return `<img src="${url}" alt="Image" style="max-width: 100%; height: auto;" />`;
+          return `<img src="${url}" alt="Image" class="aspect-auto object-contain" style="max-width: 100%; height: auto;" />`;
         }
       );
     })

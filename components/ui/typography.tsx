@@ -52,7 +52,7 @@ export function TypographyBlockquote({ children, className = "" }: { children?: 
 
 export function TypographyTable() {
     return (
-        <div className="my-6 sm:my-8 md:my-10 w-full overflow-x-auto px-4 sm:px-6 md:px-8">
+        <div className="my-4 sm:my-6 md:my-8 w-full overflow-x-auto px-4 sm:px-6 md:px-8">
             <div className="min-w-full inline-block">
                 <table className="w-full border-collapse border border-border rounded-lg overflow-hidden shadow-sm">
                     <thead>
@@ -91,7 +91,7 @@ export function TypographyTable() {
 
 export function TypographyList({ children, className = "" }: { children?: React.ReactNode; className?: string }) {
     return (
-        <ul className={`my-6 sm:my-8 md:my-10 ml-4 sm:ml-6 md:ml-8 list-disc space-y-2 sm:space-y-3 md:space-y-4 [&>li]:leading-relaxed [&>li]:text-base [&>li]:sm:text-lg [&>li]:md:text-lg [&>li]:text-foreground/90 [&>li]:pl-2 [&>li]:sm:pl-3 [&>li]:md:pl-4 [&>li]:wrap-break-word [&>li]:overflow-wrap-anywhere max-w-full sm:max-w-2xl md:max-w-3xl lg:max-w-4xl px-4 sm:px-6 md:px-8 ${className}`}>
+        <ul className={`my-4 sm:my-6 md:my-8 ml-4 sm:ml-6 md:ml-8 list-disc space-y-2 sm:space-y-3 md:space-y-4 [&>li]:leading-relaxed [&>li]:text-base [&>li]:sm:text-lg [&>li]:md:text-lg [&>li]:text-foreground/90 [&>li]:pl-2 [&>li]:sm:pl-3 [&>li]:md:pl-4 [&>li]:wrap-break-word [&>li]:overflow-wrap-anywhere max-w-full sm:max-w-2xl md:max-w-3xl lg:max-w-4xl px-4 sm:px-6 md:px-8 ${className}`}>
             {children}
         </ul>
     )
@@ -186,22 +186,22 @@ export function TypographyContent({
                     [&_h3]:scroll-m-20 [&_h3]:text-xl [&_h3]:sm:text-2xl [&_h3]:md:text-3xl [&_h3]:lg:text-4xl [&_h3]:font-semibold [&_h3]:tracking-tight [&_h3]:leading-snug [&_h3]:mt-6 [&_h3]:sm:mt-8 [&_h3]:md:mt-10 [&_h3]:mb-3 [&_h3]:sm:mb-4 [&_h3]:md:mb-6 [&_h3]:wrap-break-word
                     [&_h4]:scroll-m-20 [&_h4]:text-lg [&_h4]:sm:text-xl [&_h4]:md:text-2xl [&_h4]:lg:text-3xl [&_h4]:font-semibold [&_h4]:tracking-tight [&_h4]:leading-snug [&_h4]:mt-5 [&_h4]:sm:mt-6 [&_h4]:md:mt-8 [&_h4]:mb-2 [&_h4]:sm:mb-3 [&_h4]:md:mb-4 [&_h4]:wrap-break-word
                     [&_p]:leading-relaxed [&_p]:text-base [&_p]:sm:text-lg [&_p]:md:text-lg [&_p]:mb-4 [&_p]:sm:mb-5 [&_p]:md:mb-6 [&_p]:text-foreground/90 [&_p]:not(:first-child):mt-4 [&_p]:sm:not(:first-child):mt-6 [&_p]:md:not(:first-child):mt-8 [&_p]:wrap-break-word
-                    [&_ul]:my-6 [&_ul]:sm:my-8 [&_ul]:md:my-10 [&_ul]:ml-4 [&_ul]:sm:ml-6 [&_ul]:md:ml-8 [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:sm:space-y-3 [&_ul]:md:space-y-4 [&_ul]:wrap-break-word
-                    [&_ol]:my-6 [&_ol]:sm:my-8 [&_ol]:md:my-10 [&_ol]:ml-4 [&_ol]:sm:ml-6 [&_ol]:md:ml-8 [&_ol]:list-decimal [&_ol]:space-y-2 [&_ol]:sm:space-y-3 [&_ol]:md:space-y-4 [&_ol]:wrap-break-word
+                    [&_ul]:my-4 [&_ul]:sm:my-6 [&_ul]:md:my-8 [&_ul]:ml-4 [&_ul]:sm:ml-6 [&_ul]:md:ml-8 [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:sm:space-y-3 [&_ul]:md:space-y-4 [&_ul]:wrap-break-word
+                    [&_ol]:my-4 [&_ol]:sm:my-6 [&_ol]:md:my-8 [&_ol]:ml-4 [&_ol]:sm:ml-6 [&_ol]:md:ml-8 [&_ol]:list-decimal [&_ol]:space-y-2 [&_ol]:sm:space-y-3 [&_ol]:md:space-y-4 [&_ol]:wrap-break-word
                     [&_li]:leading-relaxed [&_li]:text-base [&_li]:sm:text-lg [&_li]:md:text-lg [&_li]:text-foreground/90 [&_li]:pl-2 [&_li]:sm:pl-3 [&_li]:md:pl-4 [&_li]:wrap-break-word [&_li]:overflow-wrap-anywhere
                     [&_strong]:font-semibold [&_strong]:wrap-break-word
                     [&_em]:italic [&_em]:wrap-break-word
                     [&_a]:text-primary [&_a]:underline [&_a]:hover:text-primary/80 [&_a]:transition-colors [&_a]:wrap-break-word
                     [&_blockquote]:mt-6 [&_blockquote]:sm:mt-8 [&_blockquote]:md:mt-10 [&_blockquote]:mb-6 [&_blockquote]:sm:mb-8 [&_blockquote]:md:mb-10 [&_blockquote]:border-l-4 [&_blockquote]:border-primary/50 [&_blockquote]:pl-4 [&_blockquote]:sm:pl-6 [&_blockquote]:md:pl-8 [&_blockquote]:italic [&_blockquote]:text-base [&_blockquote]:sm:text-lg [&_blockquote]:md:text-xl [&_blockquote]:leading-relaxed [&_blockquote]:text-foreground/80 [&_blockquote]:bg-muted/30 [&_blockquote]:py-3 [&_blockquote]:sm:py-4 [&_blockquote]:md:py-5 [&_blockquote]:rounded-r-lg [&_blockquote]:wrap-break-word
                     [&_code]:bg-muted [&_code]:relative [&_code]:rounded-md [&_code]:px-2 [&_code]:sm:px-2.5 [&_code]:md:px-3 [&_code]:py-1 [&_code]:sm:py-1.5 [&_code]:font-mono [&_code]:text-xs [&_code]:sm:text-sm [&_code]:md:text-sm [&_code]:font-semibold [&_code]:border [&_code]:border-border/50 [&_code]:wrap-break-word
-                    [&_pre]:my-6 [&_pre]:sm:my-8 [&_pre]:md:my-10 [&_pre]:overflow-x-auto [&_pre]:rounded-lg [&_pre]:bg-muted [&_pre]:p-3 [&_pre]:sm:p-4 [&_pre]:md:p-6 [&_pre]:border [&_pre]:border-border/50 [&_pre]:wrap-break-word
+                    [&_pre]:my-4 [&_pre]:sm:my-6 [&_pre]:md:my-8 [&_pre]:overflow-x-auto [&_pre]:rounded-lg [&_pre]:bg-muted [&_pre]:p-3 [&_pre]:sm:p-4 [&_pre]:md:p-6 [&_pre]:border [&_pre]:border-border/50 [&_pre]:wrap-break-word
                     [&_pre_code]:bg-transparent [&_pre_code]:p-0 [&_pre_code]:break-normal [&_pre_code]:whitespace-pre-wrap [&_pre_code]:text-xs [&_pre_code]:sm:text-sm [&_pre_code]:md:text-sm
-                    [&_hr]:my-8 [&_hr]:sm:my-10 [&_hr]:md:my-12 [&_hr]:border-t [&_hr]:border-border/40 [&_hr]:w-full
-                    [&_table]:my-6 [&_table]:sm:my-8 [&_table]:md:my-10 [&_table]:w-full [&_table]:border-collapse [&_table]:border [&_table]:border-border [&_table]:rounded-lg [&_table]:overflow-hidden [&_table]:shadow-sm [&_table]:wrap-break-word
+                    [&_hr]:my-6 [&_hr]:sm:my-8 [&_hr]:md:my-10 [&_hr]:border-t [&_hr]:border-border/40 [&_hr]:w-full
+                    [&_table]:my-4 [&_table]:sm:my-6 [&_table]:md:my-8 [&_table]:w-full [&_table]:border-collapse [&_table]:border [&_table]:border-border [&_table]:rounded-lg [&_table]:overflow-hidden [&_table]:shadow-sm [&_table]:wrap-break-word
                     [&_th]:border [&_th]:border-border [&_th]:px-3 [&_th]:sm:px-4 [&_th]:md:px-6 [&_th]:py-2 [&_th]:sm:py-3 [&_th]:md:py-4 [&_th]:text-left [&_th]:font-bold [&_th]:text-sm [&_th]:sm:text-base [&_th]:md:text-lg [&_th]:bg-muted/50 [&_th]:wrap-break-word
                     [&_td]:border [&_td]:border-border [&_td]:px-3 [&_td]:sm:px-4 [&_td]:md:px-6 [&_td]:py-2 [&_td]:sm:py-3 [&_td]:md:py-4 [&_td]:text-sm [&_td]:sm:text-base [&_td]:wrap-break-word
                     [&_tr]:even:bg-muted/20 [&_tr]:hover:bg-muted/30 [&_tr]:transition-colors
-                    [&_img]:rounded-lg [&_img]:my-4 [&_img]:sm:my-6 [&_img]:md:my-8 [&_img]:max-w-full [&_img]:h-auto [&_img]:w-auto [&_img]:shadow-md
+                    [&_img]:rounded-lg [&_img]:my-2 [&_img]:sm:my-4 [&_img]:md:my-6 [&_img]:max-w-full [&_img]:h-auto [&_img]:w-auto [&_img]:shadow-md [&_img]:aspect-auto [&_img]:object-contain
                     ${className}`}
                 style={{ wordWrap: 'break-word', overflowWrap: 'break-word' }}
                 dangerouslySetInnerHTML={{ __html: processedHtml }}

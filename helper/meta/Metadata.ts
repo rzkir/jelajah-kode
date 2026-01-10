@@ -231,7 +231,6 @@ export async function generateProductsPageMetadata(
 }
 
 //====================================== Products Create Metadata ======================================//
-
 export const ProductsCreateMetadata: Metadata = {
   title: "Add New Product - jelajah Code",
   description: "Create and add new products to your jelajah Code platform",
@@ -290,7 +289,6 @@ export const ProductsEditMetadata: Metadata = {
 };
 
 //====================================== Products Details Metadata ======================================//
-
 export async function generateProductsDetailsMetadata(
   params: Promise<{ productsId: string }>
 ): Promise<Metadata> {
@@ -361,7 +359,6 @@ export async function generateProductsDetailsMetadata(
 }
 
 //====================================== Checkout Metadata ======================================//
-
 export const CheckoutMetadata: Metadata = {
   title: "Checkout - jelajah Code",
   description: "Review your cart and complete your purchase on jelajah Code",
@@ -437,7 +434,6 @@ export async function generateCheckoutMetadata(
 }
 
 //====================================== Checkout Status Metadata ======================================//
-
 export async function generateCheckoutStatusMetadata(
   params: Promise<{ status: string; title?: string }>
 ): Promise<Metadata> {
@@ -1001,6 +997,344 @@ export async function generateProductsTagsMetadata(
         title: fallbackTitle,
         description: fallbackDescription,
         images: ["/images/products-og-image.jpg"],
+      },
+    };
+  }
+}
+
+//====================================== Articles Page Metadata ======================================//
+export const ArticlesPageMetadata: Metadata = {
+  title: "Developer Resources - jelajah Code",
+  description:
+    "Learn from detailed guides, tutorials, and best practices for modern web development on jelajah Code",
+  openGraph: {
+    title: "Developer Resources - jelajah Code",
+    description:
+      "Learn from detailed guides, tutorials, and best practices for modern web development on jelajah Code",
+    url: `${API_CONFIG.ENDPOINTS.base}/articles`,
+    siteName: "jelajah Code",
+    images: [
+      {
+        url: "/images/articles-og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "jelajah Code Developer Resources",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Developer Resources - jelajah Code",
+    description:
+      "Learn from detailed guides, tutorials, and best practices for modern web development on jelajah Code",
+    images: ["/images/articles-og-image.jpg"],
+  },
+};
+
+export async function generateArticlesPageMetadata(
+  searchParams?: Promise<{
+    category?: string;
+    page?: string;
+    sort?: string;
+  }>
+): Promise<Metadata> {
+  if (!searchParams) {
+    return ArticlesPageMetadata;
+  }
+
+  const params = await searchParams;
+  const { category, page, sort } = params;
+
+  const pageNumber = page || "1";
+
+  // Build URL with all parameters
+  const urlParams = new URLSearchParams();
+  if (category) urlParams.set("category", category);
+  if (pageNumber !== "1") urlParams.set("page", pageNumber);
+  if (sort) urlParams.set("sort", sort);
+
+  const articlesUrl = `${API_CONFIG.ENDPOINTS.base}/articles${
+    urlParams.toString() ? `?${urlParams.toString()}` : ""
+  }`;
+
+  // Build filter description
+  const filters: string[] = [];
+  if (category) filters.push(`category: ${category}`);
+
+  if (filters.length > 0) {
+    try {
+      const { fetchArticles, fetchArticlesCategories } = await import(
+        "@/utils/fetching/FetchArticles"
+      );
+
+      const [articles, categories] = await Promise.all([
+        fetchArticles(),
+        fetchArticlesCategories(),
+      ]);
+
+      const categoryData = categories.find(
+        (cat) => cat.categoryId === category || cat.title === category
+      );
+      const categoryTitle = categoryData?.title || category;
+      const filteredCount = articles.filter((article) => {
+        const articleCategory = article.category;
+        if (!articleCategory) return false;
+        return (
+          articleCategory.categoryId === category ||
+          articleCategory.title === category
+        );
+      }).length;
+
+      const title = `Developer Resources - ${categoryTitle} - jelajah Code`;
+      const description = `Browse ${filteredCount} article${
+        filteredCount !== 1 ? "s" : ""
+      } in ${categoryTitle} category. Learn from detailed guides, tutorials, and best practices for modern web development.`;
+
+      return {
+        title,
+        description,
+        openGraph: {
+          title,
+          description,
+          url: articlesUrl,
+          siteName: "jelajah Code",
+          images: [
+            {
+              url: "/images/articles-og-image.jpg",
+              width: 1200,
+              height: 630,
+              alt: `Developer Resources - ${categoryTitle}`,
+            },
+          ],
+          locale: "en_US",
+          type: "website",
+        },
+        twitter: {
+          card: "summary_large_image",
+          title,
+          description,
+          images: ["/images/articles-og-image.jpg"],
+        },
+      };
+    } catch {
+      // Fallback to default articles metadata if fetch fails
+      const fallbackTitle = `Developer Resources - ${
+        category || ""
+      } - jelajah Code`;
+      const fallbackDescription = `Browse articles${
+        category ? ` in ${category} category` : ""
+      } on jelajah Code platform`;
+
+      return {
+        title: fallbackTitle,
+        description: fallbackDescription,
+        openGraph: {
+          title: fallbackTitle,
+          description: fallbackDescription,
+          url: articlesUrl,
+          siteName: "jelajah Code",
+          images: [
+            {
+              url: "/images/articles-og-image.jpg",
+              width: 1200,
+              height: 630,
+              alt: `Developer Resources${category ? ` - ${category}` : ""}`,
+            },
+          ],
+          locale: "en_US",
+          type: "website",
+        },
+        twitter: {
+          card: "summary_large_image",
+          title: fallbackTitle,
+          description: fallbackDescription,
+          images: ["/images/articles-og-image.jpg"],
+        },
+      };
+    }
+  }
+
+  return ArticlesPageMetadata;
+}
+
+//====================================== Articles By Category Metadata ======================================//
+export async function generateArticlesCategoryMetadata(
+  params: Promise<{ categoryId: string }>,
+  searchParams: Promise<{
+    page?: string;
+    sort?: string;
+  }>
+): Promise<Metadata> {
+  const { categoryId } = await params;
+  const searchParamsData = await searchParams;
+  const page = searchParamsData.page || "1";
+  const sort = searchParamsData.sort || "newest";
+
+  try {
+    const { fetchArticlesByCategory, fetchArticlesCategories } = await import(
+      "@/utils/fetching/FetchArticles"
+    );
+
+    const [{ pagination }, categories] = await Promise.all([
+      fetchArticlesByCategory(categoryId, parseInt(page, 10), 10, sort),
+      fetchArticlesCategories(),
+    ]);
+
+    const category = categories.find((cat) => cat.categoryId === categoryId);
+    const categoryTitle = category?.title || categoryId;
+    const resultCount = pagination.total;
+
+    const urlParams = new URLSearchParams();
+    if (page !== "1") urlParams.set("page", page);
+    if (sort !== "newest") urlParams.set("sort", sort);
+
+    const categoryUrl = `${
+      API_CONFIG.ENDPOINTS.base
+    }/articles/categories/${categoryId}${
+      urlParams.toString() ? `?${urlParams.toString()}` : ""
+    }`;
+
+    const title = `Developer Resources - ${categoryTitle} - jelajah Code`;
+    const description = `Browse ${resultCount} article${
+      resultCount !== 1 ? "s" : ""
+    } in ${categoryTitle} category on jelajah Code. Learn from detailed guides, tutorials, and best practices for modern web development.`;
+
+    return {
+      title,
+      description,
+      openGraph: {
+        title,
+        description,
+        url: categoryUrl,
+        siteName: "jelajah Code",
+        images: [
+          {
+            url: "/images/articles-og-image.jpg",
+            width: 1200,
+            height: 630,
+            alt: `Developer Resources - ${categoryTitle}`,
+          },
+        ],
+        locale: "en_US",
+        type: "website",
+      },
+      twitter: {
+        card: "summary_large_image",
+        title,
+        description,
+        images: ["/images/articles-og-image.jpg"],
+      },
+    };
+  } catch {
+    // Fallback metadata if fetch fails
+    const categoryUrl = `${API_CONFIG.ENDPOINTS.base}/articles/categories/${categoryId}`;
+    const fallbackTitle = `Developer Resources - ${categoryId} - jelajah Code`;
+    const fallbackDescription = `Browse articles in ${categoryId} category on jelajah Code platform`;
+
+    return {
+      title: fallbackTitle,
+      description: fallbackDescription,
+      openGraph: {
+        title: fallbackTitle,
+        description: fallbackDescription,
+        url: categoryUrl,
+        siteName: "jelajah Code",
+        images: [
+          {
+            url: "/images/articles-og-image.jpg",
+            width: 1200,
+            height: 630,
+            alt: `Developer Resources - ${categoryId}`,
+          },
+        ],
+        locale: "en_US",
+        type: "website",
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: fallbackTitle,
+        description: fallbackDescription,
+        images: ["/images/articles-og-image.jpg"],
+      },
+    };
+  }
+}
+
+//====================================== Articles Details Metadata ======================================//
+export async function generateArticlesDetailsMetadata(
+  params: Promise<{ articlesId: string }>
+): Promise<Metadata> {
+  const { articlesId } = await params;
+
+  try {
+    const { fetchArticlesById } = await import(
+      "@/utils/fetching/FetchArticles"
+    );
+
+    const article = await fetchArticlesById(articlesId);
+    const title = article.title;
+    const description = article.description;
+    const thumbnail = article.thumbnail;
+    const url = `${API_CONFIG.ENDPOINTS.base}/articles/${articlesId}`;
+
+    return {
+      title: `${title} - jelajah Code`,
+      description: description,
+      openGraph: {
+        title: `${title} - jelajah Code`,
+        description: description,
+        url: url,
+        siteName: "jelajah Code",
+        images: [
+          {
+            url: thumbnail,
+            width: 1200,
+            height: 630,
+            alt: title,
+          },
+        ],
+        locale: "en_US",
+        type: "article",
+        authors: article.author?.name ? [article.author.name] : undefined,
+        publishedTime: article.createdAt,
+        modifiedTime: article.updatedAt,
+        tags: article.tags?.map((tag) => tag.title) || [],
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: `${title} - jelajah Code`,
+        description: description,
+        images: [thumbnail],
+      },
+    };
+  } catch {
+    // Fallback metadata if article fetch fails
+    return {
+      title: `Article ${articlesId} - jelajah Code`,
+      description: `View article details for ${articlesId} on jelajah Code platform`,
+      openGraph: {
+        title: `Article ${articlesId} - jelajah Code`,
+        description: `View article details for ${articlesId} on jelajah Code platform`,
+        url: `${API_CONFIG.ENDPOINTS.base}/articles/${articlesId}`,
+        siteName: "jelajah Code",
+        images: [
+          {
+            url: "/images/articles-default-og-image.jpg",
+            width: 1200,
+            height: 630,
+            alt: `Article ${articlesId}`,
+          },
+        ],
+        locale: "en_US",
+        type: "article",
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: `Article ${articlesId} - jelajah Code`,
+        description: `View article details for ${articlesId} on jelajah Code platform`,
+        images: ["/images/articles-default-og-image.jpg"],
       },
     };
   }

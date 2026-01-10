@@ -1,6 +1,7 @@
 interface UseFormatDate {
   formatDate: (dateString: string | Date) => string;
   formatUpdatedAt: (dateString: string | Date) => string;
+  formatDateArticle: (dateString?: string | Date) => string;
   formatWithCategoryId: (
     dateString: string | Date,
     categoryId: string
@@ -68,6 +69,34 @@ export default function useFormatDate(): UseFormatDate {
     return `${day} ${month} ${year} ${hours}:${minutes}`;
   };
 
+  const formatDateArticle = (dateString?: string | Date): string => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+
+    if (isNaN(date.getTime())) {
+      return "";
+    }
+
+    const monthNames = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
+    const month = monthNames[date.getMonth()];
+    const day = date.getDate();
+    const year = date.getFullYear();
+    return `${month} ${day}, ${year}`;
+  };
+
   const formatWithCategoryId = (
     dateString: string | Date,
     categoryId: string
@@ -76,5 +105,10 @@ export default function useFormatDate(): UseFormatDate {
     return `${formattedDate} (ID: ${categoryId})`;
   };
 
-  return { formatDate, formatUpdatedAt, formatWithCategoryId };
+  return {
+    formatDate,
+    formatUpdatedAt,
+    formatDateArticle,
+    formatWithCategoryId,
+  };
 }

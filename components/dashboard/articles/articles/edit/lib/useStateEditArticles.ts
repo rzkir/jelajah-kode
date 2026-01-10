@@ -72,7 +72,7 @@ export function useStateEditArticles() {
 
         // Fetch article data using articlesId endpoint
         const response = await fetch(
-          `${API_CONFIG.ENDPOINTS.articles.base}?id=${articleId}`,
+          API_CONFIG.ENDPOINTS.articles.byArticlesId(articleId),
           {
             headers: {
               Authorization: `Bearer ${API_CONFIG.SECRET}`,

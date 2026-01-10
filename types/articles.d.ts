@@ -14,8 +14,8 @@ interface Articles {
   };
   tags?: ArticlesTags[];
   status: "publish" | "draft";
-  created_at?: string;
-  updated_at?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 interface ArticlesTags {
@@ -80,3 +80,68 @@ type FormModalArticlesTagsProps = {
   resetForm: () => void;
   useTriggerButton?: boolean;
 };
+
+interface ArticlesCategoryPageProps {
+  params: Promise<{ categoryId: string }>;
+  searchParams: Promise<{
+    page?: string;
+    sort?: string;
+  }>;
+}
+
+interface ArticlesPageProps {
+  searchParams?: Promise<{
+    category?: string;
+    page?: string;
+    sort?: string;
+  }>;
+}
+
+interface UseStateArticlesProps {
+  articles: Articles[];
+  initialFilters?: {
+    category?: string;
+    page?: string;
+    sort?: string;
+  };
+}
+
+interface ArticlesPagination {
+  page: number;
+  limit: number;
+  total: number;
+  pages: number;
+}
+
+interface ArticlesProps {
+  articles: Articles[];
+  categories: Array<{ _id?: string; categoryId?: string; title: string }>;
+  pagination?: ArticlesPagination;
+  initialFilters?: {
+    category?: string;
+    page?: string;
+    sort?: string;
+  };
+  page?: number;
+}
+
+//====================== Articles Details ======================//
+interface ArticlesDetails {
+  _id: string;
+  articlesId: string;
+  title: string;
+  thumbnail: string;
+  description: string;
+  content: string;
+  category: ArticlesCategory;
+  author: {
+    _id: string;
+    name: string;
+    picture?: string;
+    role: UserRole;
+  };
+  tags?: ArticlesTags[];
+  status: "publish" | "draft";
+  createdAt: string;
+  updatedAt: string;
+}

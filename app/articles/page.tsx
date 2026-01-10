@@ -1,7 +1,25 @@
-import React from 'react'
+import { fetchArticles, fetchArticlesCategories } from "@/utils/fetching/FetchArticles"
 
-export default function page() {
+import Articles from "@/components/content/articles/articles/Articles"
+
+import { generateArticlesPageMetadata } from "@/helper/meta/Metadata"
+
+export async function generateMetadata({ searchParams }: ArticlesPageProps) {
+    return generateArticlesPageMetadata(searchParams);
+}
+
+export default async function page({ searchParams }: ArticlesPageProps) {
+    const params = await searchParams;
+    const [articles, categories] = await Promise.all([
+        fetchArticles(),
+        fetchArticlesCategories(),
+    ]);
     return (
-        <div>page</div>
+        <Articles
+            articles={articles}
+            categories={categories}
+            initialFilters={params}
+            page={params?.page ? parseInt(params.page, 10) : 1}
+        />
     )
 }

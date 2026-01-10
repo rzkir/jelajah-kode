@@ -78,13 +78,12 @@ export async function GET(request: Request) {
         title: article.title,
         thumbnail: article.thumbnail,
         description: article.description,
-        content: article.content || "",
         category: article.category,
         author: article.author,
         tags: article.tags,
         status: article.status,
-        created_at: article.created_at,
-        updated_at: article.updated_at,
+        created_at: article.createdAt,
+        updated_at: article.updatedAt,
       };
 
       return NextResponse.json(formattedArticle);
@@ -105,13 +104,12 @@ export async function GET(request: Request) {
         title: article.title,
         thumbnail: article.thumbnail,
         description: article.description,
-        content: article.content || "",
         category: article.category,
         author: article.author,
         tags: article.tags,
         status: article.status,
-        created_at: article.created_at,
-        updated_at: article.updated_at,
+        created_at: article.createdAt,
+        updated_at: article.updatedAt,
       }));
 
       return NextResponse.json({
@@ -347,8 +345,8 @@ export async function POST(request: Request) {
       author: savedArticle.author,
       tags: savedArticle.tags,
       status: savedArticle.status,
-      created_at: savedArticle.created_at,
-      updated_at: savedArticle.updated_at,
+      created_at: savedArticle.createdAt,
+      updated_at: savedArticle.updatedAt,
     };
 
     return NextResponse.json(formattedArticle, { status: 201 });
@@ -575,8 +573,8 @@ export async function PUT(request: Request) {
       author: updatedArticle.author,
       tags: updatedArticle.tags,
       status: updatedArticle.status,
-      created_at: updatedArticle.created_at,
-      updated_at: updatedArticle.updated_at,
+      created_at: updatedArticle.createdAt,
+      updated_at: updatedArticle.updatedAt,
     };
 
     return NextResponse.json(formattedArticle);

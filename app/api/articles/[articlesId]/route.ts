@@ -45,8 +45,8 @@ export async function GET(
       author: article.author,
       tags: article.tags,
       status: article.status,
-      created_at: article.created_at,
-      updated_at: article.updated_at,
+      created_at: article.createdAt,
+      updated_at: article.updatedAt,
     };
 
     return NextResponse.json(formattedArticle);

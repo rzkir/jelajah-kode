@@ -66,6 +66,15 @@ export const API_CONFIG = {
       categories: `${API_BASE_URL}/api/articles/categories`,
       tags: `${API_BASE_URL}/api/articles/tags`,
       byId: (id: string) => `${API_BASE_URL}/api/articles?id=${id}`,
+      byArticlesId: (articlesId: string) =>
+        `${API_BASE_URL}/api/articles/${articlesId}`,
+      byCategory: (
+        categoryId: string,
+        page: number = 1,
+        limit: number = 10,
+        sort: string = "newest"
+      ) =>
+        `${API_BASE_URL}/api/articles/categories/${categoryId}?page=${page}&limit=${limit}&sort=${sort}`,
     },
     checkout: `${API_BASE_URL}/api/checkout`,
     transactions: `${API_BASE_URL}/api/transactions`,
