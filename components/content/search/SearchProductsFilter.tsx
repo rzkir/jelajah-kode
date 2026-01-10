@@ -6,8 +6,6 @@ import { cn } from "@/lib/utils"
 
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 
-import { Progress } from "@/components/ui/progress"
-
 import { Label } from "@/components/ui/label"
 
 import { Input } from "@/components/ui/input"
@@ -17,6 +15,8 @@ import { Button } from "@/components/ui/button"
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible"
 
 import { useSearchProductsFilter } from "@/components/content/search/lib/useStateSearch"
+
+import { formatIDR } from "@/hooks/FormatPrice"
 
 export default function SearchProductsFilter({
     searchQuery,
@@ -66,7 +66,6 @@ export default function SearchProductsFilter({
         techStackOptions,
         toggleCategory,
         toggleType,
-        toggleTechStack,
     } = useSearchProductsFilter(
         categoriesData,
         typesData,
@@ -185,20 +184,78 @@ export default function SearchProductsFilter({
             {/* Price Range */}
             <div className="space-y-3">
                 <Label className="text-sm font-medium">Price Range</Label>
-                <div className="space-y-3">
-                    <Input
-                        type="range"
-                        min="0"
-                        max="200"
-                        value={priceRange[1]}
-                        onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value)])}
-                        className="w-full h-2 bg-transparent rounded-lg border-0 appearance-none cursor-pointer accent-blue-600 slider-thumb"
-                    />
-                    <Progress value={(priceRange[1] / 200) * 100} className="h-2" />
-                    <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
-                        <span>Rp {priceRange[0].toLocaleString('id-ID')}</span>
-                        <span>Rp {priceRange[1].toLocaleString('id-ID')}</span>
+                <div className="grid grid-cols-2 gap-3">
+                    {/* Min Price Input */}
+                    <div className="space-y-2">
+                        <Label htmlFor="min-price" className="text-xs text-gray-500 dark:text-gray-400">
+                            Min Price
+                        </Label>
+                        <Input
+                            id="min-price"
+                            type="text"
+                            value={formatIDR(priceRange[0])}
+                            onChange={(e) => {
+                                const value = e.target.value;
+
+                                // If empty, set to 0
+                                if (value === "" || value === ".") {
+                                    setPriceRange([0, priceRange[1]]);
+                                    return;
+                                }
+
+                                // Remove all non-digit characters
+                                const cleaned = value.replace(/[^\d]/g, "");
+
+                                // Parse to number
+                                const numericValue = cleaned === "" ? 0 : Number(cleaned);
+
+                                // Validate and update
+                                if (numericValue <= priceRange[1] && numericValue >= 0 && numericValue <= 200000) {
+                                    setPriceRange([numericValue, priceRange[1]]);
+                                }
+                            }}
+                            placeholder="Min price"
+                            inputMode="numeric"
+                            className="w-full"
+                        />
                     </div>
+                    {/* Max Price Input */}
+                    <div className="space-y-2">
+                        <Label htmlFor="max-price" className="text-xs text-gray-500 dark:text-gray-400">
+                            Max Price
+                        </Label>
+                        <Input
+                            id="max-price"
+                            type="text"
+                            value={formatIDR(priceRange[1])}
+                            onChange={(e) => {
+                                const value = e.target.value;
+
+                                // If empty, set to 200000
+                                if (value === "" || value === ".") {
+                                    setPriceRange([priceRange[0], 200000]);
+                                    return;
+                                }
+
+                                // Remove all non-digit characters
+                                const cleaned = value.replace(/[^\d]/g, "");
+
+                                // Parse to number
+                                const numericValue = cleaned === "" ? 200000 : Number(cleaned);
+
+                                // Validate and update
+                                if (numericValue >= priceRange[0] && numericValue >= 0 && numericValue <= 200000) {
+                                    setPriceRange([priceRange[0], numericValue]);
+                                }
+                            }}
+                            placeholder="Max price"
+                            inputMode="numeric"
+                            className="w-full"
+                        />
+                    </div>
+                </div>
+                <div className="text-xs text-gray-500 dark:text-gray-400">
+                    Range: Rp {formatIDR(priceRange[0])} - Rp {formatIDR(priceRange[1])}
                 </div>
             </div>
 
@@ -214,24 +271,41 @@ export default function SearchProductsFilter({
                         )}
                     </CollapsibleTrigger>
                     <CollapsibleContent>
-                        <div className="flex flex-wrap gap-2">
-                            {techStackOptions.map((tech) => (
-                                <Button
-                                    key={tech}
-                                    type="button"
-                                    variant={selectedTechStack.includes(tech) ? "default" : "outline"}
-                                    size="sm"
-                                    onClick={() => toggleTechStack(tech)}
-                                    className={cn(
-                                        selectedTechStack.includes(tech)
-                                            ? "bg-blue-600 text-white border-blue-600 hover:bg-blue-700"
-                                            : ""
-                                    )}
-                                >
-                                    {tech}
-                                </Button>
-                            ))}
-                        </div>
+                        <RadioGroup
+                            value={selectedTechStack[0] || "all"}
+                            onValueChange={(value) => {
+                                if (value === "all") {
+                                    setSelectedTechStack([]);
+                                } else if (value) {
+                                    setSelectedTechStack([value]);
+                                } else {
+                                    setSelectedTechStack([]);
+                                }
+                            }}
+                        >
+                            <div className="space-y-2">
+                                <div className="flex items-center gap-2">
+                                    <RadioGroupItem value="all" id="tech-all" />
+                                    <Label
+                                        htmlFor="tech-all"
+                                        className="flex items-center gap-2 cursor-pointer hover:text-blue-600 dark:hover:text-blue-400"
+                                    >
+                                        <span className="text-sm">All Tech Stack</span>
+                                    </Label>
+                                </div>
+                                {techStackOptions.map((tech) => (
+                                    <div key={tech} className="flex items-center gap-2">
+                                        <RadioGroupItem value={tech} id={`tech-${tech}`} />
+                                        <Label
+                                            htmlFor={`tech-${tech}`}
+                                            className="flex items-center gap-2 cursor-pointer hover:text-blue-600 dark:hover:text-blue-400"
+                                        >
+                                            <span className="text-sm">{tech}</span>
+                                        </Label>
+                                    </div>
+                                ))}
+                            </div>
+                        </RadioGroup>
                     </CollapsibleContent>
                 </div>
             </Collapsible>
@@ -346,34 +420,56 @@ export default function SearchProductsFilter({
 
             {/* Additional Filters */}
             <div className="space-y-3">
-                <div className="space-y-2">
-                    <Label
-                        htmlFor="popular-only"
-                        className="flex items-center gap-2 cursor-pointer hover:text-blue-600 dark:hover:text-blue-400"
-                    >
-                        <Input
-                            id="popular-only"
-                            type="checkbox"
-                            checked={popularOnly}
-                            onChange={(e) => setPopularOnly(e.target.checked)}
-                            className="w-4 h-4 rounded border-gray-300 dark:border-gray-700 text-blue-600 focus:ring-blue-500"
-                        />
-                        <span className="text-sm">Popular only</span>
-                    </Label>
-                    <Label
-                        htmlFor="new-arrivals"
-                        className="flex items-center gap-2 cursor-pointer hover:text-blue-600 dark:hover:text-blue-400"
-                    >
-                        <Input
-                            id="new-arrivals"
-                            type="checkbox"
-                            checked={newArrivals}
-                            onChange={(e) => setNewArrivals(e.target.checked)}
-                            className="w-4 h-4 rounded border-gray-300 dark:border-gray-700 text-blue-600 focus:ring-blue-500"
-                        />
-                        <span className="text-sm">New Arrivals</span>
-                    </Label>
-                </div>
+                <Label className="text-sm font-medium">Additional Filters</Label>
+                <RadioGroup
+                    value={
+                        popularOnly ? "popular" :
+                            newArrivals ? "new" :
+                                "all"
+                    }
+                    onValueChange={(value) => {
+                        if (value === "popular") {
+                            setPopularOnly(true);
+                            setNewArrivals(false);
+                        } else if (value === "new") {
+                            setPopularOnly(false);
+                            setNewArrivals(true);
+                        } else {
+                            setPopularOnly(false);
+                            setNewArrivals(false);
+                        }
+                    }}
+                >
+                    <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                            <RadioGroupItem value="all" id="additional-all" />
+                            <Label
+                                htmlFor="additional-all"
+                                className="flex items-center gap-2 cursor-pointer hover:text-blue-600 dark:hover:text-blue-400"
+                            >
+                                <span className="text-sm">All</span>
+                            </Label>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <RadioGroupItem value="popular" id="popular-only" />
+                            <Label
+                                htmlFor="popular-only"
+                                className="flex items-center gap-2 cursor-pointer hover:text-blue-600 dark:hover:text-blue-400"
+                            >
+                                <span className="text-sm">Popular only</span>
+                            </Label>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <RadioGroupItem value="new" id="new-arrivals" />
+                            <Label
+                                htmlFor="new-arrivals"
+                                className="flex items-center gap-2 cursor-pointer hover:text-blue-600 dark:hover:text-blue-400"
+                            >
+                                <span className="text-sm">New Arrivals</span>
+                            </Label>
+                        </div>
+                    </div>
+                </RadioGroup>
             </div>
         </div>
     )

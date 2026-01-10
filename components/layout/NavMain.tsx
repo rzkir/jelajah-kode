@@ -27,11 +27,11 @@ export default function NavMain() {
                             <span className="inline">admin@jelajahkode.biz.id</span>
                         </Link>
                         <Link
-                            href="/artikel"
+                            href="/articles"
                             className="flex items-center gap-1.5 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                         >
                             <FileText className="size-3.5" />
-                            <span>Artikel</span>
+                            <span>Articles</span>
                         </Link>
                     </div>
 

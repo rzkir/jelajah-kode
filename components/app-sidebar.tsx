@@ -67,21 +67,21 @@ const data = {
       ],
     },
     {
-      title: "Models",
-      url: "#",
+      title: "Articles",
+      url: "/dashboard/articles",
       icon: Bot,
       items: [
         {
-          title: "Genesis",
-          url: "#",
+          title: "Articles",
+          url: "/dashboard/articles/articles",
         },
         {
-          title: "Explorer",
-          url: "#",
+          title: "Articles Category",
+          url: "/dashboard/articles/category",
         },
         {
-          title: "Quantum",
-          url: "#",
+          title: "Articles Tags",
+          url: "/dashboard/articles/tags",
         },
       ],
     },

@@ -18,6 +18,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
         categories: params.categories,
         types: params.types,
         tech: params.tech,
+        minPrice: params.minPrice,
         maxPrice: params.maxPrice,
         minRating: params.minRating,
         popular: params.popular,

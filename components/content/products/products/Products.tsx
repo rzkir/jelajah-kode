@@ -226,6 +226,7 @@ export default function Products({ products, pagination, categories, types, init
                                         }
 
                                         if (initialFilters?.tech) params.set("tech", initialFilters.tech);
+                                        if (initialFilters?.minPrice) params.set("minPrice", initialFilters.minPrice);
                                         if (initialFilters?.maxPrice) params.set("maxPrice", initialFilters.maxPrice);
                                         if (initialFilters?.minRating) params.set("minRating", initialFilters.minRating);
                                         if (initialFilters?.popular) params.set("popular", initialFilters.popular);

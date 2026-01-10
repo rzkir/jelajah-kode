@@ -23,6 +23,7 @@ export async function GET(request: Request) {
       searchParams.get("categories")?.split(",").filter(Boolean) || [];
     const types = searchParams.get("types")?.split(",").filter(Boolean) || [];
     const tech = searchParams.get("tech")?.split(",").filter(Boolean) || [];
+    const minPrice = searchParams.get("minPrice");
     const maxPrice = searchParams.get("maxPrice");
     const minRating = searchParams.get("minRating");
     const popular = searchParams.get("popular") === "true";
@@ -38,15 +39,15 @@ export async function GET(request: Request) {
       status: "publish", // Only show published products
     };
 
-    // If query is provided, search in productsId, title, and description
-    // If query is empty, show all published products
-    if (q && q.trim() !== "") {
-      query.$or = [
-        { productsId: { $regex: q, $options: "i" } },
-        { title: { $regex: q, $options: "i" } },
-        { description: { $regex: q, $options: "i" } },
-      ];
-    }
+    // Store search conditions separately to combine with popular filter if needed
+    const searchConditions =
+      q && q.trim() !== ""
+        ? [
+            { productsId: { $regex: q, $options: "i" } },
+            { title: { $regex: q, $options: "i" } },
+            { description: { $regex: q, $options: "i" } },
+          ]
+        : null;
 
     // Filter by categories
     if (categories.length > 0) {
@@ -63,24 +64,30 @@ export async function GET(request: Request) {
       query["frameworks.title"] = { $in: tech };
     }
 
-    // Filter by max price
-    if (maxPrice) {
-      query.price = { $lte: parseInt(maxPrice) };
-    }
+    // Filter by price range (considering discount)
+    // We'll handle this in aggregation pipeline to calculate discounted price
+    const priceRangeFilter = minPrice || maxPrice;
 
     // Filter by minimum rating
     if (minRating) {
       query.ratingAverage = { $gte: parseFloat(minRating) };
     }
 
-    // Filter by popular (e.g., high view count or sold count)
+    // Filter by popular (products with downloads)
     if (popular) {
-      query.$or = query.$or || [];
-      if (query.$or.length === 0) {
-        delete query.$or;
+      // Consider popular as having downloads (similar to /api/products/popular)
+      const popularCondition = { downloadCount: { $gt: 0 } };
+
+      // If there's a search query, combine with $and
+      if (searchConditions) {
+        query.$and = [{ $or: searchConditions }, popularCondition];
+      } else {
+        // No search query, just use popular condition
+        query.downloadCount = { $gt: 0 };
       }
-      // Consider popular as having high views or sales
-      query.views = { $gte: 100 };
+    } else if (searchConditions) {
+      // Only search query, no popular filter
+      query.$or = searchConditions;
     }
 
     // Filter by new arrivals (last 30 days)
@@ -90,6 +97,79 @@ export async function GET(request: Request) {
       query.createdAt = { $gte: thirtyDaysAgo };
     }
 
+    // Build aggregation pipeline
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const pipeline: any[] = [{ $match: query }];
+
+    // Add field to calculate final price (considering discount)
+    // Check if discount exists and is not expired
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    pipeline.push({
+      $addFields: {
+        finalPrice: {
+          $cond: {
+            if: {
+              $and: [
+                { $ne: ["$discount", null] },
+                { $ne: ["$discount", {}] },
+                {
+                  $or: [
+                    { $not: "$discount.until" },
+                    { $eq: ["$discount.until", ""] },
+                    {
+                      $and: [
+                        { $ne: ["$discount.until", null] },
+                        {
+                          $gt: [
+                            {
+                              $dateFromString: {
+                                dateString: "$discount.until",
+                                onError: new Date(0), // Return epoch if invalid
+                              },
+                            },
+                            today,
+                          ],
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+            then: {
+              $cond: {
+                if: { $eq: ["$discount.type", "percentage"] },
+                then: {
+                  $multiply: [
+                    "$price",
+                    { $subtract: [1, { $divide: ["$discount.value", 100] }] },
+                  ],
+                },
+                else: {
+                  $max: [0, { $subtract: ["$price", "$discount.value"] }],
+                },
+              },
+            },
+            else: "$price",
+          },
+        },
+      },
+    });
+
+    // Filter by price range using finalPrice
+    if (priceRangeFilter) {
+      const priceMatch: { $gte?: number; $lte?: number } = {};
+      if (minPrice) {
+        priceMatch.$gte = parseInt(minPrice);
+      }
+      if (maxPrice) {
+        priceMatch.$lte = parseInt(maxPrice);
+      }
+      pipeline.push({ $match: { finalPrice: priceMatch } });
+    }
+
     // Build sort object
     let sortObj: { [key: string]: 1 | -1 } = { createdAt: -1 };
     switch (sort) {
@@ -97,10 +177,10 @@ export async function GET(request: Request) {
         sortObj = { createdAt: 1 };
         break;
       case "price-low":
-        sortObj = { price: 1 };
+        sortObj = { finalPrice: 1 };
         break;
       case "price-high":
-        sortObj = { price: -1 };
+        sortObj = { finalPrice: -1 };
         break;
       case "rating":
         sortObj = { ratingAverage: -1 };
@@ -109,14 +189,21 @@ export async function GET(request: Request) {
         sortObj = { createdAt: -1 };
     }
 
-    // Fetch products with pagination
-    const products = await Products.find(query)
-      .skip(skip)
-      .limit(limit)
-      .sort(sortObj);
+    // Add sort and pagination
+    pipeline.push({ $sort: sortObj });
+    pipeline.push({ $skip: skip });
+    pipeline.push({ $limit: limit });
 
-    // Get total count for pagination info
-    const totalCount = await Products.countDocuments(query);
+    // Execute aggregation
+    const products = await Products.aggregate(pipeline);
+
+    // Get total count (need to run separate aggregation for count)
+    const countPipeline = [...pipeline];
+    countPipeline.pop(); // Remove limit
+    countPipeline.pop(); // Remove skip
+    countPipeline.push({ $count: "total" });
+    const countResult = await Products.aggregate(countPipeline);
+    const totalCount = countResult[0]?.total || 0;
 
     // Format response
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

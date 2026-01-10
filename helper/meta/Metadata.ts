@@ -39,6 +39,7 @@ export async function generateProductsPageMetadata(
     categories?: string;
     types?: string;
     tech?: string;
+    minPrice?: string;
     maxPrice?: string;
     minRating?: string;
     popular?: string;
@@ -54,6 +55,7 @@ export async function generateProductsPageMetadata(
     categories,
     types,
     tech,
+    minPrice,
     maxPrice,
     minRating,
     popular,
@@ -72,6 +74,7 @@ export async function generateProductsPageMetadata(
   if (categories) urlParams.set("categories", categories);
   if (types) urlParams.set("types", types);
   if (tech) urlParams.set("tech", tech);
+  if (minPrice) urlParams.set("minPrice", minPrice);
   if (maxPrice) urlParams.set("maxPrice", maxPrice);
   if (minRating) urlParams.set("minRating", minRating);
   if (popular) urlParams.set("popular", popular);
@@ -88,7 +91,15 @@ export async function generateProductsPageMetadata(
   if (categories) filters.push(`category: ${categories}`);
   if (types) filters.push(`type: ${types}`);
   if (tech) filters.push(`tech: ${tech}`);
-  if (maxPrice) filters.push(`max price: $${maxPrice}`);
+  if (minPrice || maxPrice) {
+    if (minPrice && maxPrice) {
+      filters.push(`price: $${minPrice} - $${maxPrice}`);
+    } else if (minPrice) {
+      filters.push(`min price: $${minPrice}`);
+    } else if (maxPrice) {
+      filters.push(`max price: $${maxPrice}`);
+    }
+  }
   if (minRating) filters.push(`min rating: ${minRating}★`);
   if (popular === "true") filters.push("popular items");
   if (discounted === "true") filters.push("discounted items");
@@ -107,6 +118,7 @@ export async function generateProductsPageMetadata(
         categories,
         types,
         tech,
+        minPrice,
         maxPrice,
         minRating,
         popular,
@@ -499,6 +511,7 @@ export async function generateSearchPageMetadata(
     categories?: string;
     types?: string;
     tech?: string;
+    minPrice?: string;
     maxPrice?: string;
     minRating?: string;
     popular?: string;
@@ -514,6 +527,7 @@ export async function generateSearchPageMetadata(
     categories,
     types,
     tech,
+    minPrice,
     maxPrice,
     minRating,
     popular,
@@ -532,6 +546,7 @@ export async function generateSearchPageMetadata(
   if (categories) urlParams.set("categories", categories);
   if (types) urlParams.set("types", types);
   if (tech) urlParams.set("tech", tech);
+  if (minPrice) urlParams.set("minPrice", minPrice);
   if (maxPrice) urlParams.set("maxPrice", maxPrice);
   if (minRating) urlParams.set("minRating", minRating);
   if (popular) urlParams.set("popular", popular);
@@ -548,7 +563,15 @@ export async function generateSearchPageMetadata(
   if (categories) filters.push(`category: ${categories}`);
   if (types) filters.push(`type: ${types}`);
   if (tech) filters.push(`tech: ${tech}`);
-  if (maxPrice) filters.push(`max price: $${maxPrice}`);
+  if (minPrice || maxPrice) {
+    if (minPrice && maxPrice) {
+      filters.push(`price: $${minPrice} - $${maxPrice}`);
+    } else if (minPrice) {
+      filters.push(`min price: $${minPrice}`);
+    } else if (maxPrice) {
+      filters.push(`max price: $${maxPrice}`);
+    }
+  }
   if (minRating) filters.push(`min rating: ${minRating}★`);
   if (popular === "true") filters.push("popular items");
   if (discounted === "true") filters.push("discounted items");
@@ -567,6 +590,7 @@ export async function generateSearchPageMetadata(
         categories,
         types,
         tech,
+        minPrice,
         maxPrice,
         minRating,
         popular,

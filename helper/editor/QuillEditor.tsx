@@ -56,10 +56,8 @@ export default function QuillEditor({
   onChange,
   placeholder = "Enter content...",
   className = "",
-  height = "450px",
 }: QuillEditorProps) {
   useEffect(() => {
-    // Add theme-specific styles
     const style = document.createElement("style");
     style.textContent = `
             .dark .ql-toolbar.ql-snow {
@@ -124,13 +122,12 @@ export default function QuillEditor({
     >
       <ReactQuill
         theme="snow"
-        className="sticky top-0"
+        className="sticky top-0 h-full"
         value={value}
         onChange={onChange}
         modules={modules}
         formats={formats}
         placeholder={placeholder}
-        style={{ height }}
       />
     </div>
   );

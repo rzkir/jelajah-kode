@@ -15,14 +15,6 @@ export async function generateMetadata({
     return generateProductsTagsMetadata(params, searchParams);
 }
 
-interface ProductsTagsPageProps {
-    params: Promise<{ tagsId: string }>;
-    searchParams: Promise<{
-        page?: string;
-        sort?: string;
-    }>;
-}
-
 export default async function Page({
     params,
     searchParams,

@@ -2,6 +2,8 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 const API_SECRET = process.env.NEXT_PUBLIC_API_SECRET;
 
+const API_CHAT_BASE_URL = process.env.NEXT_PUBLIC_CHAT_BASE_URL;
+
 export const API_CONFIG = {
   ENDPOINTS: {
     base: API_BASE_URL,
@@ -37,17 +39,42 @@ export const API_CONFIG = {
         `${API_BASE_URL}/api/products/popular?page=${page}&limit=${limit}`,
       ratings: (productsId: string, page: number = 1, limit: number = 10) =>
         `${API_BASE_URL}/api/ratings/${productsId}?page=${page}&limit=${limit}`,
-      byCategory: (categoryId: string, page: number = 1, limit: number = 10, sort: string = "newest") =>
+      byCategory: (
+        categoryId: string,
+        page: number = 1,
+        limit: number = 10,
+        sort: string = "newest"
+      ) =>
         `${API_BASE_URL}/api/products/categories/${categoryId}?page=${page}&limit=${limit}&sort=${sort}`,
-      byType: (typeId: string, page: number = 1, limit: number = 10, sort: string = "newest") =>
+      byType: (
+        typeId: string,
+        page: number = 1,
+        limit: number = 10,
+        sort: string = "newest"
+      ) =>
         `${API_BASE_URL}/api/products/type/${typeId}?page=${page}&limit=${limit}&sort=${sort}`,
-      byTags: (tagsId: string, page: number = 1, limit: number = 10, sort: string = "newest") =>
+      byTags: (
+        tagsId: string,
+        page: number = 1,
+        limit: number = 10,
+        sort: string = "newest"
+      ) =>
         `${API_BASE_URL}/api/products/tags/${tagsId}?page=${page}&limit=${limit}&sort=${sort}`,
+    },
+    articles: {
+      base: `${API_BASE_URL}/api/articles`,
+      categories: `${API_BASE_URL}/api/articles/categories`,
+      tags: `${API_BASE_URL}/api/articles/tags`,
+      byId: (id: string) => `${API_BASE_URL}/api/articles?id=${id}`,
     },
     checkout: `${API_BASE_URL}/api/checkout`,
     transactions: `${API_BASE_URL}/api/transactions`,
     transactionsUpdate: `${API_BASE_URL}/api/transactions/update`,
     ratings: `${API_BASE_URL}/api/ratings`,
+    chat: {
+      academia: `${API_CHAT_BASE_URL}/academia`,
+      technology: `${API_CHAT_BASE_URL}/technology`,
+    },
   },
   SECRET: API_SECRET,
   SOCIAL_MEDIA: {

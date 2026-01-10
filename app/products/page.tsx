@@ -15,6 +15,7 @@ interface ProductsPageProps {
         categories?: string;
         types?: string;
         tech?: string;
+        minPrice?: string;
         maxPrice?: string;
         minRating?: string;
         popular?: string;
@@ -34,6 +35,7 @@ export default async function Page({ searchParams }: ProductsPageProps) {
         categories: params.categories,
         types: params.types,
         tech: params.tech,
+        minPrice: params.minPrice,
         maxPrice: params.maxPrice,
         minRating: params.minRating,
         popular: params.popular,

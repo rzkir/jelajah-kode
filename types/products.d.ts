@@ -165,6 +165,7 @@ interface ProductsProps {
     categories?: string;
     types?: string;
     tech?: string;
+    minPrice?: string;
     maxPrice?: string;
     minRating?: string;
     popular?: string;
@@ -366,6 +367,7 @@ type InitialFilters = {
   categories?: string;
   types?: string;
   tech?: string;
+  minPrice?: string;
   maxPrice?: string;
   minRating?: string;
   popular?: string;
@@ -463,6 +465,7 @@ interface SearchPageProps {
     categories?: string;
     types?: string;
     tech?: string;
+    minPrice?: string;
     maxPrice?: string;
     minRating?: string;
     popular?: string;
@@ -484,6 +487,7 @@ interface SearchProductsProps {
     categories?: string;
     types?: string;
     tech?: string;
+    minPrice?: string;
     maxPrice?: string;
     minRating?: string;
     popular?: string;

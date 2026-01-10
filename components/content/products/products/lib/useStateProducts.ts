@@ -12,8 +12,8 @@ const createInitialState = (initialFilters?: InitialFilters): FilterState => ({
   selectedTypes: initialFilters?.types ? [initialFilters.types] : [],
   selectedTechStack: initialFilters?.tech?.split(",").filter(Boolean) || [],
   priceRange: [
-    0,
-    initialFilters?.maxPrice ? parseInt(initialFilters.maxPrice) : 200,
+    initialFilters?.minPrice ? parseInt(initialFilters.minPrice) : 0,
+    initialFilters?.maxPrice ? parseInt(initialFilters.maxPrice) : 200000,
   ],
   minRating: initialFilters?.minRating
     ? parseFloat(initialFilters.minRating)
@@ -40,9 +40,12 @@ const buildFilterParams = (
     params.set("types", filters.selectedTypes[0]);
   }
   if (filters.selectedTechStack.length > 0) {
-    params.set("tech", filters.selectedTechStack.join(","));
+    params.set("tech", filters.selectedTechStack[0]);
   }
-  if (filters.priceRange[1] < 200) {
+  if (filters.priceRange[0] > 0) {
+    params.set("minPrice", filters.priceRange[0].toString());
+  }
+  if (filters.priceRange[1] < 200000) {
     params.set("maxPrice", filters.priceRange[1].toString());
   }
   if (filters.minRating) {
@@ -160,10 +163,12 @@ export function useStateProducts(
 
   const setSelectedTechStack = React.useCallback(
     (tech: React.SetStateAction<string[]>) => {
+      const newTech =
+        typeof tech === "function" ? tech(filters.selectedTechStack) : tech;
+      const singleTech = Array.isArray(newTech) && newTech.length > 0 ? [newTech[0]] : [];
       dispatch({
         type: "SET_TECH_STACK",
-        payload:
-          typeof tech === "function" ? tech(filters.selectedTechStack) : tech,
+        payload: singleTech,
       });
     },
     [filters.selectedTechStack]
@@ -195,7 +200,8 @@ export function useStateProducts(
       filters.selectedCategories.length === 0 &&
       filters.selectedTypes.length === 0 &&
       filters.selectedTechStack.length === 0 &&
-      filters.priceRange[1] === 200 &&
+      filters.priceRange[0] === 0 &&
+      filters.priceRange[1] === 200000 &&
       !filters.minRating &&
       !filters.popularOnly &&
       !filters.newArrivals &&

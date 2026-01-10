@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { processImageUrls } from '@/lib/utils';
+
 export function TypographyH1({ children, className = "" }: { children?: React.ReactNode; className?: string }) {
     return (
         <h1 className={`scroll-m-20 text-center text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight sm:leading-tight md:leading-tight lg:leading-tight text-balance mb-6 sm:mb-8 md:mb-10 px-4 sm:px-6 md:px-8 max-w-full sm:max-w-3xl md:max-w-4xl lg:max-w-5xl mx-auto ${className}`}>
@@ -143,12 +145,17 @@ export function TypographyContent({
     youtubeContainerClassName = "",
     youtubeIframeClassName = ""
 }: {
-    html: string;
+    html: string | undefined | null;
     className?: string;
     youtubeWrapperClassName?: string;
     youtubeContainerClassName?: string;
     youtubeIframeClassName?: string;
 }) {
+    // Safety check: return early if html is undefined, null, or empty
+    if (!html || typeof html !== 'string') {
+        return null;
+    }
+
     // Extract YouTube embed URLs from description
     const youtubeEmbedRegex = /https?:\/\/www\.youtube\.com\/embed\/([a-zA-Z0-9_-]+)(\?[^"<>\s]*)?/gi;
     const youtubeLinkRegex = /<a[^>]*href=["'](https?:\/\/www\.youtube\.com\/embed\/[^"'\s]+)["'][^>]*>.*?<\/a>/gi;
@@ -156,19 +163,19 @@ export function TypographyContent({
     let processedHtml = html;
     const youtubeUrls: string[] = [];
 
-    // Extract URLs from anchor tags
     processedHtml = processedHtml.replace(youtubeLinkRegex, (match, url) => {
         youtubeUrls.push(url);
         return '';
     });
 
-    // Extract direct embed URLs
     processedHtml = processedHtml.replace(youtubeEmbedRegex, (match) => {
         if (!youtubeUrls.includes(match)) {
             youtubeUrls.push(match);
         }
         return '';
     });
+
+    processedHtml = processImageUrls(processedHtml);
 
     return (
         <>
