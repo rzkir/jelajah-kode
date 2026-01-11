@@ -1,4 +1,4 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+const API_BASE_URL = process.env.NEXT_PUBLIC_API;
 
 const API_SECRET = process.env.NEXT_PUBLIC_API_SECRET;
 
@@ -14,6 +14,7 @@ export const API_CONFIG = {
     resetPassword: `${API_BASE_URL}/api/auth/reset-password`,
     forgetPassword: `${API_BASE_URL}/api/auth/forget-password`,
     changePassword: `${API_BASE_URL}/api/auth/change-password`,
+    deleteAccount: `${API_BASE_URL}/api/auth/delete-account`,
     me: `${API_BASE_URL}/api/auth/me`,
     uploadPicture: `${API_BASE_URL}/api/auth/upload-picture`,
     products: {
@@ -82,9 +83,12 @@ export const API_CONFIG = {
     transactionsSendEmail: `${API_BASE_URL}/api/transactions/send-email`,
     transactionsDelete: `${API_BASE_URL}/api/transactions/delete`,
     ratings: `${API_BASE_URL}/api/ratings`,
+    users: {
+      base: `${API_BASE_URL}/api/users`,
+    },
     chat: {
-      academia: `${API_CHAT_BASE_URL}/academia`,
-      technology: `${API_CHAT_BASE_URL}/technology`,
+      academia: `${API_CHAT_BASE_URL}/edu/academia`,
+      curhat: `${API_CHAT_BASE_URL}/personal/curhat`,
     },
   },
   SECRET: API_SECRET,

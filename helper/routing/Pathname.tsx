@@ -10,6 +10,8 @@ import { Footer } from "@/components/layout/Footer";
 
 import BottomNavigation from "@/components/layout/BottomNavigation";
 
+import AiAgent from "@/helper/ai-assist/AiAgent"
+
 import { Toaster } from "sonner";
 
 const Pathname = ({ children }: { children: React.ReactNode }) => {
@@ -41,6 +43,9 @@ const Pathname = ({ children }: { children: React.ReactNode }) => {
       {children}
       {!isRoute && <Footer />}
       {!isRoute && <BottomNavigation />}
+      <div className="fixed bottom-6 right-6 z-50">
+        <AiAgent />
+      </div>
     </Fragment>
   );
 };

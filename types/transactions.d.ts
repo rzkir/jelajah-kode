@@ -140,3 +140,11 @@ interface RatingData {
 interface CheckoutSuccessProps {
   status?: string;
 }
+
+interface CheckoutPageProps {
+  searchParams: Promise<{
+    products?: string;
+    productId?: string;
+    title?: string;
+  }>;
+}

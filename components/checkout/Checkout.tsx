@@ -24,7 +24,11 @@ import useStateCheckout from "@/components/checkout/lib/useStateCheckout";
 
 import LoadingOverlay from "@/helper/loading/LoadingOverlay";
 
-export default function Checkout() {
+interface CheckoutProps {
+    productsParam: string;
+}
+
+export default function Checkout({ productsParam }: CheckoutProps) {
     const {
         router,
         user,
@@ -46,7 +50,7 @@ export default function Checkout() {
         handleFollowStepClick,
         handleFollowStepComplete,
         handleFollowConfirm,
-    } = useStateCheckout();
+    } = useStateCheckout(productsParam);
 
 
     if (authLoading || isLoading) {

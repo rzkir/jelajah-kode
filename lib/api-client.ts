@@ -1,16 +1,3 @@
-interface Message {
-  role: "user" | "assistant";
-  content: string;
-  imageUrl?: string;
-}
-
-interface StreamChatOptions {
-  endpoint: string;
-  messages: Message[];
-  onChunk: (content: string) => void;
-  onError?: (error: string) => void;
-}
-
 /**
  * Utility function untuk memanggil API chat dengan streaming response
  * @param options - Konfigurasi untuk API call

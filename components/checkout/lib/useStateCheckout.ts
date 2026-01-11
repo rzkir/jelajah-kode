@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 import { toast } from "sonner";
 
@@ -15,9 +15,8 @@ import {
 
 import { useAuth } from "@/utils/context/AuthContext";
 
-const useStateCheckout = () => {
+const useStateCheckout = (productsParam: string) => {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const { user, loading: authLoading } = useAuth();
 
   const [products, setProducts] = useState<CheckoutProduct[]>([]);
@@ -91,8 +90,6 @@ const useStateCheckout = () => {
     try {
       setIsLoading(true);
 
-      const productsParam = searchParams.get("products");
-
       if (!productsParam) {
         setProducts([]);
         return;
@@ -124,7 +121,7 @@ const useStateCheckout = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [router, searchParams]);
+  }, [router, productsParam]);
 
   useEffect(() => {
     if (authLoading) return;

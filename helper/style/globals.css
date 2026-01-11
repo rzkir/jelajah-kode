@@ -152,4 +152,76 @@ html {
   .animate-float {
     animation: float 3s ease-in-out infinite;
   }
+
+  /* Custom scrollbar untuk chat - minimal di pojok */
+  .scrollbar-minimal::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .scrollbar-minimal::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-minimal::-webkit-scrollbar-thumb {
+    background: rgba(156, 163, 175, 0.3);
+    border-radius: 10px;
+  }
+
+  .scrollbar-minimal::-webkit-scrollbar-thumb:hover {
+    background: rgba(156, 163, 175, 0.5);
+  }
+
+  .dark .scrollbar-minimal::-webkit-scrollbar-thumb {
+    background: rgba(75, 85, 99, 0.4);
+  }
+
+  .dark .scrollbar-minimal::-webkit-scrollbar-thumb:hover {
+    background: rgba(75, 85, 99, 0.6);
+  }
+
+  /* Firefox */
+  .scrollbar-minimal {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(156, 163, 175, 0.3) transparent;
+  }
+
+  .dark .scrollbar-minimal {
+    scrollbar-color: rgba(75, 85, 99, 0.4) transparent;
+  }
+
+  /* Custom scrollbar untuk textarea input - di pojok kanan dekat icon send */
+  .scrollbar-textarea::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .scrollbar-textarea::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-textarea::-webkit-scrollbar-thumb {
+    background: rgba(156, 163, 175, 0.4);
+    border-radius: 10px;
+  }
+
+  .scrollbar-textarea::-webkit-scrollbar-thumb:hover {
+    background: rgba(156, 163, 175, 0.6);
+  }
+
+  .dark .scrollbar-textarea::-webkit-scrollbar-thumb {
+    background: rgba(75, 85, 99, 0.5);
+  }
+
+  .dark .scrollbar-textarea::-webkit-scrollbar-thumb:hover {
+    background: rgba(75, 85, 99, 0.7);
+  }
+
+  /* Firefox */
+  .scrollbar-textarea {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(156, 163, 175, 0.4) transparent;
+  }
+
+  .dark .scrollbar-textarea {
+    scrollbar-color: rgba(75, 85, 99, 0.5) transparent;
+  }
 }

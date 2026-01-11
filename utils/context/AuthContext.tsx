@@ -153,8 +153,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signIn = async (email: string, password: string) => {
     try {
-      // Call the sign-in API directly
-      const result = await fetch(API_CONFIG.ENDPOINTS.signIn, {
+      // For development: use proxy route to handle cookie forwarding
+      // For production: use direct backend call
+      const signInUrl =
+        process.env.NODE_ENV === "development"
+          ? "/api/auth/proxy-signin" // Use proxy in development
+          : API_CONFIG.ENDPOINTS.signIn; // Direct call in production
+
+      // Call the sign-in API
+      const result = await fetch(signInUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -163,34 +170,89 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         body: JSON.stringify({ email, password }),
       });
 
+      // Log for debugging in development
+      if (process.env.NODE_ENV === "development") {
+        console.log("Sign in response status:", result.status);
+        console.log("Sign in response headers:", Object.fromEntries(result.headers.entries()));
+      }
+
       // Check content type before parsing JSON
       const contentType = result.headers.get("content-type");
       if (!contentType || !contentType.includes("application/json")) {
+        const text = await result.text();
+        console.error("Invalid response format. Response:", text);
         throw new Error("Invalid response format from server");
       }
 
       const resultData = await result.json();
 
-      if (!result.ok || resultData.error) {
-        throw new Error(resultData.error || "Sign in failed");
+      if (!result.ok) {
+        // Log error details for debugging
+        if (process.env.NODE_ENV === "development") {
+          console.error("Sign in failed:", {
+            status: result.status,
+            error: resultData.error,
+            data: resultData,
+          });
+        }
+        throw new Error(resultData.error || `Sign in failed with status ${result.status}`);
+      }
+
+      if (resultData.error) {
+        throw new Error(resultData.error);
+      }
+
+      // For development (cross-origin), cookie might not be set
+      // Store token in localStorage as fallback for development
+      if (process.env.NODE_ENV === "development" && resultData.user) {
+        try {
+          // Try to extract token from response headers or use a workaround
+          // Since we can't read httpOnly cookie, we'll rely on cookie being set
+          // But store user info in localStorage for quick access
+          localStorage.setItem("user", JSON.stringify(resultData.user));
+        } catch (e) {
+          console.warn("Could not store user in localStorage:", e);
+        }
       }
 
       // Fetch the complete user data from the API
       const userResponse = await fetch(API_CONFIG.ENDPOINTS.me, {
         method: "GET",
         credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
+
+      // Log for debugging in development
+      if (process.env.NODE_ENV === "development") {
+        console.log("Me endpoint response status:", userResponse.status);
+      }
 
       // Check content type before parsing JSON
       const userContentType = userResponse.headers.get("content-type");
       if (!userContentType || !userContentType.includes("application/json")) {
+        const text = await userResponse.text();
+        console.error("Invalid response format from /me. Response:", text);
         throw new Error("Invalid response format from server");
       }
 
       const userResponseData = await userResponse.json();
 
-      if (!userResponse.ok || userResponseData.error) {
-        throw new Error(userResponseData.error || "Failed to fetch user data");
+      if (!userResponse.ok) {
+        // Log error details for debugging
+        if (process.env.NODE_ENV === "development") {
+          console.error("Failed to fetch user data:", {
+            status: userResponse.status,
+            error: userResponseData.error,
+            data: userResponseData,
+          });
+        }
+        throw new Error(userResponseData.error || `Failed to fetch user data with status ${userResponse.status}`);
+      }
+
+      if (userResponseData.error) {
+        throw new Error(userResponseData.error);
       }
 
       // The API returns user data directly, not wrapped in a data property
@@ -198,18 +260,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(account);
       setUserRole(account.role);
 
-      // Show success message and navigate based on role
+      // Show success message
       if (account.role === "admins") {
         toast.success("Welcome back, Admin!", {
           duration: 2000,
         });
-        router.push("/dashboard");
       } else {
         toast.success("Welcome back!", {
           duration: 2000,
         });
-        router.push("/");
       }
+
+      // For cross-origin cookies (frontend localhost, backend Vercel),
+      // cookie from backend might not be immediately available in frontend domain
+      // The cookie will be sent to backend on next API call, but proxy won't see it
+      // So we redirect directly without waiting for proxy
+      const redirectPath = account.role === "admins" ? "/dashboard" : "/";
+
+      // Redirect immediately - cookie will be available on next request to backend
+      window.location.href = redirectPath;
 
       // Return the fetched user data
       return account;
@@ -218,6 +287,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         error instanceof Error
           ? error.message
           : "An unexpected error occurred. Please try again.";
+
+      // Log full error for debugging
+      if (process.env.NODE_ENV === "development") {
+        console.error("Sign in error:", error);
+      }
+
       toast.error(errorMessage);
       return;
     }

@@ -120,24 +120,24 @@ const data = {
     },
     {
       title: "Management Users",
-      url: "dashboard/management-users",
+      url: "/dashboard/management-users",
       icon: SquareUser,
       items: [
         {
-          title: "General",
-          url: "dashboard/management-users/users",
+          title: "Users",
+          url: "/dashboard/management-users/user",
         },
         {
-          title: "Team",
-          url: "dashboard/management-users/verified",
+          title: "Verified",
+          url: "/dashboard/management-users/verified",
         },
         {
-          title: "Billing",
-          url: "dashboard/management-users/active",
+          title: "Active",
+          url: "/dashboard/management-users/active",
         },
         {
-          title: "Limits",
-          url: "dashboard/management-users/inactive",
+          title: "Inactive",
+          url: "/dashboard/management-users/inactive",
         },
       ],
     },

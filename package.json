@@ -34,6 +34,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
+    "emoji-picker-react": "^4.16.1",
     "framer-motion": "^12.24.10",
     "google-auth-library": "^10.5.0",
     "imagekit": "^6.0.0",

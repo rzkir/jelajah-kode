@@ -358,7 +358,7 @@ export default function ChangePassword({ open, onOpenChange }: ChangePasswordPro
                                 </FieldContent>
                             </Field>
                         </FieldGroup>
-                        <DialogFooter>
+                        <DialogFooter className="mt-4">
                             <Button
                                 type="button"
                                 variant="outline"
