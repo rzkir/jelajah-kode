@@ -64,7 +64,14 @@ export function useStateProfile() {
 
       setTransactionsLoading(true);
       try {
-        const response = await fetch(API_CONFIG.ENDPOINTS.transactions, {
+        // For development: use proxy route to handle cookie forwarding
+        // For production: use direct backend call
+        const transactionsUrl =
+          process.env.NODE_ENV === "development"
+            ? "/api/proxy-transactions" // Use proxy in development
+            : API_CONFIG.ENDPOINTS.transactions; // Direct call in production
+
+        const response = await fetch(transactionsUrl, {
           method: "GET",
           credentials: "include",
           headers: {
@@ -96,16 +103,20 @@ export function useStateProfile() {
 
       setReviewsLoading(true);
       try {
-        const response = await fetch(
-          `${API_CONFIG.ENDPOINTS.ratings}?userId=me`,
-          {
-            method: "GET",
-            credentials: "include",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
+        // For development: use proxy route to handle cookie forwarding
+        // For production: use direct backend call
+        const ratingsUrl =
+          process.env.NODE_ENV === "development"
+            ? "/api/proxy-ratings" // Use proxy in development
+            : API_CONFIG.ENDPOINTS.ratings; // Direct call in production
+
+        const response = await fetch(`${ratingsUrl}?userId=me`, {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
 
         if (!response.ok) {
           throw new Error("Failed to fetch reviews");
@@ -150,7 +161,14 @@ export function useStateProfile() {
     if (!user) return;
 
     try {
-      const response = await fetch(API_CONFIG.ENDPOINTS.transactions, {
+      // For development: use proxy route to handle cookie forwarding
+      // For production: use direct backend call
+      const transactionsUrl =
+        process.env.NODE_ENV === "development"
+          ? "/api/proxy-transactions" // Use proxy in development
+          : API_CONFIG.ENDPOINTS.transactions; // Direct call in production
+
+      const response = await fetch(transactionsUrl, {
         method: "GET",
         credentials: "include",
         headers: {
@@ -178,7 +196,14 @@ export function useStateProfile() {
     setIsUpdating(true);
 
     try {
-      const response = await fetch(API_CONFIG.ENDPOINTS.me, {
+      // For development: use proxy route to handle cookie forwarding
+      // For production: use direct backend call
+      const meUrl =
+        process.env.NODE_ENV === "development"
+          ? "/api/auth/proxy-me" // Use proxy in development
+          : API_CONFIG.ENDPOINTS.me; // Direct call in production
+
+      const response = await fetch(meUrl, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -253,7 +278,14 @@ export function useStateProfile() {
       const uploadResult = await uploadResponse.json();
 
       // Update user profile with new picture URL
-      const updateResponse = await fetch(API_CONFIG.ENDPOINTS.me, {
+      // For development: use proxy route to handle cookie forwarding
+      // For production: use direct backend call
+      const meUrl =
+        process.env.NODE_ENV === "development"
+          ? "/api/auth/proxy-me" // Use proxy in development
+          : API_CONFIG.ENDPOINTS.me; // Direct call in production
+
+      const updateResponse = await fetch(meUrl, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

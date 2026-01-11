@@ -46,8 +46,15 @@ export default function useStateOrderDetails() {
 
         if (data.paymentMethod === "paid" && data.order_id) {
           try {
+            // For development: use proxy route to handle cookie forwarding
+            // For production: use direct backend call
+            const transactionsUrl =
+              process.env.NODE_ENV === "development"
+                ? "/api/proxy-transactions" // Use proxy in development
+                : API_CONFIG.ENDPOINTS.transactions; // Direct call in production
+
             const refreshResponse = await fetch(
-              `${API_CONFIG.ENDPOINTS.transactions}?order_id=${orderId}`,
+              `${transactionsUrl}?order_id=${orderId}`,
               {
                 credentials: "include",
               }
@@ -69,8 +76,15 @@ export default function useStateOrderDetails() {
           const ratings: Record<string, RatingData> = {};
           for (const product of data.products) {
             try {
+              // For development: use proxy route to handle cookie forwarding
+              // For production: use direct backend call
+              const ratingsUrl =
+                process.env.NODE_ENV === "development"
+                  ? "/api/proxy-ratings" // Use proxy in development
+                  : API_CONFIG.ENDPOINTS.ratings; // Direct call in production
+
               const ratingResponse = await fetch(
-                `${API_CONFIG.ENDPOINTS.ratings}?productsId=${product.productsId}`,
+                `${ratingsUrl}?productsId=${product.productsId}`,
                 {
                   credentials: "include",
                 }
@@ -155,7 +169,14 @@ export default function useStateOrderDetails() {
 
     setIsSubmittingRating(true);
     try {
-      const response = await fetch(API_CONFIG.ENDPOINTS.ratings, {
+      // For development: use proxy route to handle cookie forwarding
+      // For production: use direct backend call
+      const ratingsUrl =
+        process.env.NODE_ENV === "development"
+          ? "/api/proxy-ratings" // Use proxy in development
+          : API_CONFIG.ENDPOINTS.ratings; // Direct call in production
+
+      const response = await fetch(ratingsUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -51,7 +51,14 @@ export default function EditProfile({ open, onOpenChange }: EditProfileProps) {
         setIsLoading(true);
 
         try {
-            const response = await fetch(API_CONFIG.ENDPOINTS.me, {
+            // For development: use proxy route to handle cookie forwarding
+            // For production: use direct backend call
+            const meUrl =
+                process.env.NODE_ENV === "development"
+                    ? "/api/auth/proxy-me" // Use proxy in development
+                    : API_CONFIG.ENDPOINTS.me; // Direct call in production
+
+            const response = await fetch(meUrl, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",

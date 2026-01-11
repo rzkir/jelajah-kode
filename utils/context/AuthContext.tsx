@@ -59,8 +59,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Since the cookie is httpOnly, we can't read it directly
       // Instead, we'll make an API call to check if the user is authenticated
       try {
-        // Ensure we have a valid URL
-        const apiUrl = API_CONFIG.ENDPOINTS.me;
+        // For development: use proxy route to handle cookie forwarding
+        // For production: use direct backend call
+        const apiUrl =
+          process.env.NODE_ENV === "development"
+            ? "/api/auth/proxy-me" // Use proxy in development
+            : API_CONFIG.ENDPOINTS.me; // Direct call in production
+
         if (!apiUrl || apiUrl.trim() === "") {
           console.error("API endpoint URL is not configured");
           setLoading(false);
@@ -216,7 +221,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       // Fetch the complete user data from the API
-      const userResponse = await fetch(API_CONFIG.ENDPOINTS.me, {
+      // For development: use proxy route to handle cookie forwarding
+      // For production: use direct backend call
+      const meUrl =
+        process.env.NODE_ENV === "development"
+          ? "/api/auth/proxy-me" // Use proxy in development
+          : API_CONFIG.ENDPOINTS.me; // Direct call in production
+
+      const userResponse = await fetch(meUrl, {
         method: "GET",
         credentials: "include",
         headers: {
@@ -342,7 +354,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const refreshUserData = async (): Promise<Accounts | null> => {
     try {
-      const response = await fetch(API_CONFIG.ENDPOINTS.me, {
+      // For development: use proxy route to handle cookie forwarding
+      // For production: use direct backend call
+      const meUrl =
+        process.env.NODE_ENV === "development"
+          ? "/api/auth/proxy-me" // Use proxy in development
+          : API_CONFIG.ENDPOINTS.me; // Direct call in production
+
+      const response = await fetch(meUrl, {
         method: "GET",
         credentials: "include",
       });

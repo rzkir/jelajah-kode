@@ -95,10 +95,15 @@ const useStateCheckout = (productsParam: string) => {
         return;
       }
 
+      // For development: use proxy route to handle cookie forwarding
+      // For production: use direct backend call
+      const checkoutUrl =
+        process.env.NODE_ENV === "development"
+          ? "/api/proxy-checkout" // Use proxy in development
+          : API_CONFIG.ENDPOINTS.checkout; // Direct call in production
+
       const response = await fetch(
-        `${API_CONFIG.ENDPOINTS.checkout}?products=${encodeURIComponent(
-          productsParam
-        )}`,
+        `${checkoutUrl}?products=${encodeURIComponent(productsParam)}`,
         {
           method: "GET",
           headers: {
@@ -137,8 +142,15 @@ const useStateCheckout = (productsParam: string) => {
 
   const fetchPaymentDetails = useCallback(async (orderId: string) => {
     try {
+      // For development: use proxy route to handle cookie forwarding
+      // For production: use direct backend call
+      const transactionsUrl =
+        process.env.NODE_ENV === "development"
+          ? "/api/proxy-transactions" // Use proxy in development
+          : API_CONFIG.ENDPOINTS.transactions; // Direct call in production
+
       const response = await fetch(
-        `${API_CONFIG.ENDPOINTS.transactions}/midtrans-status?order_id=${orderId}`,
+        `${transactionsUrl}/midtrans-status?order_id=${orderId}`,
         {
           credentials: "include",
         }
@@ -175,7 +187,14 @@ const useStateCheckout = (productsParam: string) => {
         })),
       };
 
-      const response = await fetch(`${API_CONFIG.ENDPOINTS.checkout}`, {
+      // For development: use proxy route to handle cookie forwarding
+      // For production: use direct backend call
+      const checkoutUrl =
+        process.env.NODE_ENV === "development"
+          ? "/api/proxy-checkout" // Use proxy in development
+          : API_CONFIG.ENDPOINTS.checkout; // Direct call in production
+
+      const response = await fetch(checkoutUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
