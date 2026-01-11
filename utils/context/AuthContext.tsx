@@ -59,12 +59,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Since the cookie is httpOnly, we can't read it directly
       // Instead, we'll make an API call to check if the user is authenticated
       try {
-        // For development: use proxy route to handle cookie forwarding
-        // For production: use direct backend call
-        const apiUrl =
-          process.env.NODE_ENV === "development"
-            ? "/api/auth/proxy-me" // Use proxy in development
-            : API_CONFIG.ENDPOINTS.me; // Direct call in production
+        // Always use proxy route to handle cookie forwarding (works in both dev and production)
+        const apiUrl = "/api/auth/proxy-me";
 
         if (!apiUrl || apiUrl.trim() === "") {
           console.error("API endpoint URL is not configured");
@@ -158,12 +154,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signIn = async (email: string, password: string) => {
     try {
-      // For development: use proxy route to handle cookie forwarding
-      // For production: use direct backend call
-      const signInUrl =
-        process.env.NODE_ENV === "development"
-          ? "/api/auth/proxy-signin" // Use proxy in development
-          : API_CONFIG.ENDPOINTS.signIn; // Direct call in production
+      // Always use proxy route to handle cookie forwarding (works in both dev and production)
+      const signInUrl = "/api/auth/proxy-signin";
 
       // Call the sign-in API
       const result = await fetch(signInUrl, {

@@ -36,13 +36,19 @@ export async function POST(request: NextRequest) {
       if (tokenMatch && tokenMatch[1]) {
         const tokenValue = tokenMatch[1];
 
-        // Set cookie for frontend domain (localhost)
+        // Detect if we're in production (HTTPS) or development (HTTP)
+        const isProduction =
+          process.env.NODE_ENV === "production" ||
+          (typeof request.headers.get("x-forwarded-proto") === "string" &&
+            request.headers.get("x-forwarded-proto") === "https");
+
+        // Set cookie for frontend domain
         response.cookies.set({
           name: "token",
           value: tokenValue,
           httpOnly: true,
-          secure: false, // Development: allow HTTP
-          sameSite: "lax",
+          secure: isProduction, // true in production (HTTPS), false in development (HTTP)
+          sameSite: isProduction ? "none" : "lax", // none for cross-origin in production, lax for same-site in dev
           maxAge: 60 * 60 * 24, // 24 hours
           path: "/",
         });
