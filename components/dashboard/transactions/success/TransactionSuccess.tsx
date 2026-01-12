@@ -42,7 +42,6 @@ export default function TransactionSuccess() {
                 const successTransactions = Array.isArray(data)
                     ? data.filter((txn: Transaction) => txn.status === "success")
                     : [];
-                console.log("Fetched success transactions:", successTransactions);
                 setTransactions(successTransactions);
                 setError(null);
             } catch (error) {

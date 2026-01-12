@@ -50,7 +50,6 @@ export default function TransactionPending() {
                 const pendingTransactions = Array.isArray(data)
                     ? data.filter((txn: Transaction) => txn.status === "pending")
                     : [];
-                console.log("Fetched pending transactions:", pendingTransactions);
                 setTransactions(pendingTransactions);
                 setError(null);
             } catch (error) {

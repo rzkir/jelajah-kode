@@ -38,7 +38,6 @@ export default function Transactions() {
                 }
 
                 const data = await response.json();
-                console.log("Fetched transactions:", data);
                 setTransactions(Array.isArray(data) ? data : []);
                 setError(null);
             } catch (error) {

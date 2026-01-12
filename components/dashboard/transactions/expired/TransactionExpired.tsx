@@ -49,7 +49,6 @@ export default function TransactionExpired() {
                 const expiredTransactions = Array.isArray(data)
                     ? data.filter((txn: Transaction) => txn.status === "expired")
                     : [];
-                console.log("Fetched expired transactions:", expiredTransactions);
                 setTransactions(expiredTransactions);
                 setError(null);
             } catch (error) {

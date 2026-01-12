@@ -49,7 +49,6 @@ export default function TransactionCanceled() {
                 const canceledTransactions = Array.isArray(data)
                     ? data.filter((txn: Transaction) => txn.status === "canceled")
                     : [];
-                console.log("Fetched canceled transactions:", canceledTransactions);
                 setTransactions(canceledTransactions);
                 setError(null);
             } catch (error) {

@@ -61,14 +61,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const apiUrl = "/api/auth/proxy-me";
 
         if (!apiUrl || apiUrl.trim() === "") {
-          console.error("API endpoint URL is not configured");
           setLoading(false);
           return;
-        }
-
-        // Log the URL for debugging (only in development)
-        if (process.env.NODE_ENV === "development") {
-          console.log("Fetching user data from:", apiUrl);
         }
 
         const userResponse = await fetch(apiUrl, {
@@ -77,9 +71,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           headers: {
             "Content-Type": "application/json",
           },
-        }).catch((fetchError) => {
+        }).catch(() => {
           // Handle network errors
-          console.error("Network error during auth initialization:", fetchError);
           // Don't throw - just set user to null and continue
           return null;
         });
@@ -97,11 +90,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           const contentType = userResponse.headers.get("content-type");
           if (contentType && contentType.includes("application/json")) {
             try {
-              const errorData = await userResponse.json();
-              // 401 is expected when not authenticated, don't log as error
-              if (userResponse.status !== 401) {
-                console.error("Auth error:", errorData.error || "Unauthorized");
-              }
+              await userResponse.json();
             } catch {
               // Ignore parse errors for non-JSON responses
             }
@@ -116,7 +105,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // Check content type before parsing JSON
         const contentType = userResponse.headers.get("content-type");
         if (!contentType || !contentType.includes("application/json")) {
-          console.error("Invalid response format from server");
           setUser(null);
           setUserRole(null);
           setLoading(false);
@@ -126,7 +114,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const userResponseData = await userResponse.json();
 
         if (userResponseData.error) {
-          console.error("API returned error:", userResponseData.error);
           setUser(null);
           setUserRole(null);
           setLoading(false);
@@ -135,10 +122,47 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         // The API returns user data directly, not wrapped in a data property
         const account = userResponseData;
+
+        // Validate account status and verification on initialization
+        if (account.status === "inactive") {
+          // Account is inactive, sign out the user
+          setUser(null);
+          setUserRole(null);
+          // Clear cookie by calling signout
+          try {
+            await fetch("/api/auth/proxy-signout", {
+              method: "POST",
+              credentials: "include",
+            });
+          } catch {
+            // Ignore signout errors
+          }
+          setLoading(false);
+          return;
+        }
+
+        // Check isVerified (can be string "true"/"false" or boolean)
+        const isVerified = account.isVerified === "true" || account.isVerified === true;
+        if (!isVerified) {
+          // Account is not verified, sign out the user
+          setUser(null);
+          setUserRole(null);
+          // Clear cookie by calling signout
+          try {
+            await fetch("/api/auth/proxy-signout", {
+              method: "POST",
+              credentials: "include",
+            });
+          } catch {
+            // Ignore signout errors
+          }
+          setLoading(false);
+          return;
+        }
+
         setUser(account);
         setUserRole(account.role);
-      } catch (error) {
-        console.error("Auth initialization error:", error);
+      } catch {
         // Error occurred while fetching user data
         setUser(null);
         setUserRole(null);
@@ -165,31 +189,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         body: JSON.stringify({ email, password }),
       });
 
-      // Log for debugging in development
-      if (process.env.NODE_ENV === "development") {
-        console.log("Sign in response status:", result.status);
-        console.log("Sign in response headers:", Object.fromEntries(result.headers.entries()));
-      }
-
       // Check content type before parsing JSON
       const contentType = result.headers.get("content-type");
       if (!contentType || !contentType.includes("application/json")) {
-        const text = await result.text();
-        console.error("Invalid response format. Response:", text);
         throw new Error("Invalid response format from server");
       }
 
       const resultData = await result.json();
 
       if (!result.ok) {
-        // Log error details for debugging
-        if (process.env.NODE_ENV === "development") {
-          console.error("Sign in failed:", {
-            status: result.status,
-            error: resultData.error,
-            data: resultData,
-          });
-        }
         throw new Error(resultData.error || `Sign in failed with status ${result.status}`);
       }
 
@@ -197,18 +205,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         throw new Error(resultData.error);
       }
 
-      // For development (cross-origin), cookie might not be set
-      // Store token in localStorage as fallback for development
-      if (process.env.NODE_ENV === "development" && resultData.user) {
-        try {
-          // Try to extract token from response headers or use a workaround
-          // Since we can't read httpOnly cookie, we'll rely on cookie being set
-          // But store user info in localStorage for quick access
-          localStorage.setItem("user", JSON.stringify(resultData.user));
-        } catch (e) {
-          console.warn("Could not store user in localStorage:", e);
-        }
-      }
 
       // Fetch the complete user data from the API
       // Always use proxy route to handle cookie forwarding (works in both dev and production)
@@ -222,30 +218,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         },
       });
 
-      // Log for debugging in development
-      if (process.env.NODE_ENV === "development") {
-        console.log("Me endpoint response status:", userResponse.status);
-      }
-
       // Check content type before parsing JSON
       const userContentType = userResponse.headers.get("content-type");
       if (!userContentType || !userContentType.includes("application/json")) {
-        const text = await userResponse.text();
-        console.error("Invalid response format from /me. Response:", text);
         throw new Error("Invalid response format from server");
       }
 
       const userResponseData = await userResponse.json();
 
       if (!userResponse.ok) {
-        // Log error details for debugging
-        if (process.env.NODE_ENV === "development") {
-          console.error("Failed to fetch user data:", {
-            status: userResponse.status,
-            error: userResponseData.error,
-            data: userResponseData,
-          });
-        }
         throw new Error(userResponseData.error || `Failed to fetch user data with status ${userResponse.status}`);
       }
 
@@ -255,6 +236,44 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       // The API returns user data directly, not wrapped in a data property
       const account = userResponseData;
+
+      // Validate account status and verification
+      if (account.status === "inactive") {
+        // Clear user state and sign out
+        setUser(null);
+        setUserRole(null);
+        // Clear cookie by calling signout API
+        try {
+          await fetch("/api/auth/proxy-signout", {
+            method: "POST",
+            credentials: "include",
+          });
+        } catch {
+          // Ignore signout errors
+        }
+        toast.error("Your account has been deactivated. Please contact support.");
+        throw new Error("Account is inactive");
+      }
+
+      // Check isVerified (can be string "true"/"false" or boolean)
+      const isVerified = account.isVerified === "true" || account.isVerified === true;
+      if (!isVerified) {
+        // Clear user state and sign out
+        setUser(null);
+        setUserRole(null);
+        // Clear cookie by calling signout API
+        try {
+          await fetch("/api/auth/proxy-signout", {
+            method: "POST",
+            credentials: "include",
+          });
+        } catch {
+          // Ignore signout errors
+        }
+        toast.error("Please verify your email before signing in.");
+        throw new Error("Account is not verified");
+      }
+
       setUser(account);
       setUserRole(account.role);
 
@@ -284,11 +303,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           ? error.message
           : "An unexpected error occurred. Please try again.";
 
-      // Log full error for debugging
-      if (process.env.NODE_ENV === "development") {
-        console.error("Sign in error:", error);
-      }
-
       toast.error(errorMessage);
       return;
     }
@@ -309,15 +323,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(null);
       setUserRole(null);
 
-      // Clear localStorage if used in development
-      if (process.env.NODE_ENV === "development") {
-        try {
-          localStorage.removeItem("user");
-        } catch {
-          // Ignore errors
-        }
-      }
-
       toast.success("Logged out successfully!", {
         duration: 2000,
       });
@@ -329,15 +334,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(null);
       setUserRole(null);
 
-      // Clear localStorage if used in development
-      if (process.env.NODE_ENV === "development") {
-        try {
-          localStorage.removeItem("user");
-        } catch {
-          // Ignore errors
-        }
-      }
-
       // Try again with proxy route to ensure server-side logout
       try {
         const signOutUrl = "/api/auth/proxy-signout";
@@ -345,8 +341,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           method: "POST",
           credentials: "include",
         });
-      } catch (err) {
-        console.error("Error during sign out API call:", err);
+      } catch {
+        // Ignore errors
       }
 
       toast.success("Logged out successfully!", {
@@ -711,8 +707,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await signUp(name, email, password);
       // Reset the form after successful signup
       resetSignupState();
-    } catch (error) {
-      console.error("Signup error:", error);
+    } catch {
+      // Ignore errors
     } finally {
       setSignupIsLoading(false);
     }
