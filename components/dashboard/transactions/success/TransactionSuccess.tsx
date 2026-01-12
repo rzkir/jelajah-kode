@@ -12,7 +12,6 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { API_CONFIG } from "@/lib/config";
 import { formatIDR } from "@/hooks/FormatPrice";
 import Image from "next/image";
 
@@ -25,7 +24,7 @@ export default function TransactionSuccess() {
         const fetchTransactions = async () => {
             setIsLoading(true);
             try {
-                const response = await fetch(API_CONFIG.ENDPOINTS.transactions, {
+                const response = await fetch("/api/proxy-transactions", {
                     method: "GET",
                     credentials: "include",
                     headers: {

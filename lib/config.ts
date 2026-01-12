@@ -78,10 +78,6 @@ export const API_CONFIG = {
         `${API_BASE_URL}/api/articles/categories/${categoryId}?page=${page}&limit=${limit}&sort=${sort}`,
     },
     checkout: `${API_BASE_URL}/api/checkout`,
-    transactions: `${API_BASE_URL}/api/transactions`,
-    transactionsUpdate: `${API_BASE_URL}/api/transactions/update`,
-    transactionsSendEmail: `${API_BASE_URL}/api/transactions/send-email`,
-    transactionsDelete: `${API_BASE_URL}/api/transactions/delete`,
     ratings: `${API_BASE_URL}/api/ratings`,
     users: {
       base: `${API_BASE_URL}/api/users`,

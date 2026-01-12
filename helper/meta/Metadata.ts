@@ -1510,11 +1510,12 @@ export async function generateOrderDetailsMetadata(
     const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value;
 
-    if (token && API_CONFIG.ENDPOINTS.transactions) {
+    if (token) {
       try {
-        // Fetch transaction data from backend API
+        // Fetch transaction data from backend API via proxy
+        const baseUrl = process.env.NEXT_PUBLIC_FRONTEND_URL;
         const transactionResponse = await fetch(
-          `${API_CONFIG.ENDPOINTS.transactions}?order_id=${order_id}`,
+          `${baseUrl}/api/proxy-transactions?order_id=${order_id}`,
           {
             method: "GET",
             headers: {
