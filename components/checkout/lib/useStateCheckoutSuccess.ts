@@ -37,7 +37,7 @@ const useStateCheckoutSuccess = ({ status }: UseStateCheckoutSuccessParams) => {
       try {
         setIsLoading(true);
         // Always use proxy route to handle cookie forwarding (works in both dev and production)
-        const transactionsUrl = "/api/proxy-transactions";
+        const transactionsUrl = API_CONFIG.ENDPOINTS.transactions;
 
         const response = await fetch(`${transactionsUrl}?order_id=${orderId}`, {
           credentials: "include",
@@ -63,7 +63,7 @@ const useStateCheckoutSuccess = ({ status }: UseStateCheckoutSuccessParams) => {
         if (data.paymentMethod === "paid" && data.order_id) {
           try {
             // Always use proxy route to handle cookie forwarding (works in both dev and production)
-            const transactionsUrl = "/api/proxy-transactions";
+            const transactionsUrl = API_CONFIG.ENDPOINTS.transactions;
 
             const refreshResponse = await fetch(
               `${transactionsUrl}?order_id=${orderId}`,
@@ -89,7 +89,7 @@ const useStateCheckoutSuccess = ({ status }: UseStateCheckoutSuccessParams) => {
           for (const product of data.products) {
             try {
               // Always use proxy route to handle cookie forwarding (works in both dev and production)
-              const ratingsUrl = "/api/proxy-ratings";
+              const ratingsUrl = API_CONFIG.ENDPOINTS.ratings;
 
               const ratingResponse = await fetch(
                 `${ratingsUrl}?productsId=${product.productsId}`,
@@ -263,7 +263,7 @@ const useStateCheckoutSuccess = ({ status }: UseStateCheckoutSuccessParams) => {
       // For development: use proxy route to handle cookie forwarding
       // For production: use direct backend call
       // Always use proxy route to handle cookie forwarding (works in both dev and production)
-      const ratingsUrl = "/api/proxy-ratings";
+      const ratingsUrl = API_CONFIG.ENDPOINTS.ratings;
 
       const response = await fetch(ratingsUrl, {
         method: "POST",

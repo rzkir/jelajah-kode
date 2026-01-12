@@ -10,8 +10,6 @@ import { parseIDR } from "@/hooks/FormatPrice";
 
 import { API_CONFIG } from "@/lib/config";
 
-import { getApiUrl, shouldUseProxy } from "@/lib/development";
-
 export function useStateEditProducts() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -60,56 +58,27 @@ export function useStateEditProducts() {
 
     const fetchCollectionsAndProduct = async () => {
       try {
-        // Use getApiUrl to handle development/production routing
-        const categoriesUrl = getApiUrl(
-          "/api/proxy-products/categories",
-          API_CONFIG.ENDPOINTS.products.categories
-        );
-        const frameworksUrl = getApiUrl(
-          "/api/proxy-products/framework",
-          API_CONFIG.ENDPOINTS.products.framework
-        );
-        const tagsUrl = getApiUrl(
-          "/api/proxy-products/tags",
-          API_CONFIG.ENDPOINTS.products.tags
-        );
-        const typesUrl = getApiUrl(
-          "/api/proxy-products/type",
-          API_CONFIG.ENDPOINTS.products.type
-        );
-
-        // Determine if we're using proxy or direct URL
-        const isUsingProxy = shouldUseProxy() && typeof window !== "undefined";
-
         // Fetch collections first
         const [categoriesRes, frameworksRes, tagsRes, typesRes] =
           await Promise.all([
-            fetch(categoriesUrl, {
+            fetch(API_CONFIG.ENDPOINTS.products.categories, {
               headers: {
-                ...(isUsingProxy
-                  ? {}
-                  : { Authorization: `Bearer ${API_CONFIG.SECRET}` }),
+                Authorization: `Bearer ${API_CONFIG.SECRET}`,
               },
             }),
-            fetch(frameworksUrl, {
+            fetch(API_CONFIG.ENDPOINTS.products.framework, {
               headers: {
-                ...(isUsingProxy
-                  ? {}
-                  : { Authorization: `Bearer ${API_CONFIG.SECRET}` }),
+                Authorization: `Bearer ${API_CONFIG.SECRET}`,
               },
             }),
-            fetch(tagsUrl, {
+            fetch(API_CONFIG.ENDPOINTS.products.tags, {
               headers: {
-                ...(isUsingProxy
-                  ? {}
-                  : { Authorization: `Bearer ${API_CONFIG.SECRET}` }),
+                Authorization: `Bearer ${API_CONFIG.SECRET}`,
               },
             }),
-            fetch(typesUrl, {
+            fetch(API_CONFIG.ENDPOINTS.products.type, {
               headers: {
-                ...(isUsingProxy
-                  ? {}
-                  : { Authorization: `Bearer ${API_CONFIG.SECRET}` }),
+                Authorization: `Bearer ${API_CONFIG.SECRET}`,
               },
             }),
           ]);

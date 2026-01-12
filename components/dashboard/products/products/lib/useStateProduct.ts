@@ -5,7 +5,6 @@ import { toast } from "sonner";
 import useFormatDate from "@/hooks/FormatDate";
 import { useRouter } from "next/navigation";
 import { API_CONFIG } from "@/lib/config";
-import { getApiUrl, shouldUseProxy } from "@/lib/development";
 
 interface Product {
   _id: string;
@@ -168,22 +167,10 @@ export default function useStateProduct() {
   const fetchProducts = async () => {
     try {
       setIsLoading(true);
-      // Use getApiUrl to handle development/production routing
-      const productsUrl = getApiUrl(
-        "/api/proxy-products",
-        API_CONFIG.ENDPOINTS.products.base
-      );
-
-      // Determine if we're using proxy or direct URL
-      const isUsingProxy = shouldUseProxy() && typeof window !== "undefined";
-
-      const response = await fetch(productsUrl, {
+      const response = await fetch(API_CONFIG.ENDPOINTS.products.base, {
         headers: {
           "Content-Type": "application/json",
-          // Only send Authorization header when using direct URL (not proxy)
-          ...(isUsingProxy
-            ? {}
-            : { Authorization: `Bearer ${API_CONFIG.SECRET}` }),
+          Authorization: `Bearer ${API_CONFIG.SECRET}`,
         },
       });
 
@@ -213,24 +200,15 @@ export default function useStateProduct() {
 
     try {
       setIsSubmitting(true);
-      // Use getApiUrl to handle development/production routing
-      const deleteUrl = getApiUrl(
-        `/api/proxy-products?id=${deleteId}`,
-        API_CONFIG.ENDPOINTS.products.byId(deleteId)
+      const response = await fetch(
+        API_CONFIG.ENDPOINTS.products.byId(deleteId),
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${API_CONFIG.SECRET}`,
+          },
+        }
       );
-
-      // Determine if we're using proxy or direct URL
-      const isUsingProxy = shouldUseProxy() && typeof window !== "undefined";
-
-      const response = await fetch(deleteUrl, {
-        method: "DELETE",
-        headers: {
-          // Only send Authorization header when using direct URL (not proxy)
-          ...(isUsingProxy
-            ? {}
-            : { Authorization: `Bearer ${API_CONFIG.SECRET}` }),
-        },
-      });
 
       if (!response.ok) {
         throw new Error("Failed to delete product");

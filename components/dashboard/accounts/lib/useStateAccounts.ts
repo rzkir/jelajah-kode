@@ -1,7 +1,6 @@
 import { useState, useRef } from "react";
 import { toast } from "sonner";
 import { API_CONFIG } from "@/lib/config";
-import { getApiUrl } from "@/lib/development";
 import { useAuth } from "@/utils/context/AuthContext";
 
 export function useStateAccounts() {
@@ -74,13 +73,11 @@ export function useStateAccounts() {
       const uploadResult = await uploadResponse.json();
 
       // Update user profile with new picture URL
-      // Use getApiUrl to handle development/production routing
-      const meUrl = getApiUrl("/api/auth/proxy-me", API_CONFIG.ENDPOINTS.me);
-
-      const updateResponse = await fetch(meUrl, {
+      const updateResponse = await fetch(API_CONFIG.ENDPOINTS.me, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${API_CONFIG.SECRET}`,
         },
         credentials: "include",
         body: JSON.stringify({
@@ -91,16 +88,8 @@ export function useStateAccounts() {
       if (!updateResponse.ok) {
         // Handle rate limit errors
         if (updateResponse.status === 429) {
-          const { handleRateLimitError } = await import(
-            "@/lib/rate-limit-handler"
-          );
-          const handled = await handleRateLimitError(
-            updateResponse,
-            "Terlalu banyak permintaan. Silakan coba lagi nanti."
-          );
-          if (handled) {
-            return;
-          }
+          toast.error("Terlalu banyak permintaan. Silakan coba lagi nanti.");
+          return;
         }
         const errorData = await updateResponse.json();
         throw new Error(errorData.error || "Failed to update profile");

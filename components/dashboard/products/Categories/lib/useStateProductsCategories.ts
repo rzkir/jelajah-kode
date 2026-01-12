@@ -6,8 +6,6 @@ import { toast } from "sonner";
 
 import { API_CONFIG } from "@/lib/config";
 
-import { getApiUrl, shouldUseProxy } from "@/lib/development";
-
 export default function useStateProjectsCategories() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -26,22 +24,10 @@ export default function useStateProjectsCategories() {
 
   const fetchCategories = async () => {
     try {
-      // Use getApiUrl to handle development/production routing
-      const categoriesUrl = getApiUrl(
-        "/api/proxy-products/categories",
-        API_CONFIG.ENDPOINTS.products.categories
-      );
-
-      // Determine if we're using proxy or direct URL
-      const isUsingProxy = shouldUseProxy() && typeof window !== "undefined";
-
-      const response = await fetch(categoriesUrl, {
+      const response = await fetch(API_CONFIG.ENDPOINTS.products.categories, {
         headers: {
           "Content-Type": "application/json",
-          // Only send Authorization header when using direct URL (not proxy)
-          ...(isUsingProxy
-            ? {}
-            : { Authorization: `Bearer ${API_CONFIG.SECRET}` }),
+          Authorization: `Bearer ${API_CONFIG.SECRET}`,
         },
       });
       if (!response.ok) {
@@ -77,15 +63,6 @@ export default function useStateProjectsCategories() {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      // Use getApiUrl to handle development/production routing
-      const categoriesUrl = getApiUrl(
-        "/api/proxy-products/categories",
-        API_CONFIG.ENDPOINTS.products.categories
-      );
-
-      // Determine if we're using proxy or direct URL
-      const isUsingProxy = shouldUseProxy() && typeof window !== "undefined";
-
       const method = editingCategory ? "PUT" : "POST";
       const body = editingCategory
         ? {
@@ -95,14 +72,11 @@ export default function useStateProjectsCategories() {
           }
         : { title: formData.title, categoryId: formData.categoryId };
 
-      const response = await fetch(categoriesUrl, {
+      const response = await fetch(API_CONFIG.ENDPOINTS.products.categories, {
         method,
         headers: {
           "Content-Type": "application/json",
-          // Only send Authorization header when using direct URL (not proxy)
-          ...(isUsingProxy
-            ? {}
-            : { Authorization: `Bearer ${API_CONFIG.SECRET}` }),
+          Authorization: `Bearer ${API_CONFIG.SECRET}`,
         },
         body: JSON.stringify(body),
       });
@@ -133,23 +107,11 @@ export default function useStateProjectsCategories() {
 
     setIsDeleting(true);
     try {
-      // Use getApiUrl to handle development/production routing
-      const categoriesUrl = getApiUrl(
-        "/api/proxy-products/categories",
-        API_CONFIG.ENDPOINTS.products.categories
-      );
-
-      // Determine if we're using proxy or direct URL
-      const isUsingProxy = shouldUseProxy() && typeof window !== "undefined";
-
-      const response = await fetch(categoriesUrl, {
+      const response = await fetch(API_CONFIG.ENDPOINTS.products.categories, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
-          // Only send Authorization header when using direct URL (not proxy)
-          ...(isUsingProxy
-            ? {}
-            : { Authorization: `Bearer ${API_CONFIG.SECRET}` }),
+          Authorization: `Bearer ${API_CONFIG.SECRET}`,
         },
         body: JSON.stringify({ id: categoryToDelete._id }),
       });

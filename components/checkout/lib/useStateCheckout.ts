@@ -96,7 +96,7 @@ const useStateCheckout = (productsParam: string) => {
       }
 
       // Always use proxy route to handle cookie forwarding (works in both dev and production)
-      const checkoutUrl = "/api/proxy-checkout";
+      const checkoutUrl = API_CONFIG.ENDPOINTS.checkout;
 
       const response = await fetch(
         `${checkoutUrl}?products=${encodeURIComponent(productsParam)}`,
@@ -139,7 +139,7 @@ const useStateCheckout = (productsParam: string) => {
   const fetchPaymentDetails = useCallback(async (orderId: string) => {
     try {
       // Always use proxy route to handle cookie forwarding (works in both dev and production)
-      const transactionsUrl = "/api/proxy-transactions";
+      const transactionsUrl = API_CONFIG.ENDPOINTS.transactions;
 
       const response = await fetch(
         `${transactionsUrl}/midtrans-status?order_id=${orderId}`,
@@ -180,7 +180,7 @@ const useStateCheckout = (productsParam: string) => {
       };
 
       // Always use proxy route to handle cookie forwarding (works in both dev and production)
-      const checkoutUrl = "/api/proxy-checkout";
+      const checkoutUrl = API_CONFIG.ENDPOINTS.checkout;
 
       const response = await fetch(checkoutUrl, {
         method: "POST",

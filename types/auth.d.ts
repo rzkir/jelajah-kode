@@ -1,3 +1,5 @@
+import { IAccount } from "@/models/Account";
+
 type UserRole = "admins" | "user";
 
 interface Accounts {
@@ -98,4 +100,22 @@ interface AuthContextType {
   handleOtpSubmit: (otp: string) => Promise<void>;
   handleResendOTP: (email: string) => Promise<void>;
   resetOtpState: () => void;
+}
+
+export interface IAccount extends mongoose.Document {
+  email: string;
+  password?: string; // Optional for OAuth users
+  name: string;
+  role: UserRole;
+  picture?: string;
+  status: "active" | "inactive";
+  isVerified: "true" | "false" | boolean;
+  resetToken?: string;
+  resetTokenExpiry?: Date;
+  verificationToken?: string;
+  verificationTokenExpiry?: Date;
+  comparePassword(candidatePassword: string): Promise<boolean>;
+  isModified(path: string): boolean;
+  save(): Promise<this>;
+  populate(path: string): Promise<this>;
 }

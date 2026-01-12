@@ -14,6 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatIDR } from "@/hooks/FormatPrice";
 import Image from "next/image";
+import { API_CONFIG } from "@/lib/config";
 
 export default function TransactionSuccess() {
     const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -24,7 +25,7 @@ export default function TransactionSuccess() {
         const fetchTransactions = async () => {
             setIsLoading(true);
             try {
-                const response = await fetch("/api/proxy-transactions", {
+                const response = await fetch(API_CONFIG.ENDPOINTS.transactions, {
                     method: "GET",
                     credentials: "include",
                     headers: {

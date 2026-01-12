@@ -17,6 +17,7 @@ import { formatIDR } from "@/hooks/FormatPrice";
 import Image from "next/image";
 import { Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { API_CONFIG } from "@/lib/config";
 import DeleteModalTransaction from "../pending/modal/DeleteModalTransaction";
 
 export default function TransactionCanceled() {
@@ -31,7 +32,7 @@ export default function TransactionCanceled() {
         const fetchTransactions = async () => {
             setIsLoading(true);
             try {
-                const response = await fetch("/api/proxy-transactions", {
+                const response = await fetch(API_CONFIG.ENDPOINTS.transactions, {
                     method: "GET",
                     credentials: "include",
                     headers: {
@@ -66,7 +67,7 @@ export default function TransactionCanceled() {
     // Refresh transactions after delete
     const refreshTransactions = async () => {
         try {
-            const response = await fetch("/api/proxy-transactions", {
+            const response = await fetch("API_CONFIG.ENDPOINTS.transactions", {
                 method: "GET",
                 credentials: "include",
                 headers: {
@@ -120,7 +121,7 @@ export default function TransactionCanceled() {
             const transactionId = selectedTransaction._id;
             const orderId = selectedTransaction.order_id;
 
-            const url = new URL("/api/proxy-transactions/delete", window.location.origin);
+            const url = new URL(`${API_CONFIG.ENDPOINTS.transactions}/delete`, window.location.origin);
             if (transactionId) {
                 url.searchParams.append("id", transactionId);
             } else if (orderId) {

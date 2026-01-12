@@ -1513,9 +1513,8 @@ export async function generateOrderDetailsMetadata(
     if (token) {
       try {
         // Fetch transaction data from backend API via proxy
-        const baseUrl = process.env.NEXT_PUBLIC_FRONTEND_URL;
         const transactionResponse = await fetch(
-          `${baseUrl}/api/proxy-transactions?order_id=${order_id}`,
+          `${API_CONFIG.ENDPOINTS.transactions}?order_id=${order_id}`,
           {
             method: "GET",
             headers: {

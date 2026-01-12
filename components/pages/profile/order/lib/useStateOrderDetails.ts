@@ -30,7 +30,7 @@ export default function useStateOrderDetails() {
       try {
         setIsLoading(true);
         // Always use proxy route to handle cookie forwarding (works in both dev and production)
-        const transactionsUrl = "/api/proxy-transactions";
+        const transactionsUrl = API_CONFIG.ENDPOINTS.transactions;
         const response = await fetch(`${transactionsUrl}?order_id=${orderId}`, {
           credentials: "include",
         });
@@ -46,7 +46,7 @@ export default function useStateOrderDetails() {
         if (data.paymentMethod === "paid" && data.order_id) {
           try {
             // Always use proxy route to handle cookie forwarding (works in both dev and production)
-            const transactionsUrl = "/api/proxy-transactions";
+            const transactionsUrl = API_CONFIG.ENDPOINTS.transactions;
 
             const refreshResponse = await fetch(
               `${transactionsUrl}?order_id=${orderId}`,
@@ -72,7 +72,7 @@ export default function useStateOrderDetails() {
           for (const product of data.products) {
             try {
               // Always use proxy route to handle cookie forwarding (works in both dev and production)
-              const ratingsUrl = "/api/proxy-ratings";
+              const ratingsUrl = API_CONFIG.ENDPOINTS.ratings;
 
               const ratingResponse = await fetch(
                 `${ratingsUrl}?productsId=${product.productsId}`,
@@ -161,7 +161,7 @@ export default function useStateOrderDetails() {
     setIsSubmittingRating(true);
     try {
       // Always use proxy route to handle cookie forwarding (works in both dev and production)
-      const ratingsUrl = "/api/proxy-ratings";
+      const ratingsUrl = API_CONFIG.ENDPOINTS.ratings;
 
       const response = await fetch(ratingsUrl, {
         method: "POST",

@@ -7,8 +7,8 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 import { API_CONFIG } from "@/lib/config";
-import { getApiUrl } from "@/lib/development";
-import { handleRateLimitError } from "@/lib/rate-limit-handler";
+
+import type { AuthContextType, Accounts, UserRole } from "@/types/auth";
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -65,8 +65,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Since the cookie is httpOnly, we can't read it directly
       // Instead, we'll make an API call to check if the user is authenticated
       try {
-        // Always use proxy route to handle cookie forwarding (works in both dev and production)
-        const apiUrl = "/api/auth/proxy-me";
+        const apiUrl = API_CONFIG.ENDPOINTS.me;
 
         if (!apiUrl || apiUrl.trim() === "") {
           setLoading(false);
@@ -78,6 +77,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           credentials: "include",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${API_CONFIG.SECRET}`,
           },
         }).catch(() => {
           // Handle network errors
@@ -96,10 +96,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (!userResponse.ok) {
           // Handle rate limit errors
           if (userResponse.status === 429) {
-            await handleRateLimitError(
-              userResponse,
-              "Too many requests. Please try again later."
-            );
+            toast.error("Terlalu banyak permintaan. Silakan coba lagi nanti.");
             setUser(null);
             setUserRole(null);
             setLoading(false);
@@ -150,9 +147,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setUserRole(null);
           // Clear cookie by calling signout
           try {
-            await fetch("/api/auth/proxy-signout", {
+            await fetch(API_CONFIG.ENDPOINTS.signOut, {
               method: "POST",
               credentials: "include",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${API_CONFIG.SECRET}`,
+              },
             });
           } catch {
             // Ignore signout errors
@@ -169,9 +170,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setUserRole(null);
           // Clear cookie by calling signout
           try {
-            await fetch("/api/auth/proxy-signout", {
+            await fetch(API_CONFIG.ENDPOINTS.signOut, {
               method: "POST",
               credentials: "include",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${API_CONFIG.SECRET}`,
+              },
             });
           } catch {
             // Ignore signout errors
@@ -196,14 +201,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signIn = async (email: string, password: string) => {
     try {
-      // Always use proxy route to handle cookie forwarding (works in both dev and production)
-      const signInUrl = "/api/auth/proxy-signin";
-
-      // Call the sign-in API
-      const result = await fetch(signInUrl, {
+      const result = await fetch(API_CONFIG.ENDPOINTS.signIn, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${API_CONFIG.SECRET}`,
         },
         credentials: "include",
         body: JSON.stringify({ email, password }),
@@ -249,10 +251,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             setLoginIsRateLimited(true);
           }
 
-          await handleRateLimitError(
-            result,
-            "Terlalu banyak percobaan login. Silakan coba lagi nanti."
-          );
+          toast.error("Terlalu banyak percobaan login. Silakan coba lagi nanti.");
           throw new Error("Rate limit exceeded");
         }
         throw new Error(resultData.error || `Sign in failed with status ${result.status}`);
@@ -268,14 +267,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 
       // Fetch the complete user data from the API
-      // Always use proxy route to handle cookie forwarding (works in both dev and production)
-      const meUrl = "/api/auth/proxy-me";
-
-      const userResponse = await fetch(meUrl, {
+      const userResponse = await fetch(API_CONFIG.ENDPOINTS.me, {
         method: "GET",
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${API_CONFIG.SECRET}`,
         },
       });
 
@@ -290,10 +287,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (!userResponse.ok) {
         // Handle rate limit errors
         if (userResponse.status === 429) {
-          await handleRateLimitError(
-            userResponse,
-            "Too many requests. Please try again later."
-          );
+          toast.error("Terlalu banyak permintaan. Silakan coba lagi nanti.");
           throw new Error("Rate limit exceeded");
         }
         throw new Error(userResponseData.error || `Failed to fetch user data with status ${userResponse.status}`);
@@ -313,9 +307,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUserRole(null);
         // Clear cookie by calling signout API
         try {
-          await fetch("/api/auth/proxy-signout", {
+          await fetch(API_CONFIG.ENDPOINTS.signOut, {
             method: "POST",
             credentials: "include",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${API_CONFIG.SECRET}`,
+            },
           });
         } catch {
           // Ignore signout errors
@@ -332,9 +330,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUserRole(null);
         // Clear cookie by calling signout API
         try {
-          await fetch("/api/auth/proxy-signout", {
+          await fetch(API_CONFIG.ENDPOINTS.signOut, {
             method: "POST",
             credentials: "include",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${API_CONFIG.SECRET}`,
+            },
           });
         } catch {
           // Ignore signout errors
@@ -379,13 +381,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signOut = async () => {
     try {
-      // Always use proxy route to handle cookie forwarding (works in both dev and production)
-      // This ensures cookie is cleared in both frontend and backend domains
-      const signOutUrl = "/api/auth/proxy-signout";
-
-      await fetch(signOutUrl, {
+      await fetch(API_CONFIG.ENDPOINTS.signOut, {
         method: "POST",
         credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${API_CONFIG.SECRET}`,
+        },
       });
 
       // Clear local state
@@ -403,12 +405,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(null);
       setUserRole(null);
 
-      // Try again with proxy route to ensure server-side logout
+      // Try again to ensure server-side logout
       try {
-        const signOutUrl = "/api/auth/proxy-signout";
-        await fetch(signOutUrl, {
+        await fetch(API_CONFIG.ENDPOINTS.signOut, {
           method: "POST",
           credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${API_CONFIG.SECRET}`,
+          },
         });
       } catch {
         // Ignore errors
@@ -425,12 +430,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const refreshUserData = async (): Promise<Accounts | null> => {
     try {
-      // Always use proxy route to handle cookie forwarding (works in both dev and production)
-      const meUrl = "/api/auth/proxy-me";
-
-      const response = await fetch(meUrl, {
+      const response = await fetch(API_CONFIG.ENDPOINTS.me, {
         method: "GET",
         credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${API_CONFIG.SECRET}`,
+        },
       });
 
       // Check content type before parsing JSON
@@ -558,16 +564,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const verifyOtp = async (token: string) => {
     try {
-      // Use getApiUrl to handle development/production routing
-      const verificationUrl = getApiUrl(
-        "/api/auth/proxy-verification",
-        API_CONFIG.ENDPOINTS.verification
-      );
-
-      const result = await fetch(verificationUrl, {
+      const result = await fetch(API_CONFIG.ENDPOINTS.verification, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${API_CONFIG.SECRET}`,
         },
         credentials: "include",
         body: JSON.stringify({ token }),
@@ -595,16 +596,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         throw new Error("Missing token. Please verify OTP again.");
       }
 
-      // Use getApiUrl to handle development/production routing
-      const verificationUrl = getApiUrl(
-        "/api/auth/proxy-verification",
-        API_CONFIG.ENDPOINTS.verification
-      );
-
-      const result = await fetch(verificationUrl, {
+      const result = await fetch(API_CONFIG.ENDPOINTS.verification, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${API_CONFIG.SECRET}`,
         },
         credentials: "include",
         body: JSON.stringify({ token: resetToken, newPassword }),
@@ -854,16 +850,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setOtpIsLoading(true);
 
     try {
-      // Use getApiUrl to handle development/production routing
-      const verificationUrl = getApiUrl(
-        "/api/auth/proxy-verification",
-        API_CONFIG.ENDPOINTS.verification
-      );
-
-      const response = await fetch(verificationUrl, {
+      const response = await fetch(API_CONFIG.ENDPOINTS.verification, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${API_CONFIG.SECRET}`,
         },
         credentials: "include",
         body: JSON.stringify({ token: otpValue }),
@@ -915,16 +906,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setOtpIsResending(true);
 
     try {
-      // Use getApiUrl to handle development/production routing
-      const verificationUrl = getApiUrl(
-        "/api/auth/proxy-verification",
-        API_CONFIG.ENDPOINTS.verification
-      );
-
-      const response = await fetch(verificationUrl, {
+      const response = await fetch(API_CONFIG.ENDPOINTS.verification, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${API_CONFIG.SECRET}`,
         },
         credentials: "include",
         body: JSON.stringify({ email }),

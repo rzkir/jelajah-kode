@@ -21,9 +21,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { API_CONFIG } from "@/lib/config";
-import { getApiUrl } from "@/lib/development";
 import { useAuth } from "@/utils/context/AuthContext";
-import { handleRateLimitError } from "@/lib/rate-limit-handler";
 
 interface EditProfileProps {
     open: boolean;
@@ -53,16 +51,11 @@ export default function EditProfile({ open, onOpenChange }: EditProfileProps) {
         setIsLoading(true);
 
         try {
-            // Use getApiUrl to handle development/production routing
-            const meUrl = getApiUrl(
-                "/api/auth/proxy-me",
-                API_CONFIG.ENDPOINTS.me
-            );
-
-            const response = await fetch(meUrl, {
+            const response = await fetch(API_CONFIG.ENDPOINTS.me, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
+                    Authorization: `Bearer ${API_CONFIG.SECRET}`,
                 },
                 credentials: "include",
                 body: JSON.stringify({
@@ -73,13 +66,8 @@ export default function EditProfile({ open, onOpenChange }: EditProfileProps) {
             if (!response.ok) {
                 // Handle rate limit errors
                 if (response.status === 429) {
-                    const handled = await handleRateLimitError(
-                        response,
-                        "Terlalu banyak permintaan. Silakan coba lagi nanti."
-                    );
-                    if (handled) {
-                        return;
-                    }
+                    toast.error("Terlalu banyak permintaan. Silakan coba lagi nanti.");
+                    return;
                 }
                 const errorData = await response.json();
                 throw new Error(errorData.error || "Failed to update profile");

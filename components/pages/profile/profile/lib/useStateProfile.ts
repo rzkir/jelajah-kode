@@ -68,7 +68,7 @@ export function useStateProfile() {
       setTransactionsLoading(true);
       try {
         // Always use proxy route to handle cookie forwarding (works in both dev and production)
-        const transactionsUrl = "/api/proxy-transactions";
+        const transactionsUrl = API_CONFIG.ENDPOINTS.transactions;
 
         const response = await fetch(transactionsUrl, {
           method: "GET",
@@ -103,7 +103,7 @@ export function useStateProfile() {
       setReviewsLoading(true);
       try {
         // Always use proxy route to handle cookie forwarding (works in both dev and production)
-        const ratingsUrl = "/api/proxy-ratings";
+        const ratingsUrl = API_CONFIG.ENDPOINTS.ratings;
 
         const response = await fetch(`${ratingsUrl}?userId=me`, {
           method: "GET",
@@ -156,8 +156,7 @@ export function useStateProfile() {
     if (!user) return;
 
     try {
-      // Always use proxy route to handle cookie forwarding (works in both dev and production)
-      const transactionsUrl = "/api/proxy-transactions";
+      const transactionsUrl = API_CONFIG.ENDPOINTS.transactions;
 
       const response = await fetch(transactionsUrl, {
         method: "GET",
@@ -188,7 +187,7 @@ export function useStateProfile() {
 
     try {
       // Always use proxy route to handle cookie forwarding (works in both dev and production)
-      const meUrl = "/api/auth/proxy-me";
+      const meUrl = API_CONFIG.ENDPOINTS.me;
 
       const response = await fetch(meUrl, {
         method: "PUT",
@@ -204,16 +203,8 @@ export function useStateProfile() {
       if (!response.ok) {
         // Handle rate limit errors
         if (response.status === 429) {
-          const { handleRateLimitError } = await import(
-            "@/lib/rate-limit-handler"
-          );
-          const handled = await handleRateLimitError(
-            response,
-            "Terlalu banyak permintaan. Silakan coba lagi nanti."
-          );
-          if (handled) {
-            return;
-          }
+          toast.error("Terlalu banyak permintaan. Silakan coba lagi nanti.");
+          return;
         }
         const errorData = await response.json();
         throw new Error(errorData.error || "Failed to update profile");
@@ -279,7 +270,7 @@ export function useStateProfile() {
 
       // Update user profile with new picture URL
       // Always use proxy route to handle cookie forwarding (works in both dev and production)
-      const meUrl = "/api/auth/proxy-me";
+      const meUrl = API_CONFIG.ENDPOINTS.me;
 
       const updateResponse = await fetch(meUrl, {
         method: "PUT",
@@ -295,16 +286,8 @@ export function useStateProfile() {
       if (!updateResponse.ok) {
         // Handle rate limit errors
         if (updateResponse.status === 429) {
-          const { handleRateLimitError } = await import(
-            "@/lib/rate-limit-handler"
-          );
-          const handled = await handleRateLimitError(
-            updateResponse,
-            "Too many requests. Please try again later."
-          );
-          if (handled) {
-            return;
-          }
+          toast.error("Terlalu banyak permintaan. Silakan coba lagi nanti.");
+          return;
         }
         const errorData = await updateResponse.json();
         throw new Error(errorData.error || "Failed to update profile");
@@ -456,17 +439,20 @@ export function useStateProfile() {
     );
 
     try {
-      const response = await fetch("/api/proxy-transactions/update", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({
-          order_id: transaction.order_id,
-          status: "canceled",
-        }),
-      });
+      const response = await fetch(
+        `${API_CONFIG.ENDPOINTS.transactions}/update`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({
+            order_id: transaction.order_id,
+            status: "canceled",
+          }),
+        }
+      );
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
@@ -501,7 +487,7 @@ export function useStateProfile() {
 
     try {
       // Always use proxy route to handle cookie forwarding (works in both dev and production)
-      const deleteAccountUrl = "/api/auth/proxy-delete-account";
+      const deleteAccountUrl = API_CONFIG.ENDPOINTS.deleteAccount;
 
       const response = await fetch(deleteAccountUrl, {
         method: "DELETE",

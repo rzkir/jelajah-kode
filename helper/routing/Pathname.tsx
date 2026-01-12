@@ -43,9 +43,9 @@ const Pathname = ({ children }: { children: React.ReactNode }) => {
       {children}
       {!isRoute && <Footer />}
       {!isRoute && <BottomNavigation />}
-      <div className="fixed bottom-6 right-6 z-50">
+      {!isRoute && <div className="fixed bottom-6 right-6 z-50">
         <AiAgent />
-      </div>
+      </div>}
     </Fragment>
   );
 };

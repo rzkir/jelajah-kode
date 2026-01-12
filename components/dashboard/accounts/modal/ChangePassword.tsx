@@ -27,7 +27,6 @@ import {
 } from "@/components/ui/input-otp";
 import { toast } from "sonner";
 import { API_CONFIG } from "@/lib/config";
-import { getApiUrl } from "@/lib/development";
 import { useAuth } from "@/utils/context/AuthContext";
 import { passwordResetSchema } from "@/hooks/validation";
 import { useForm } from "react-hook-form";
@@ -67,16 +66,11 @@ export default function ChangePassword({ open, onOpenChange }: ChangePasswordPro
         setIsRequestingOtp(true);
 
         try {
-            // Use getApiUrl to handle development/production routing
-            const verificationUrl = getApiUrl(
-                "/api/auth/proxy-verification",
-                API_CONFIG.ENDPOINTS.verification
-            );
-
-            const response = await fetch(verificationUrl, {
+            const response = await fetch(API_CONFIG.ENDPOINTS.verification, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    Authorization: `Bearer ${API_CONFIG.SECRET}`,
                 },
                 credentials: "include",
                 body: JSON.stringify({ email: user.email }),
@@ -131,16 +125,11 @@ export default function ChangePassword({ open, onOpenChange }: ChangePasswordPro
         setIsLoading(true);
 
         try {
-            // Use getApiUrl to handle development/production routing
-            const verificationUrl = getApiUrl(
-                "/api/auth/proxy-verification",
-                API_CONFIG.ENDPOINTS.verification
-            );
-
-            const response = await fetch(verificationUrl, {
+            const response = await fetch(API_CONFIG.ENDPOINTS.verification, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
+                    Authorization: `Bearer ${API_CONFIG.SECRET}`,
                 },
                 credentials: "include",
                 body: JSON.stringify({ token: otp }),
