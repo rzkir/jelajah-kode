@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import useFormatDate from "@/hooks/FormatDate";
 import { API_CONFIG } from "@/lib/config";
+import { getApiUrl, shouldUseProxy } from "@/lib/development";
 
 interface User {
   _id: string;
@@ -77,10 +78,22 @@ export default function useStateUsers(options?: UseStateUsersOptions) {
   const fetchUsers = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch(API_CONFIG.ENDPOINTS.users.base, {
+      // Use getApiUrl to handle development/production routing
+      const usersUrl = getApiUrl(
+        "/api/proxy-users",
+        API_CONFIG.ENDPOINTS.users.base
+      );
+
+      // Determine if we're using proxy or direct URL
+      const isUsingProxy = shouldUseProxy() && typeof window !== "undefined";
+
+      const response = await fetch(usersUrl, {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${API_CONFIG.SECRET}`,
+          // Only send Authorization header when using direct URL (not proxy)
+          ...(isUsingProxy
+            ? {}
+            : { Authorization: `Bearer ${API_CONFIG.SECRET}` }),
         },
       });
 
@@ -124,11 +137,23 @@ export default function useStateUsers(options?: UseStateUsersOptions) {
   ) => {
     try {
       setIsUpdating(true);
-      const response = await fetch(API_CONFIG.ENDPOINTS.users.base, {
+      // Use getApiUrl to handle development/production routing
+      const usersUrl = getApiUrl(
+        "/api/proxy-users",
+        API_CONFIG.ENDPOINTS.users.base
+      );
+
+      // Determine if we're using proxy or direct URL
+      const isUsingProxy = shouldUseProxy() && typeof window !== "undefined";
+
+      const response = await fetch(usersUrl, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${API_CONFIG.SECRET}`,
+          // Only send Authorization header when using direct URL (not proxy)
+          ...(isUsingProxy
+            ? {}
+            : { Authorization: `Bearer ${API_CONFIG.SECRET}` }),
         },
         body: JSON.stringify({
           userId,
@@ -164,11 +189,23 @@ export default function useStateUsers(options?: UseStateUsersOptions) {
   const deleteUser = async (userId: string) => {
     try {
       setIsDeleting(true);
-      const response = await fetch(API_CONFIG.ENDPOINTS.users.base, {
+      // Use getApiUrl to handle development/production routing
+      const usersUrl = getApiUrl(
+        "/api/proxy-users",
+        API_CONFIG.ENDPOINTS.users.base
+      );
+
+      // Determine if we're using proxy or direct URL
+      const isUsingProxy = shouldUseProxy() && typeof window !== "undefined";
+
+      const response = await fetch(usersUrl, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${API_CONFIG.SECRET}`,
+          // Only send Authorization header when using direct URL (not proxy)
+          ...(isUsingProxy
+            ? {}
+            : { Authorization: `Bearer ${API_CONFIG.SECRET}` }),
         },
         body: JSON.stringify({
           userId,

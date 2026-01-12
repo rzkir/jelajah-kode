@@ -7,6 +7,7 @@ import { toast } from "sonner";
 
 import { cn } from "@/lib/utils";
 import { API_CONFIG } from "@/lib/config";
+import { getApiUrl } from "@/lib/development";
 import { Button } from "@/components/ui/button";
 import {
   Field,
@@ -37,7 +38,13 @@ export function OTPForm({ className, email, ...props }: React.ComponentProps<"di
     setIsLoading(true);
 
     try {
-      const response = await fetch(API_CONFIG.ENDPOINTS.verification, {
+      // Use getApiUrl to handle development/production routing
+      const verificationUrl = getApiUrl(
+        "/api/auth/proxy-verification",
+        API_CONFIG.ENDPOINTS.verification
+      );
+
+      const response = await fetch(verificationUrl, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -87,7 +94,13 @@ export function OTPForm({ className, email, ...props }: React.ComponentProps<"di
     setIsResending(true);
 
     try {
-      const response = await fetch(API_CONFIG.ENDPOINTS.verification, {
+      // Use getApiUrl to handle development/production routing
+      const verificationUrl = getApiUrl(
+        "/api/auth/proxy-verification",
+        API_CONFIG.ENDPOINTS.verification
+      );
+
+      const response = await fetch(verificationUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/input-otp";
 import { toast } from "sonner";
 import { API_CONFIG } from "@/lib/config";
+import { getApiUrl } from "@/lib/development";
 import { useAuth } from "@/utils/context/AuthContext";
 import { passwordResetSchema } from "@/hooks/validation";
 import { useForm } from "react-hook-form";
@@ -66,7 +67,13 @@ export default function ChangePassword({ open, onOpenChange }: ChangePasswordPro
         setIsRequestingOtp(true);
 
         try {
-            const response = await fetch(API_CONFIG.ENDPOINTS.verification, {
+            // Use getApiUrl to handle development/production routing
+            const verificationUrl = getApiUrl(
+                "/api/auth/proxy-verification",
+                API_CONFIG.ENDPOINTS.verification
+            );
+
+            const response = await fetch(verificationUrl, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -124,7 +131,13 @@ export default function ChangePassword({ open, onOpenChange }: ChangePasswordPro
         setIsLoading(true);
 
         try {
-            const response = await fetch(API_CONFIG.ENDPOINTS.verification, {
+            // Use getApiUrl to handle development/production routing
+            const verificationUrl = getApiUrl(
+                "/api/auth/proxy-verification",
+                API_CONFIG.ENDPOINTS.verification
+            );
+
+            const response = await fetch(verificationUrl, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",

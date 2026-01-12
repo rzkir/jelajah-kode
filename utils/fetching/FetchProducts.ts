@@ -1,14 +1,28 @@
 import { API_CONFIG } from "@/lib/config";
 
+import { getApiUrl, shouldUseProxy } from "@/lib/development";
+
 export const fetchProducts = async (): Promise<Products[]> => {
   try {
-    const response = await fetch(API_CONFIG.ENDPOINTS.products.base, {
+    // Use getApiUrl to handle development/production routing
+    const productsUrl = getApiUrl(
+      "/api/proxy-products",
+      API_CONFIG.ENDPOINTS.products.base
+    );
+
+    // Determine if we're using proxy or direct URL
+    const isUsingProxy = shouldUseProxy() && typeof window !== "undefined";
+
+    const response = await fetch(productsUrl, {
       next: {
         revalidate: 0,
       },
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${API_CONFIG.SECRET}`,
+        // Only send Authorization header when using direct URL (not proxy)
+        ...(isUsingProxy
+          ? {}
+          : { Authorization: `Bearer ${API_CONFIG.SECRET}` }),
       },
     });
 
@@ -105,11 +119,23 @@ export const fetchProductsBySearch = async (
 
 export const fetchProductCategories = async (): Promise<Category[]> => {
   try {
-    const response = await fetch(API_CONFIG.ENDPOINTS.products.categories, {
+    // Use getApiUrl to handle development/production routing
+    const categoriesUrl = getApiUrl(
+      "/api/proxy-products/categories",
+      API_CONFIG.ENDPOINTS.products.categories
+    );
+
+    // Determine if we're using proxy or direct URL
+    const isUsingProxy = shouldUseProxy() && typeof window !== "undefined";
+
+    const response = await fetch(categoriesUrl, {
       cache: "no-store",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${API_CONFIG.SECRET}`,
+        // Only send Authorization header when using direct URL (not proxy)
+        ...(isUsingProxy
+          ? {}
+          : { Authorization: `Bearer ${API_CONFIG.SECRET}` }),
       },
     });
 
@@ -129,11 +155,23 @@ export const fetchProductCategories = async (): Promise<Category[]> => {
 
 export const fetchProductType = async (): Promise<Type[]> => {
   try {
-    const response = await fetch(API_CONFIG.ENDPOINTS.products.type, {
+    // Use getApiUrl to handle development/production routing
+    const typeUrl = getApiUrl(
+      "/api/proxy-products/type",
+      API_CONFIG.ENDPOINTS.products.type
+    );
+
+    // Determine if we're using proxy or direct URL
+    const isUsingProxy = shouldUseProxy() && typeof window !== "undefined";
+
+    const response = await fetch(typeUrl, {
       cache: "no-store",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${API_CONFIG.SECRET}`,
+        // Only send Authorization header when using direct URL (not proxy)
+        ...(isUsingProxy
+          ? {}
+          : { Authorization: `Bearer ${API_CONFIG.SECRET}` }),
       },
     });
 

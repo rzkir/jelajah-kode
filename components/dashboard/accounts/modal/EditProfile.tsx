@@ -21,6 +21,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { API_CONFIG } from "@/lib/config";
+import { getApiUrl } from "@/lib/development";
 import { useAuth } from "@/utils/context/AuthContext";
 
 interface EditProfileProps {
@@ -51,12 +52,11 @@ export default function EditProfile({ open, onOpenChange }: EditProfileProps) {
         setIsLoading(true);
 
         try {
-            // For development: use proxy route to handle cookie forwarding
-            // For production: use direct backend call
-            const meUrl =
-                process.env.NODE_ENV === "development"
-                    ? "/api/auth/proxy-me" // Use proxy in development
-                    : API_CONFIG.ENDPOINTS.me; // Direct call in production
+            // Use getApiUrl to handle development/production routing
+            const meUrl = getApiUrl(
+                "/api/auth/proxy-me",
+                API_CONFIG.ENDPOINTS.me
+            );
 
             const response = await fetch(meUrl, {
                 method: "PUT",

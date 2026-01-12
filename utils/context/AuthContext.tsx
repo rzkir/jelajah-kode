@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 import { API_CONFIG } from "@/lib/config";
+import { getApiUrl } from "@/lib/development";
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -481,7 +482,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const verifyOtp = async (token: string) => {
     try {
-      const result = await fetch(API_CONFIG.ENDPOINTS.verification, {
+      // Use getApiUrl to handle development/production routing
+      const verificationUrl = getApiUrl(
+        "/api/auth/proxy-verification",
+        API_CONFIG.ENDPOINTS.verification
+      );
+
+      const result = await fetch(verificationUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -512,7 +519,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         throw new Error("Missing token. Please verify OTP again.");
       }
 
-      const result = await fetch(API_CONFIG.ENDPOINTS.verification, {
+      // Use getApiUrl to handle development/production routing
+      const verificationUrl = getApiUrl(
+        "/api/auth/proxy-verification",
+        API_CONFIG.ENDPOINTS.verification
+      );
+
+      const result = await fetch(verificationUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

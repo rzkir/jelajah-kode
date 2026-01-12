@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import { toast } from "sonner";
 import { API_CONFIG } from "@/lib/config";
+import { getApiUrl } from "@/lib/development";
 import { useAuth } from "@/utils/context/AuthContext";
 
 export function useStateAccounts() {
@@ -73,12 +74,8 @@ export function useStateAccounts() {
       const uploadResult = await uploadResponse.json();
 
       // Update user profile with new picture URL
-      // For development: use proxy route to handle cookie forwarding
-      // For production: use direct backend call
-      const meUrl =
-        process.env.NODE_ENV === "development"
-          ? "/api/auth/proxy-me" // Use proxy in development
-          : API_CONFIG.ENDPOINTS.me; // Direct call in production
+      // Use getApiUrl to handle development/production routing
+      const meUrl = getApiUrl("/api/auth/proxy-me", API_CONFIG.ENDPOINTS.me);
 
       const updateResponse = await fetch(meUrl, {
         method: "PUT",
