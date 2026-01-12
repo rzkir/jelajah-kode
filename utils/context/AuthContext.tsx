@@ -296,8 +296,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signOut = async () => {
     try {
-      // Make a request to our custom signout endpoint to clear JWT cookie
-      await fetch(API_CONFIG.ENDPOINTS.signOut, {
+      // Always use proxy route to handle cookie forwarding (works in both dev and production)
+      // This ensures cookie is cleared in both frontend and backend domains
+      const signOutUrl = "/api/auth/proxy-signout";
+
+      await fetch(signOutUrl, {
         method: "POST",
         credentials: "include",
       });
@@ -305,6 +308,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Clear local state
       setUser(null);
       setUserRole(null);
+
+      // Clear localStorage if used in development
+      if (process.env.NODE_ENV === "development") {
+        try {
+          localStorage.removeItem("user");
+        } catch {
+          // Ignore errors
+        }
+      }
 
       toast.success("Logged out successfully!", {
         duration: 2000,
@@ -317,9 +329,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(null);
       setUserRole(null);
 
-      // Make API call to ensure server-side logout
+      // Clear localStorage if used in development
+      if (process.env.NODE_ENV === "development") {
+        try {
+          localStorage.removeItem("user");
+        } catch {
+          // Ignore errors
+        }
+      }
+
+      // Try again with proxy route to ensure server-side logout
       try {
-        await fetch(API_CONFIG.ENDPOINTS.signOut, {
+        const signOutUrl = "/api/auth/proxy-signout";
+        await fetch(signOutUrl, {
           method: "POST",
           credentials: "include",
         });

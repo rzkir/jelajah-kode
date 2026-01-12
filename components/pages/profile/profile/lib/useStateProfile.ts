@@ -64,12 +64,8 @@ export function useStateProfile() {
 
       setTransactionsLoading(true);
       try {
-        // For development: use proxy route to handle cookie forwarding
-        // For production: use direct backend call
-        const transactionsUrl =
-          process.env.NODE_ENV === "development"
-            ? "/api/proxy-transactions" // Use proxy in development
-            : API_CONFIG.ENDPOINTS.transactions; // Direct call in production
+        // Always use proxy route to handle cookie forwarding (works in both dev and production)
+        const transactionsUrl = "/api/proxy-transactions";
 
         const response = await fetch(transactionsUrl, {
           method: "GET",
@@ -103,12 +99,8 @@ export function useStateProfile() {
 
       setReviewsLoading(true);
       try {
-        // For development: use proxy route to handle cookie forwarding
-        // For production: use direct backend call
-        const ratingsUrl =
-          process.env.NODE_ENV === "development"
-            ? "/api/proxy-ratings" // Use proxy in development
-            : API_CONFIG.ENDPOINTS.ratings; // Direct call in production
+        // Always use proxy route to handle cookie forwarding (works in both dev and production)
+        const ratingsUrl = "/api/proxy-ratings";
 
         const response = await fetch(`${ratingsUrl}?userId=me`, {
           method: "GET",
@@ -161,12 +153,8 @@ export function useStateProfile() {
     if (!user) return;
 
     try {
-      // For development: use proxy route to handle cookie forwarding
-      // For production: use direct backend call
-      const transactionsUrl =
-        process.env.NODE_ENV === "development"
-          ? "/api/proxy-transactions" // Use proxy in development
-          : API_CONFIG.ENDPOINTS.transactions; // Direct call in production
+      // Always use proxy route to handle cookie forwarding (works in both dev and production)
+      const transactionsUrl = "/api/proxy-transactions";
 
       const response = await fetch(transactionsUrl, {
         method: "GET",
@@ -196,12 +184,8 @@ export function useStateProfile() {
     setIsUpdating(true);
 
     try {
-      // For development: use proxy route to handle cookie forwarding
-      // For production: use direct backend call
-      const meUrl =
-        process.env.NODE_ENV === "development"
-          ? "/api/auth/proxy-me" // Use proxy in development
-          : API_CONFIG.ENDPOINTS.me; // Direct call in production
+      // Always use proxy route to handle cookie forwarding (works in both dev and production)
+      const meUrl = "/api/auth/proxy-me";
 
       const response = await fetch(meUrl, {
         method: "PUT",
@@ -278,12 +262,8 @@ export function useStateProfile() {
       const uploadResult = await uploadResponse.json();
 
       // Update user profile with new picture URL
-      // For development: use proxy route to handle cookie forwarding
-      // For production: use direct backend call
-      const meUrl =
-        process.env.NODE_ENV === "development"
-          ? "/api/auth/proxy-me" // Use proxy in development
-          : API_CONFIG.ENDPOINTS.me; // Direct call in production
+      // Always use proxy route to handle cookie forwarding (works in both dev and production)
+      const meUrl = "/api/auth/proxy-me";
 
       const updateResponse = await fetch(meUrl, {
         method: "PUT",
@@ -435,7 +415,10 @@ export function useStateProfile() {
     setIsDeletingAccount(true);
 
     try {
-      const response = await fetch(API_CONFIG.ENDPOINTS.deleteAccount, {
+      // Always use proxy route to handle cookie forwarding (works in both dev and production)
+      const deleteAccountUrl = "/api/auth/proxy-delete-account";
+
+      const response = await fetch(deleteAccountUrl, {
         method: "DELETE",
         credentials: "include",
         headers: {

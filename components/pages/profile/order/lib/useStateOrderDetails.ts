@@ -29,12 +29,11 @@ export default function useStateOrderDetails() {
     async (orderId: string) => {
       try {
         setIsLoading(true);
-        const response = await fetch(
-          `${API_CONFIG.ENDPOINTS.transactions}?order_id=${orderId}`,
-          {
-            credentials: "include",
-          }
-        );
+        // Always use proxy route to handle cookie forwarding (works in both dev and production)
+        const transactionsUrl = "/api/proxy-transactions";
+        const response = await fetch(`${transactionsUrl}?order_id=${orderId}`, {
+          credentials: "include",
+        });
 
         if (!response.ok) {
           const data = await response.json();
@@ -46,12 +45,8 @@ export default function useStateOrderDetails() {
 
         if (data.paymentMethod === "paid" && data.order_id) {
           try {
-            // For development: use proxy route to handle cookie forwarding
-            // For production: use direct backend call
-            const transactionsUrl =
-              process.env.NODE_ENV === "development"
-                ? "/api/proxy-transactions" // Use proxy in development
-                : API_CONFIG.ENDPOINTS.transactions; // Direct call in production
+            // Always use proxy route to handle cookie forwarding (works in both dev and production)
+            const transactionsUrl = "/api/proxy-transactions";
 
             const refreshResponse = await fetch(
               `${transactionsUrl}?order_id=${orderId}`,
@@ -76,12 +71,8 @@ export default function useStateOrderDetails() {
           const ratings: Record<string, RatingData> = {};
           for (const product of data.products) {
             try {
-              // For development: use proxy route to handle cookie forwarding
-              // For production: use direct backend call
-              const ratingsUrl =
-                process.env.NODE_ENV === "development"
-                  ? "/api/proxy-ratings" // Use proxy in development
-                  : API_CONFIG.ENDPOINTS.ratings; // Direct call in production
+              // Always use proxy route to handle cookie forwarding (works in both dev and production)
+              const ratingsUrl = "/api/proxy-ratings";
 
               const ratingResponse = await fetch(
                 `${ratingsUrl}?productsId=${product.productsId}`,
@@ -169,12 +160,8 @@ export default function useStateOrderDetails() {
 
     setIsSubmittingRating(true);
     try {
-      // For development: use proxy route to handle cookie forwarding
-      // For production: use direct backend call
-      const ratingsUrl =
-        process.env.NODE_ENV === "development"
-          ? "/api/proxy-ratings" // Use proxy in development
-          : API_CONFIG.ENDPOINTS.ratings; // Direct call in production
+      // Always use proxy route to handle cookie forwarding (works in both dev and production)
+      const ratingsUrl = "/api/proxy-ratings";
 
       const response = await fetch(ratingsUrl, {
         method: "POST",
