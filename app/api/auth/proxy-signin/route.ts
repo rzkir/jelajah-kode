@@ -53,26 +53,11 @@ export async function POST(request: NextRequest) {
           path: "/",
         });
 
-        console.log("[PROXY-SIGNIN] Cookie set for frontend domain");
-      } else {
-        console.warn(
-          "[PROXY-SIGNIN] Could not extract token from Set-Cookie header:",
-          setCookieHeader
-        );
       }
-    } else {
-      console.warn(
-        "[PROXY-SIGNIN] No Set-Cookie header found in backend response"
-      );
-      console.log(
-        "[PROXY-SIGNIN] All headers:",
-        Object.fromEntries(backendResponse.headers.entries())
-      );
     }
 
     return response;
-  } catch (error) {
-    console.error("Proxy signin error:", error);
+  } catch {
     return NextResponse.json({ error: "Failed to sign in" }, { status: 500 });
   }
 }

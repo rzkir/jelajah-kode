@@ -51,8 +51,7 @@ export async function GET(request: NextRequest) {
     });
 
     return response;
-  } catch (error) {
-    console.error("Proxy checkout GET error:", error);
+  } catch {
     return NextResponse.json(
       { error: "Failed to fetch checkout products" },
       { status: 500 }
@@ -105,12 +104,10 @@ export async function POST(request: NextRequest) {
     });
 
     return response;
-  } catch (error) {
-    console.error("Proxy checkout POST error:", error);
+  } catch {
     return NextResponse.json(
       { error: "Failed to process checkout" },
       { status: 500 }
     );
   }
 }
-

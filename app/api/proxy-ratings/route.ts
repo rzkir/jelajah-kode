@@ -45,8 +45,7 @@ export async function GET(request: NextRequest) {
     });
 
     return response;
-  } catch (error) {
-    console.error("Proxy ratings GET error:", error);
+  } catch {
     return NextResponse.json(
       { error: "Failed to fetch ratings" },
       { status: 500 }
@@ -93,8 +92,7 @@ export async function POST(request: NextRequest) {
     });
 
     return response;
-  } catch (error) {
-    console.error("Proxy ratings POST error:", error);
+  } catch {
     return NextResponse.json(
       { error: "Failed to submit rating" },
       { status: 500 }

@@ -13,8 +13,7 @@ function decodeJWT(token: string) {
     const paddedPayload = payload + "=".repeat((4 - (payload.length % 4)) % 4);
     const decodedPayload = atob(paddedPayload);
     return JSON.parse(decodedPayload);
-  } catch (error) {
-    console.error("JWT decoding error:", error);
+  } catch {
     throw new Error("Invalid token");
   }
 }
@@ -45,24 +44,7 @@ export default function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const method = request.method;
 
-  // Log all cookies for debugging in development
-  if (process.env.NODE_ENV === "development") {
-    const allCookies = request.cookies.getAll();
-    console.log(
-      "[PROXY] All cookies:",
-      allCookies.map((c) => ({
-        name: c.name,
-        value: c.value?.substring(0, 20) + "...",
-      }))
-    );
-    console.log("[PROXY] Token cookie:", token ? "exists" : "not found");
-  }
-
   if (pathname.startsWith("/api/") || pathname === "/api") {
-    // Log in development for debugging
-    if (process.env.NODE_ENV === "development") {
-      console.log(`[PROXY] Allowing API route: ${method} ${pathname}`);
-    }
     return NextResponse.next();
   }
 
@@ -89,22 +71,10 @@ export default function proxy(request: NextRequest) {
 
       userRole = decoded.role as string;
       isAuthenticated = true;
-
-      if (process.env.NODE_ENV === "development") {
-        console.log("[PROXY] User authenticated:", {
-          role: userRole,
-          pathname,
-        });
-      }
-    } catch (error) {
-      console.error("Token decoding error:", error);
+    } catch {
       const response = NextResponse.next();
       response.cookies.delete("token");
       return response;
-    }
-  } else {
-    if (process.env.NODE_ENV === "development") {
-      console.log("[PROXY] No token found, user not authenticated");
     }
   }
 
@@ -115,11 +85,6 @@ export default function proxy(request: NextRequest) {
     redirectParam &&
     (redirectParam === "/dashboard" || redirectParam === "/")
   ) {
-    if (process.env.NODE_ENV === "development") {
-      console.log(
-        `[PROXY] Redirecting based on query param to ${redirectParam}`
-      );
-    }
     return NextResponse.redirect(new URL(redirectParam, request.url));
   }
 
@@ -132,14 +97,6 @@ export default function proxy(request: NextRequest) {
     }
 
     // Redirect based on role
-    if (process.env.NODE_ENV === "development") {
-      console.log(
-        `[PROXY] Redirecting authenticated user from ${pathname} to ${
-          userRole === "admins" ? "/dashboard" : "/"
-        }`
-      );
-    }
-
     if (userRole === "admins") {
       return NextResponse.redirect(new URL("/dashboard", request.url));
     } else {

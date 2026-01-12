@@ -64,15 +64,11 @@ export async function DELETE(request: NextRequest) {
           expires: new Date(0), // Set expiration to past date to delete cookie
           path: "/",
         });
-        console.log(
-          "[PROXY-DELETE-ACCOUNT] Cookie cleared for frontend domain"
-        );
       }
     }
 
     return response;
-  } catch (error) {
-    console.error("Proxy delete account error:", error);
+  } catch {
     return NextResponse.json(
       { error: "Failed to delete account" },
       { status: 500 }

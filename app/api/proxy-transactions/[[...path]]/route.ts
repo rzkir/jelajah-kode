@@ -28,15 +28,6 @@ async function handleRequest(
       url.searchParams.append(key, value);
     });
 
-    // Debug logging in development
-    if (process.env.NODE_ENV === "development") {
-      console.log(
-        `[PROXY-TRANSACTIONS] ${method} ${request.nextUrl.pathname}${
-          request.nextUrl.search
-        } -> ${url.toString()}`
-      );
-    }
-
     // Forward request to backend with cookies
     const headers: HeadersInit = {
       "Content-Type": "application/json",
@@ -73,8 +64,7 @@ async function handleRequest(
     });
 
     return response;
-  } catch (error) {
-    console.error(`Proxy transactions ${method} error:`, error);
+  } catch {
     return NextResponse.json(
       { error: `Failed to process transactions request` },
       { status: 500 }
@@ -93,8 +83,7 @@ export async function GET(
     const pathArray =
       path === undefined ? [] : Array.isArray(path) ? path : path ? [path] : [];
     return handleRequest(request, "GET", undefined, pathArray);
-  } catch (error) {
-    console.error("Proxy transactions GET error:", error);
+  } catch {
     return NextResponse.json(
       { error: "Failed to process request" },
       { status: 500 }
@@ -113,8 +102,7 @@ export async function POST(
       path === undefined ? [] : Array.isArray(path) ? path : path ? [path] : [];
     const body = await request.text();
     return handleRequest(request, "POST", body, pathArray);
-  } catch (error) {
-    console.error("Proxy transactions POST error:", error);
+  } catch {
     return NextResponse.json(
       { error: "Failed to process request" },
       { status: 500 }
@@ -133,8 +121,7 @@ export async function PUT(
       path === undefined ? [] : Array.isArray(path) ? path : path ? [path] : [];
     const body = await request.text();
     return handleRequest(request, "PUT", body, pathArray);
-  } catch (error) {
-    console.error("Proxy transactions PUT error:", error);
+  } catch {
     return NextResponse.json(
       { error: "Failed to process request" },
       { status: 500 }
@@ -152,8 +139,7 @@ export async function DELETE(
     const pathArray =
       path === undefined ? [] : Array.isArray(path) ? path : path ? [path] : [];
     return handleRequest(request, "DELETE", undefined, pathArray);
-  } catch (error) {
-    console.error("Proxy transactions DELETE error:", error);
+  } catch {
     return NextResponse.json(
       { error: "Failed to process request" },
       { status: 500 }

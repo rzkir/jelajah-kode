@@ -60,13 +60,11 @@ export async function GET(request: NextRequest) {
           maxAge: 60 * 60 * 24, // 24 hours
           path: "/",
         });
-        console.log("[PROXY-ME] Cookie forwarded from backend");
       }
     }
 
     return response;
-  } catch (error) {
-    console.error("Proxy me error:", error);
+  } catch {
     return NextResponse.json(
       { error: "Failed to fetch user data" },
       { status: 500 }
@@ -137,8 +135,7 @@ export async function PUT(request: NextRequest) {
     }
 
     return response;
-  } catch (error) {
-    console.error("Proxy me PUT error:", error);
+  } catch {
     return NextResponse.json(
       { error: "Failed to update user data" },
       { status: 500 }

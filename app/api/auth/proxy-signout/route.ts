@@ -57,11 +57,8 @@ export async function POST(request: NextRequest) {
       path: "/",
     });
 
-    console.log("[PROXY-SIGNOUT] Cookie cleared for frontend domain");
-
     return response;
-  } catch (error) {
-    console.error("Proxy signout error:", error);
+  } catch {
     return NextResponse.json({ error: "Failed to sign out" }, { status: 500 });
   }
 }
