@@ -95,12 +95,8 @@ const useStateCheckout = (productsParam: string) => {
         return;
       }
 
-      // For development: use proxy route to handle cookie forwarding
-      // For production: use direct backend call
-      const checkoutUrl =
-        process.env.NODE_ENV === "development"
-          ? "/api/proxy-checkout" // Use proxy in development
-          : API_CONFIG.ENDPOINTS.checkout; // Direct call in production
+      // Always use proxy route to handle cookie forwarding (works in both dev and production)
+      const checkoutUrl = "/api/proxy-checkout";
 
       const response = await fetch(
         `${checkoutUrl}?products=${encodeURIComponent(productsParam)}`,
@@ -108,8 +104,8 @@ const useStateCheckout = (productsParam: string) => {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${API_CONFIG.SECRET}`,
           },
+          credentials: "include", // Required to send cookies
         }
       );
 
@@ -142,12 +138,8 @@ const useStateCheckout = (productsParam: string) => {
 
   const fetchPaymentDetails = useCallback(async (orderId: string) => {
     try {
-      // For development: use proxy route to handle cookie forwarding
-      // For production: use direct backend call
-      const transactionsUrl =
-        process.env.NODE_ENV === "development"
-          ? "/api/proxy-transactions" // Use proxy in development
-          : API_CONFIG.ENDPOINTS.transactions; // Direct call in production
+      // Always use proxy route to handle cookie forwarding (works in both dev and production)
+      const transactionsUrl = "/api/proxy-transactions";
 
       const response = await fetch(
         `${transactionsUrl}/midtrans-status?order_id=${orderId}`,
@@ -187,20 +179,15 @@ const useStateCheckout = (productsParam: string) => {
         })),
       };
 
-      // For development: use proxy route to handle cookie forwarding
-      // For production: use direct backend call
-      const checkoutUrl =
-        process.env.NODE_ENV === "development"
-          ? "/api/proxy-checkout" // Use proxy in development
-          : API_CONFIG.ENDPOINTS.checkout; // Direct call in production
+      // Always use proxy route to handle cookie forwarding (works in both dev and production)
+      const checkoutUrl = "/api/proxy-checkout";
 
       const response = await fetch(checkoutUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${API_CONFIG.SECRET}`,
         },
-        credentials: "include",
+        credentials: "include", // Required to send cookies
         body: JSON.stringify(checkoutData),
       });
 

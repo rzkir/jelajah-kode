@@ -460,7 +460,7 @@ export default function ProductsDetails({ product }: ProductsDetailsProps) {
                                                 <div className="flex-1 space-y-1 sm:space-y-2 min-w-0">
                                                     <p className="font-bold text-sm sm:text-base wrap-break-word">{product.author.name}</p>
                                                     <p className="text-xs sm:text-sm text-muted-foreground font-medium">
-                                                        {product.author.role === 'admin' ? '⭐ Elite Author' : 'Author'}
+                                                        {product.author.role === 'admins' ? '⭐ Elite Author' : 'Author'}
                                                     </p>
                                                 </div>
                                             </div>

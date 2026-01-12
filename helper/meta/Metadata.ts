@@ -1408,29 +1408,26 @@ export const ProfilePageMetadata: Metadata = {
 export async function generateProfileMetadata(): Promise<Metadata> {
   try {
     const { cookies } = await import("next/headers");
-    const { connectMongoDB } = await import("@/lib/mongodb");
-    const { Account } = await import("@/models/Account");
-    const { verifyJWT } = await import("@/hooks/jwt");
-
-    await connectMongoDB();
-
-    // Get token from cookies
     const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value;
 
-    if (token) {
+    if (token && API_CONFIG.ENDPOINTS.me) {
       try {
-        const decodedToken = await verifyJWT(token);
-        const user = await Account.findById(decodedToken._id);
+        // Fetch user data from backend API
+        const userResponse = await fetch(API_CONFIG.ENDPOINTS.me, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Cookie: `token=${token}`,
+          },
+          cache: "no-store",
+        }).catch(() => null);
 
-        if (user) {
-          const userObj = user.toObject() as {
-            name: string;
-            picture?: string;
-          };
-
-          const userName = userObj.name || "User";
-          const userPicture = userObj.picture || "/images/profile-og-image.jpg";
+        if (userResponse?.ok) {
+          const userData = await userResponse.json();
+          const userName = userData.name || "User";
+          const userPicture =
+            userData.picture || "/images/profile-og-image.jpg";
           const title = `${userName}'s Profile - jelajah Code`;
           const description = `Manage ${userName}'s profile, view transactions, and update account settings on jelajah Code`;
 
@@ -1462,7 +1459,7 @@ export async function generateProfileMetadata(): Promise<Metadata> {
           };
         }
       } catch {
-        // If token is invalid or user not found, fallback to default
+        // If fetch fails, fallback to default
       }
     }
   } catch {
@@ -1510,89 +1507,80 @@ export async function generateOrderDetailsMetadata(
 
   try {
     const { cookies } = await import("next/headers");
-    const { connectMongoDB } = await import("@/lib/mongodb");
-    const { Account } = await import("@/models/Account");
-    const Transactions = (await import("@/models/Transactions")).default;
-    const { verifyJWT } = await import("@/hooks/jwt");
-
-    await connectMongoDB();
-
-    // Get token from cookies
     const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value;
 
-    if (token) {
+    if (token && API_CONFIG.ENDPOINTS.transactions) {
       try {
-        const decodedToken = await verifyJWT(token);
-        const user = await Account.findById(decodedToken._id);
+        // Fetch transaction data from backend API
+        const transactionResponse = await fetch(
+          `${API_CONFIG.ENDPOINTS.transactions}?order_id=${order_id}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Cookie: `token=${token}`,
+            },
+            cache: "no-store",
+          }
+        ).catch(() => null);
 
-        if (user) {
-          // Find transaction by order_id
-          const transaction = await Transactions.findOne({ order_id });
+        if (transactionResponse?.ok) {
+          const transactionData = await transactionResponse.json();
 
-          if (transaction) {
-            // Verify that the transaction belongs to the current user
-            const transactionObj = transaction.toObject() as {
-              user: { _id: string; name: string };
-              products: Array<{ title: string; thumbnail: string }>;
-              status: string;
-              total_amount: number;
-            };
+          if (transactionData && transactionData.products) {
+            const productTitles =
+              transactionData.products
+                .map((p: { title: string }) => p.title)
+                .slice(0, 3)
+                .join(", ") || "Products";
+            const productCount = transactionData.products.length;
+            const status = transactionData.status || "pending";
+            const statusCapitalized =
+              status.charAt(0).toUpperCase() + status.slice(1);
+            const thumbnail =
+              transactionData.products[0]?.thumbnail ||
+              "/images/profile-og-image.jpg";
 
-            if (transactionObj.user._id.toString() === user._id.toString()) {
-              const productTitles =
-                transactionObj.products
-                  .map((p) => p.title)
-                  .slice(0, 3)
-                  .join(", ") || "Products";
-              const productCount = transactionObj.products.length;
-              const status = transactionObj.status || "pending";
-              const statusCapitalized =
-                status.charAt(0).toUpperCase() + status.slice(1);
-              const thumbnail =
-                transactionObj.products[0]?.thumbnail ||
-                "/images/profile-og-image.jpg";
+            const title = `Order ${order_id} - ${statusCapitalized} - jelajah Code`;
+            const description = `View order details for ${productCount} product${
+              productCount !== 1 ? "s" : ""
+            }: ${productTitles}${
+              productCount > 3 ? "..." : ""
+            }. Status: ${statusCapitalized}. Total: Rp ${
+              transactionData.total_amount?.toLocaleString("id-ID") || "0"
+            }`;
 
-              const title = `Order ${order_id} - ${statusCapitalized} - jelajah Code`;
-              const description = `View order details for ${productCount} product${
-                productCount !== 1 ? "s" : ""
-              }: ${productTitles}${
-                productCount > 3 ? "..." : ""
-              }. Status: ${statusCapitalized}. Total: Rp ${
-                transactionObj.total_amount?.toLocaleString("id-ID") || "0"
-              }`;
-
-              return {
+            return {
+              title,
+              description,
+              openGraph: {
                 title,
                 description,
-                openGraph: {
-                  title,
-                  description,
-                  url: `${API_CONFIG.ENDPOINTS.base}/profile/${order_id}`,
-                  siteName: "jelajah Code",
-                  images: [
-                    {
-                      url: thumbnail,
-                      width: 1200,
-                      height: 630,
-                      alt: `Order ${order_id}`,
-                    },
-                  ],
-                  locale: "en_US",
-                  type: "website",
-                },
-                twitter: {
-                  card: "summary_large_image",
-                  title,
-                  description,
-                  images: [thumbnail],
-                },
-              };
-            }
+                url: `${API_CONFIG.ENDPOINTS.base}/profile/${order_id}`,
+                siteName: "jelajah Code",
+                images: [
+                  {
+                    url: thumbnail,
+                    width: 1200,
+                    height: 630,
+                    alt: `Order ${order_id}`,
+                  },
+                ],
+                locale: "en_US",
+                type: "website",
+              },
+              twitter: {
+                card: "summary_large_image",
+                title,
+                description,
+                images: [thumbnail],
+              },
+            };
           }
         }
       } catch {
-        // If token is invalid or transaction not found, fallback to default
+        // If fetch fails, fallback to default
       }
     }
   } catch {

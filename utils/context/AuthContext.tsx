@@ -6,8 +6,6 @@ import { useRouter } from "next/navigation";
 
 import { toast } from "sonner";
 
-import type { Accounts, AuthContextType, UserRole } from "@/types/auth";
-
 import { API_CONFIG } from "@/lib/config";
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -213,12 +211,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       // Fetch the complete user data from the API
-      // For development: use proxy route to handle cookie forwarding
-      // For production: use direct backend call
-      const meUrl =
-        process.env.NODE_ENV === "development"
-          ? "/api/auth/proxy-me" // Use proxy in development
-          : API_CONFIG.ENDPOINTS.me; // Direct call in production
+      // Always use proxy route to handle cookie forwarding (works in both dev and production)
+      const meUrl = "/api/auth/proxy-me";
 
       const userResponse = await fetch(meUrl, {
         method: "GET",
@@ -275,14 +269,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         });
       }
 
-      // For cross-origin cookies (frontend localhost, backend Vercel),
-      // cookie from backend might not be immediately available in frontend domain
-      // The cookie will be sent to backend on next API call, but proxy won't see it
-      // So we redirect directly without waiting for proxy
+      // Determine redirect path based on role
       const redirectPath = account.role === "admins" ? "/dashboard" : "/";
 
-      // Redirect immediately - cookie will be available on next request to backend
-      window.location.href = redirectPath;
+      // Use router.push for client-side navigation to preserve state
+      // This ensures token is immediately available without requiring a refresh
+      router.push(redirectPath);
 
       // Return the fetched user data
       return account;
@@ -346,12 +338,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const refreshUserData = async (): Promise<Accounts | null> => {
     try {
-      // For development: use proxy route to handle cookie forwarding
-      // For production: use direct backend call
-      const meUrl =
-        process.env.NODE_ENV === "development"
-          ? "/api/auth/proxy-me" // Use proxy in development
-          : API_CONFIG.ENDPOINTS.me; // Direct call in production
+      // Always use proxy route to handle cookie forwarding (works in both dev and production)
+      const meUrl = "/api/auth/proxy-me";
 
       const response = await fetch(meUrl, {
         method: "GET",
