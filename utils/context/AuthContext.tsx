@@ -8,6 +8,7 @@ import { toast } from "sonner";
 
 import { API_CONFIG } from "@/lib/config";
 import { getApiUrl } from "@/lib/development";
+import { handleRateLimitError } from "@/lib/rate-limit-handler";
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -34,6 +35,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
   const [loginIsLoading, setLoginIsLoading] = useState(false);
+  const [loginRateLimitResetTime, setLoginRateLimitResetTime] = useState<Date | null>(null);
+  const [loginIsRateLimited, setLoginIsRateLimited] = useState(false);
 
   // Forget password form state
   const [forgetPasswordEmail, setForgetPasswordEmail] = useState("");
@@ -44,6 +47,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [signupPassword, setSignupPassword] = useState("");
   const [signupConfirmPassword, setSignupConfirmPassword] = useState("");
   const [signupIsLoading, setSignupIsLoading] = useState(false);
+  // OTP form state
+  const [otp, setOtp] = useState("");
+  const [otpIsLoading, setOtpIsLoading] = useState(false);
+  const [otpIsResending, setOtpIsResending] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -87,6 +94,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
 
         if (!userResponse.ok) {
+          // Handle rate limit errors
+          if (userResponse.status === 429) {
+            await handleRateLimitError(
+              userResponse,
+              "Too many requests. Please try again later."
+            );
+            setUser(null);
+            setUserRole(null);
+            setLoading(false);
+            return;
+          }
+
           // If response is not OK, check if it's JSON before parsing
           const contentType = userResponse.headers.get("content-type");
           if (contentType && contentType.includes("application/json")) {
@@ -199,8 +218,49 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const resultData = await result.json();
 
       if (!result.ok) {
+        // Handle rate limit errors
+        if (result.status === 429) {
+          // Extract rate limit reset time
+          const resetTime = result.headers.get("X-RateLimit-Reset");
+          const retryAfter = result.headers.get("Retry-After");
+
+          let resetDate: Date | null = null;
+
+          if (resetTime) {
+            try {
+              resetDate = new Date(resetTime);
+              if (isNaN(resetDate.getTime())) {
+                resetDate = null;
+              }
+            } catch {
+              resetDate = null;
+            }
+          }
+
+          if (!resetDate && retryAfter) {
+            const seconds = parseInt(retryAfter, 10);
+            if (!isNaN(seconds) && seconds > 0) {
+              resetDate = new Date(Date.now() + seconds * 1000);
+            }
+          }
+
+          if (resetDate) {
+            setLoginRateLimitResetTime(resetDate);
+            setLoginIsRateLimited(true);
+          }
+
+          await handleRateLimitError(
+            result,
+            "Terlalu banyak percobaan login. Silakan coba lagi nanti."
+          );
+          throw new Error("Rate limit exceeded");
+        }
         throw new Error(resultData.error || `Sign in failed with status ${result.status}`);
       }
+
+      // Clear rate limit state on successful login
+      setLoginIsRateLimited(false);
+      setLoginRateLimitResetTime(null);
 
       if (resultData.error) {
         throw new Error(resultData.error);
@@ -228,6 +288,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const userResponseData = await userResponse.json();
 
       if (!userResponse.ok) {
+        // Handle rate limit errors
+        if (userResponse.status === 429) {
+          await handleRateLimitError(
+            userResponse,
+            "Too many requests. Please try again later."
+          );
+          throw new Error("Rate limit exceeded");
+        }
         throw new Error(userResponseData.error || `Failed to fetch user data with status ${userResponse.status}`);
       }
 
@@ -373,7 +441,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       const responseData = await response.json();
 
-      if (!response.ok || responseData.error) {
+      if (!response.ok) {
+        // Handle rate limit errors silently (don't show toast on refresh)
+        if (response.status === 429) {
+          // Just return null without showing error toast
+          return null;
+        }
+        if (responseData.error) {
+          return null;
+        }
         return null;
       }
 
@@ -625,6 +701,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
+    if (loginIsRateLimited) {
+      return;
+    }
+
     setLoginIsLoading(true);
 
     try {
@@ -633,6 +713,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         resetLoginState();
       }
     } catch {
+      // Rate limit error is handled in signIn function
+      // State is set in signIn when rate limit occurs
     } finally {
       setLoginIsLoading(false);
     }
@@ -642,7 +724,34 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setLoginEmail("");
     setLoginPassword("");
     setLoginIsLoading(false);
+    setLoginIsRateLimited(false);
+    setLoginRateLimitResetTime(null);
   };
+
+  // Effect to check and clear rate limit when timer expires
+  useEffect(() => {
+    if (!loginRateLimitResetTime || !loginIsRateLimited) {
+      return;
+    }
+
+    const checkRateLimit = () => {
+      const now = new Date();
+      if (now >= loginRateLimitResetTime) {
+        setLoginIsRateLimited(false);
+        setLoginRateLimitResetTime(null);
+      }
+    };
+
+    // Check immediately
+    checkRateLimit();
+
+    // Check every second
+    const interval = setInterval(checkRateLimit, 1000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [loginRateLimitResetTime, loginIsRateLimited]);
 
   // Forget password form functions
   const handleForgetPasswordSubmit = async () => {
@@ -735,6 +844,123 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setSignupIsLoading(false);
   };
 
+  // OTP form functions
+  const handleOtpSubmit = async (otpValue: string) => {
+    if (!otpValue || otpValue.length !== 6) {
+      toast.error("Please enter a valid 6-digit code");
+      return;
+    }
+
+    setOtpIsLoading(true);
+
+    try {
+      // Use getApiUrl to handle development/production routing
+      const verificationUrl = getApiUrl(
+        "/api/auth/proxy-verification",
+        API_CONFIG.ENDPOINTS.verification
+      );
+
+      const response = await fetch(verificationUrl, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ token: otpValue }),
+      });
+
+      // Check content type before parsing JSON
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        throw new Error("Invalid response format from server");
+      }
+
+      const result = await response.json();
+
+      if (!response.ok || result.error) {
+        throw new Error(result.error || "Failed to verify OTP");
+      }
+
+      // Update user data after successful verification
+      if (result.user) {
+        setUser(result.user);
+        setUserRole(result.user.role);
+      }
+
+      toast.success("Email verified successfully!");
+      // Redirect to dashboard or home based on user role
+      if (result.user?.role === "admins") {
+        router.push("/dashboard");
+      } else {
+        router.push("/");
+      }
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Failed to verify OTP. Please try again.";
+      toast.error(errorMessage);
+      throw error;
+    } finally {
+      setOtpIsLoading(false);
+    }
+  };
+
+  const handleResendOTP = async (email: string) => {
+    if (!email) {
+      toast.error("Email is required to resend verification code");
+      return;
+    }
+
+    setOtpIsResending(true);
+
+    try {
+      // Use getApiUrl to handle development/production routing
+      const verificationUrl = getApiUrl(
+        "/api/auth/proxy-verification",
+        API_CONFIG.ENDPOINTS.verification
+      );
+
+      const response = await fetch(verificationUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ email }),
+      });
+
+      // Check content type before parsing JSON
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        throw new Error("Invalid response format from server");
+      }
+
+      const result = await response.json();
+
+      if (!response.ok || result.error) {
+        throw new Error(result.error || "Failed to resend verification code");
+      }
+
+      toast.success("Verification code resent successfully!");
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Failed to resend verification code. Please try again.";
+      toast.error(errorMessage);
+      throw error;
+    } finally {
+      setOtpIsResending(false);
+    }
+  };
+
+  const resetOtpState = () => {
+    setOtp("");
+    setOtpIsLoading(false);
+    setOtpIsResending(false);
+  };
+
   const signUp = async (name: string, email: string, password: string) => {
     // For email/password signup, we still use the existing API route
     try {
@@ -824,6 +1050,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     loginEmail,
     loginPassword,
     loginIsLoading,
+    loginRateLimitResetTime,
+    loginIsRateLimited,
     // Login form functions
     setLoginEmail,
     setLoginPassword,
@@ -852,6 +1080,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setSignupIsLoading,
     handleSignupSubmit,
     resetSignupState,
+    // OTP form state
+    otp,
+    otpIsLoading,
+    otpIsResending,
+    // OTP form functions
+    setOtp,
+    setOtpIsLoading,
+    setOtpIsResending,
+    handleOtpSubmit,
+    handleResendOTP,
+    resetOtpState,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

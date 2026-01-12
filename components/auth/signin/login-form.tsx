@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+
 import { Code, Loader2 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -30,10 +31,60 @@ export function LoginForm({
     loginEmail,
     loginPassword,
     loginIsLoading,
+    loginRateLimitResetTime,
+    loginIsRateLimited,
     setLoginEmail,
     setLoginPassword,
     handleLoginSubmit,
   } = useAuth();
+
+  // Timer countdown state
+  const [timeLeft, setTimeLeft] = React.useState<number>(0);
+
+  // Calculate time left from rate limit reset time
+  React.useEffect(() => {
+    if (!loginRateLimitResetTime || !loginIsRateLimited) {
+      setTimeLeft(0);
+      return;
+    }
+
+    const calculateTimeLeft = () => {
+      const now = new Date();
+      const reset = loginRateLimitResetTime;
+      return Math.max(0, Math.ceil((reset.getTime() - now.getTime()) / 1000));
+    };
+
+    // Update immediately
+    setTimeLeft(calculateTimeLeft());
+
+    // Update every second
+    const interval = setInterval(() => {
+      const remaining = calculateTimeLeft();
+      setTimeLeft(remaining);
+
+      if (remaining <= 0) {
+        clearInterval(interval);
+      }
+    }, 1000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [loginRateLimitResetTime, loginIsRateLimited]);
+
+  const formatTime = (seconds: number): string => {
+    if (seconds <= 0) return "0 detik";
+
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+
+    if (mins > 0 && secs > 0) {
+      return `${mins} menit ${secs} detik`;
+    } else if (mins > 0) {
+      return `${mins} menit`;
+    }
+    return `${secs} detik`;
+  };
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setLoginEmail(e.target.value);
@@ -55,7 +106,7 @@ export function LoginForm({
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && !loginIsLoading) {
+    if (e.key === "Enter" && !loginIsLoading && !loginIsRateLimited) {
       e.preventDefault();
       e.stopPropagation();
       handleButtonClick();
@@ -129,13 +180,24 @@ export function LoginForm({
             <Button
               type="button"
               onClick={handleButtonClick}
-              disabled={loginIsLoading || !loginEmail || !loginPassword}
+              disabled={
+                loginIsLoading ||
+                !loginEmail ||
+                !loginPassword ||
+                loginIsRateLimited
+              }
             >
               {loginIsLoading && (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               )}
               {loginIsLoading ? "Signing in..." : "Sign in"}
             </Button>
+            {loginIsRateLimited && timeLeft > 0 && (
+              <FieldDescription className="mt-2 text-center text-sm text-muted-foreground">
+                Terlalu banyak percobaan login. Silakan coba lagi dalam{" "}
+                <span className="font-semibold">{formatTime(timeLeft)}</span>.
+              </FieldDescription>
+            )}
           </Field>
         </FieldGroup>
       </div>

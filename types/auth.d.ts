@@ -51,6 +51,8 @@ interface AuthContextType {
   loginEmail: string;
   loginPassword: string;
   loginIsLoading: boolean;
+  loginRateLimitResetTime: Date | null;
+  loginIsRateLimited: boolean;
 
   // Login form functions
   setLoginEmail: (email: string) => void;
@@ -85,4 +87,15 @@ interface AuthContextType {
     confirmPassword?: string
   ) => Promise<void>;
   resetSignupState: () => void;
+  // OTP form state
+  otp: string;
+  otpIsLoading: boolean;
+  otpIsResending: boolean;
+  // OTP form functions
+  setOtp: (otp: string) => void;
+  setOtpIsLoading: (loading: boolean) => void;
+  setOtpIsResending: (resending: boolean) => void;
+  handleOtpSubmit: (otp: string) => Promise<void>;
+  handleResendOTP: (email: string) => Promise<void>;
+  resetOtpState: () => void;
 }

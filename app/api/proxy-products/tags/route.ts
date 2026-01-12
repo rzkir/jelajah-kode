@@ -11,7 +11,7 @@ export async function GET() {
       Authorization: `Bearer ${API_SECRET}`,
     };
 
-    const backendResponse = await fetch(`${BACKEND_URL}/api/products/type`, {
+    const backendResponse = await fetch(`${BACKEND_URL}/api/products/tags`, {
       method: "GET",
       headers,
       cache: "no-store",
@@ -25,7 +25,7 @@ export async function GET() {
     });
   } catch {
     return NextResponse.json(
-      { error: "Failed to fetch types" },
+      { error: "Failed to fetch tags" },
       { status: 500 }
     );
   }
@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
       Authorization: `Bearer ${API_SECRET}`,
     };
 
-    const backendResponse = await fetch(`${BACKEND_URL}/api/products/type`, {
+    const backendResponse = await fetch(`${BACKEND_URL}/api/products/tags`, {
       method: "POST",
       headers,
       body: JSON.stringify(body),
@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
     });
   } catch {
     return NextResponse.json(
-      { error: "Failed to create type" },
+      { error: "Failed to create tag" },
       { status: 500 }
     );
   }
@@ -72,7 +72,7 @@ export async function PUT(request: NextRequest) {
       Authorization: `Bearer ${API_SECRET}`,
     };
 
-    const backendResponse = await fetch(`${BACKEND_URL}/api/products/type`, {
+    const backendResponse = await fetch(`${BACKEND_URL}/api/products/tags`, {
       method: "PUT",
       headers,
       body: JSON.stringify(body),
@@ -87,7 +87,7 @@ export async function PUT(request: NextRequest) {
     });
   } catch {
     return NextResponse.json(
-      { error: "Failed to update type" },
+      { error: "Failed to update tag" },
       { status: 500 }
     );
   }
@@ -103,7 +103,7 @@ export async function DELETE(request: NextRequest) {
       Authorization: `Bearer ${API_SECRET}`,
     };
 
-    const backendResponse = await fetch(`${BACKEND_URL}/api/products/type`, {
+    const backendResponse = await fetch(`${BACKEND_URL}/api/products/tags`, {
       method: "DELETE",
       headers,
       body: JSON.stringify(body),
@@ -118,8 +118,9 @@ export async function DELETE(request: NextRequest) {
     });
   } catch {
     return NextResponse.json(
-      { error: "Failed to delete type" },
+      { error: "Failed to delete tag" },
       { status: 500 }
     );
   }
 }
+

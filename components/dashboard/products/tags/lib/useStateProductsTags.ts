@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { API_CONFIG } from "@/lib/config";
+import { getApiUrl, shouldUseProxy } from "@/lib/development";
 
 export default function useStateProjectsTags() {
   const [tags, setTags] = useState<Tags[]>([]);
@@ -22,10 +23,22 @@ export default function useStateProjectsTags() {
 
   const fetchTags = async () => {
     try {
-      const response = await fetch(API_CONFIG.ENDPOINTS.products.tags, {
+      // Use getApiUrl to handle development/production routing
+      const tagsUrl = getApiUrl(
+        "/api/proxy-products/tags",
+        API_CONFIG.ENDPOINTS.products.tags
+      );
+
+      // Determine if we're using proxy or direct URL
+      const isUsingProxy = shouldUseProxy() && typeof window !== "undefined";
+
+      const response = await fetch(tagsUrl, {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${API_CONFIG.SECRET}`,
+          // Only send Authorization header when using direct URL (not proxy)
+          ...(isUsingProxy
+            ? {}
+            : { Authorization: `Bearer ${API_CONFIG.SECRET}` }),
         },
       });
       if (!response.ok) {
@@ -61,7 +74,15 @@ export default function useStateProjectsTags() {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      const url = API_CONFIG.ENDPOINTS.products.tags;
+      // Use getApiUrl to handle development/production routing
+      const tagsUrl = getApiUrl(
+        "/api/proxy-products/tags",
+        API_CONFIG.ENDPOINTS.products.tags
+      );
+
+      // Determine if we're using proxy or direct URL
+      const isUsingProxy = shouldUseProxy() && typeof window !== "undefined";
+
       const method = editingTag ? "PUT" : "POST";
       const body = editingTag
         ? {
@@ -71,9 +92,15 @@ export default function useStateProjectsTags() {
           }
         : { title: formData.title, tagsId: formData.tagsId };
 
-      const response = await fetch(url, {
+      const response = await fetch(tagsUrl, {
         method,
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          // Only send Authorization header when using direct URL (not proxy)
+          ...(isUsingProxy
+            ? {}
+            : { Authorization: `Bearer ${API_CONFIG.SECRET}` }),
+        },
         body: JSON.stringify(body),
       });
 
@@ -99,9 +126,24 @@ export default function useStateProjectsTags() {
 
     setIsDeleting(true);
     try {
-      const response = await fetch(API_CONFIG.ENDPOINTS.products.tags, {
+      // Use getApiUrl to handle development/production routing
+      const tagsUrl = getApiUrl(
+        "/api/proxy-products/tags",
+        API_CONFIG.ENDPOINTS.products.tags
+      );
+
+      // Determine if we're using proxy or direct URL
+      const isUsingProxy = shouldUseProxy() && typeof window !== "undefined";
+
+      const response = await fetch(tagsUrl, {
         method: "DELETE",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          // Only send Authorization header when using direct URL (not proxy)
+          ...(isUsingProxy
+            ? {}
+            : { Authorization: `Bearer ${API_CONFIG.SECRET}` }),
+        },
         body: JSON.stringify({ id: tagToDelete._id }),
       });
 

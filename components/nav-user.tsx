@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,6 +18,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+
 import {
   SidebarMenu,
   SidebarMenuButton,
@@ -111,11 +113,11 @@ export function NavUser({
           </DropdownMenu>
         ) : (
           <SidebarMenuButton size="lg" asChild>
-            <a href="/signin">
+            <Link href="/signin">
               <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
                 <span className="text-sm font-medium">Sign In</span>
               </div>
-            </a>
+            </Link>
           </SidebarMenuButton>
         )}
       </SidebarMenuItem>

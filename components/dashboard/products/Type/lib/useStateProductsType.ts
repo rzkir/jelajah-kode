@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { API_CONFIG } from "@/lib/config";
+import { getApiUrl, shouldUseProxy } from "@/lib/development";
 
 export default function useStateProductsType() {
   const [types, setTypes] = useState<Type[]>([]);
@@ -22,10 +23,22 @@ export default function useStateProductsType() {
 
   const fetchTypes = async () => {
     try {
-      const response = await fetch(API_CONFIG.ENDPOINTS.products.type, {
+      // Use getApiUrl to handle development/production routing
+      const typesUrl = getApiUrl(
+        "/api/proxy-products/type",
+        API_CONFIG.ENDPOINTS.products.type
+      );
+
+      // Determine if we're using proxy or direct URL
+      const isUsingProxy = shouldUseProxy() && typeof window !== "undefined";
+
+      const response = await fetch(typesUrl, {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${API_CONFIG.SECRET}`,
+          // Only send Authorization header when using direct URL (not proxy)
+          ...(isUsingProxy
+            ? {}
+            : { Authorization: `Bearer ${API_CONFIG.SECRET}` }),
         },
       });
       if (!response.ok) {
@@ -61,7 +74,15 @@ export default function useStateProductsType() {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      const url = API_CONFIG.ENDPOINTS.products.type;
+      // Use getApiUrl to handle development/production routing
+      const typesUrl = getApiUrl(
+        "/api/proxy-products/type",
+        API_CONFIG.ENDPOINTS.products.type
+      );
+
+      // Determine if we're using proxy or direct URL
+      const isUsingProxy = shouldUseProxy() && typeof window !== "undefined";
+
       const method = editingType ? "PUT" : "POST";
       const body = editingType
         ? {
@@ -71,9 +92,15 @@ export default function useStateProductsType() {
           }
         : { title: formData.title, typeId: formData.typeId };
 
-      const response = await fetch(url, {
+      const response = await fetch(typesUrl, {
         method,
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          // Only send Authorization header when using direct URL (not proxy)
+          ...(isUsingProxy
+            ? {}
+            : { Authorization: `Bearer ${API_CONFIG.SECRET}` }),
+        },
         body: JSON.stringify(body),
       });
 
@@ -99,9 +126,24 @@ export default function useStateProductsType() {
 
     setIsDeleting(true);
     try {
-      const response = await fetch(API_CONFIG.ENDPOINTS.products.type, {
+      // Use getApiUrl to handle development/production routing
+      const typesUrl = getApiUrl(
+        "/api/proxy-products/type",
+        API_CONFIG.ENDPOINTS.products.type
+      );
+
+      // Determine if we're using proxy or direct URL
+      const isUsingProxy = shouldUseProxy() && typeof window !== "undefined";
+
+      const response = await fetch(typesUrl, {
         method: "DELETE",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          // Only send Authorization header when using direct URL (not proxy)
+          ...(isUsingProxy
+            ? {}
+            : { Authorization: `Bearer ${API_CONFIG.SECRET}` }),
+        },
         body: JSON.stringify({ id: typeToDelete._id }),
       });
 

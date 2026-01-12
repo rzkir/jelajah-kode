@@ -22,6 +22,27 @@ export async function POST(request: NextRequest) {
       status: backendResponse.status,
     });
 
+    // Forward rate limit headers from backend
+    const rateLimitLimit = backendResponse.headers.get("X-RateLimit-Limit");
+    const rateLimitRemaining = backendResponse.headers.get(
+      "X-RateLimit-Remaining"
+    );
+    const rateLimitReset = backendResponse.headers.get("X-RateLimit-Reset");
+    const retryAfter = backendResponse.headers.get("Retry-After");
+
+    if (rateLimitLimit) {
+      response.headers.set("X-RateLimit-Limit", rateLimitLimit);
+    }
+    if (rateLimitRemaining) {
+      response.headers.set("X-RateLimit-Remaining", rateLimitRemaining);
+    }
+    if (rateLimitReset) {
+      response.headers.set("X-RateLimit-Reset", rateLimitReset);
+    }
+    if (retryAfter) {
+      response.headers.set("Retry-After", retryAfter);
+    }
+
     // Extract token from backend response
     // Backend sets cookie via Set-Cookie header
     // We need to extract the token value and set it for frontend domain
@@ -52,7 +73,6 @@ export async function POST(request: NextRequest) {
           maxAge: 60 * 60 * 24, // 24 hours
           path: "/",
         });
-
       }
     }
 

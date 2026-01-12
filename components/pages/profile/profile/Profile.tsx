@@ -18,7 +18,7 @@ import {
     DialogDescription,
 } from "@/components/ui/dialog"
 
-import { User, ShoppingBag, Settings, LogOut, Calendar, CreditCard, Loader2, EyeIcon, Camera, Lock, Trash2, Star } from "lucide-react"
+import { User, ShoppingBag, Settings, LogOut, Calendar, CreditCard, Loader2, EyeIcon, Camera, Lock, Trash2, Star, X } from "lucide-react"
 
 import { useRouter } from "next/navigation"
 
@@ -40,6 +40,8 @@ import { useStateProfile } from "./lib/useStateProfile"
 
 import { UserReviews } from "@/components/ui/user-riview"
 
+import TransactionLoading from "@/components/pages/profile/profile/transaction/TransactionLoading"
+
 export default function ProfilePage() {
     const { signOut } = useAuth()
     const router = useRouter()
@@ -50,6 +52,7 @@ export default function ProfilePage() {
         transactions,
         transactionsLoading,
         continuingPayment,
+        cancelingTransaction,
         isUploadingPicture,
         fileInputRef,
         isChangePasswordOpen,
@@ -67,6 +70,7 @@ export default function ProfilePage() {
         handleEditPicture,
         handleFileChange,
         handleContinuePayment,
+        handleCancelTransaction,
         handleDeleteAccount,
     } = useStateProfile()
 
@@ -257,9 +261,7 @@ export default function ProfilePage() {
                             </CardHeader>
                             <CardContent>
                                 {transactionsLoading ? (
-                                    <div className="flex items-center justify-center py-8">
-                                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                                    </div>
+                                    <TransactionLoading />
                                 ) : transactions.length === 0 ? (
                                     <div className="text-center py-8">
                                         <p className="text-muted-foreground">No transactions found</p>
@@ -297,42 +299,68 @@ export default function ProfilePage() {
                                                         </p>
                                                     </div>
                                                 </div>
-                                                {txn.status === "pending" && txn.paymentMethod === "paid" && txn.snap_token && (
-                                                    <div className="mt-3 pt-3 border-t border-border">
-                                                        <Button
-                                                            variant="default"
-                                                            size="sm"
-                                                            onClick={() => handleContinuePayment(txn)}
-                                                            disabled={continuingPayment.has(txn.order_id || txn._id)}
-                                                            className="w-full gap-2"
-                                                        >
-                                                            {continuingPayment.has(txn.order_id || txn._id) ? (
-                                                                <>
-                                                                    <Loader2 className="h-4 w-4 animate-spin" />
-                                                                    Memproses...
-                                                                </>
-                                                            ) : (
-                                                                <>
-                                                                    <CreditCard className="h-4 w-4" />
-                                                                    Lanjutkan Pembayaran
-                                                                </>
+
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                    {txn.status === "pending" && (
+                                                        <div className="mt-3 pt-3 border-t border-border space-y-2">
+                                                            {txn.paymentMethod === "paid" && txn.snap_token && (
+                                                                <Button
+                                                                    variant="default"
+                                                                    size="sm"
+                                                                    onClick={() => handleContinuePayment(txn)}
+                                                                    disabled={continuingPayment.has(txn.order_id || txn._id) || cancelingTransaction.has(txn.order_id || txn._id)}
+                                                                    className="w-full gap-2"
+                                                                >
+                                                                    {continuingPayment.has(txn.order_id || txn._id) ? (
+                                                                        <>
+                                                                            <Loader2 className="h-4 w-4 animate-spin" />
+                                                                            Memproses...
+                                                                        </>
+                                                                    ) : (
+                                                                        <>
+                                                                            <CreditCard className="h-4 w-4" />
+                                                                            Lanjutkan Pembayaran
+                                                                        </>
+                                                                    )}
+                                                                </Button>
                                                             )}
-                                                        </Button>
-                                                    </div>
-                                                )}
-                                                {txn.status === "success" && (
-                                                    <div className="mt-3 pt-3 border-t border-border">
-                                                        <Button
-                                                            variant="outline"
-                                                            size="sm"
-                                                            onClick={() => router.push(`/profile/${txn.order_id}`)}
-                                                            className="w-full gap-2"
-                                                        >
-                                                            <EyeIcon className="h-4 w-4" />
-                                                            Lihat Detail
-                                                        </Button>
-                                                    </div>
-                                                )}
+                                                            <Button
+                                                                variant="outline"
+                                                                size="sm"
+                                                                onClick={() => handleCancelTransaction(txn)}
+                                                                disabled={continuingPayment.has(txn.order_id || txn._id) || cancelingTransaction.has(txn.order_id || txn._id)}
+                                                                className="w-full gap-2 text-destructive hover:text-destructive hover:bg-destructive/10"
+                                                            >
+                                                                {cancelingTransaction.has(txn.order_id || txn._id) ? (
+                                                                    <>
+                                                                        <Loader2 className="h-4 w-4 animate-spin" />
+                                                                        Membatalkan...
+                                                                    </>
+                                                                ) : (
+                                                                    <>
+                                                                        <X className="h-4 w-4" />
+                                                                        Batalkan Transaksi
+                                                                    </>
+                                                                )}
+                                                            </Button>
+                                                        </div>
+                                                    )}
+
+                                                    {txn.status === "success" && (
+                                                        <div className="mt-3 pt-3 border-t border-border">
+                                                            <Button
+                                                                variant="outline"
+                                                                size="sm"
+                                                                onClick={() => router.push(`/profile/${txn.order_id}`)}
+                                                                className="w-full gap-2"
+                                                            >
+                                                                <EyeIcon className="h-4 w-4" />
+                                                                Lihat Detail
+                                                            </Button>
+                                                        </div>
+                                                    )}
+                                                </div>
+
                                                 <div className="space-y-2 mt-3 pt-3 border-t border-border">
                                                     {txn.products.map((product: TransactionProduct, idx: number) => (
                                                         <div

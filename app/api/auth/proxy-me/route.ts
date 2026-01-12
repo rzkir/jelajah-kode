@@ -38,6 +38,27 @@ export async function GET(request: NextRequest) {
       status: backendResponse.status,
     });
 
+    // Forward rate limit headers from backend
+    const rateLimitLimit = backendResponse.headers.get("X-RateLimit-Limit");
+    const rateLimitRemaining = backendResponse.headers.get(
+      "X-RateLimit-Remaining"
+    );
+    const rateLimitReset = backendResponse.headers.get("X-RateLimit-Reset");
+    const retryAfter = backendResponse.headers.get("Retry-After");
+
+    if (rateLimitLimit) {
+      response.headers.set("X-RateLimit-Limit", rateLimitLimit);
+    }
+    if (rateLimitRemaining) {
+      response.headers.set("X-RateLimit-Remaining", rateLimitRemaining);
+    }
+    if (rateLimitReset) {
+      response.headers.set("X-RateLimit-Reset", rateLimitReset);
+    }
+    if (retryAfter) {
+      response.headers.set("Retry-After", retryAfter);
+    }
+
     // Forward any Set-Cookie headers from backend to frontend
     const setCookieHeader = backendResponse.headers.get("set-cookie");
     if (setCookieHeader) {
@@ -109,6 +130,27 @@ export async function PUT(request: NextRequest) {
     const response = NextResponse.json(data, {
       status: backendResponse.status,
     });
+
+    // Forward rate limit headers from backend
+    const rateLimitLimit = backendResponse.headers.get("X-RateLimit-Limit");
+    const rateLimitRemaining = backendResponse.headers.get(
+      "X-RateLimit-Remaining"
+    );
+    const rateLimitReset = backendResponse.headers.get("X-RateLimit-Reset");
+    const retryAfter = backendResponse.headers.get("Retry-After");
+
+    if (rateLimitLimit) {
+      response.headers.set("X-RateLimit-Limit", rateLimitLimit);
+    }
+    if (rateLimitRemaining) {
+      response.headers.set("X-RateLimit-Remaining", rateLimitRemaining);
+    }
+    if (rateLimitReset) {
+      response.headers.set("X-RateLimit-Reset", rateLimitReset);
+    }
+    if (retryAfter) {
+      response.headers.set("Retry-After", retryAfter);
+    }
 
     // Forward any Set-Cookie headers from backend to frontend
     const setCookieHeader = backendResponse.headers.get("set-cookie");

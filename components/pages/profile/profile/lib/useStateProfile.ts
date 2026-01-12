@@ -19,6 +19,9 @@ export function useStateProfile() {
   const [continuingPayment, setContinuingPayment] = useState<Set<string>>(
     new Set()
   );
+  const [cancelingTransaction, setCancelingTransaction] = useState<Set<string>>(
+    new Set()
+  );
   const [isUploadingPicture, setIsUploadingPicture] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
@@ -199,6 +202,19 @@ export function useStateProfile() {
       });
 
       if (!response.ok) {
+        // Handle rate limit errors
+        if (response.status === 429) {
+          const { handleRateLimitError } = await import(
+            "@/lib/rate-limit-handler"
+          );
+          const handled = await handleRateLimitError(
+            response,
+            "Terlalu banyak permintaan. Silakan coba lagi nanti."
+          );
+          if (handled) {
+            return;
+          }
+        }
         const errorData = await response.json();
         throw new Error(errorData.error || "Failed to update profile");
       }
@@ -277,6 +293,19 @@ export function useStateProfile() {
       });
 
       if (!updateResponse.ok) {
+        // Handle rate limit errors
+        if (updateResponse.status === 429) {
+          const { handleRateLimitError } = await import(
+            "@/lib/rate-limit-handler"
+          );
+          const handled = await handleRateLimitError(
+            updateResponse,
+            "Too many requests. Please try again later."
+          );
+          if (handled) {
+            return;
+          }
+        }
         const errorData = await updateResponse.json();
         throw new Error(errorData.error || "Failed to update profile");
       }
@@ -408,6 +437,62 @@ export function useStateProfile() {
     openSnapPayment();
   };
 
+  // Handle cancel transaction
+  const handleCancelTransaction = async (transaction: Transaction) => {
+    if (!transaction.order_id) {
+      toast.error("Order ID tidak ditemukan");
+      return;
+    }
+
+    if (transaction.status !== "pending") {
+      toast.error(
+        "Hanya transaksi dengan status pending yang dapat dibatalkan"
+      );
+      return;
+    }
+
+    setCancelingTransaction((prev) =>
+      new Set(prev).add(transaction.order_id || transaction._id)
+    );
+
+    try {
+      const response = await fetch("/api/proxy-transactions/update", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          order_id: transaction.order_id,
+          status: "canceled",
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || "Gagal membatalkan transaksi");
+      }
+
+      toast.success("Transaksi berhasil dibatalkan");
+
+      // Refresh transactions
+      await refreshTransactions();
+    } catch (error) {
+      console.error("Error canceling transaction:", error);
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Gagal membatalkan transaksi. Silakan coba lagi."
+      );
+    } finally {
+      setCancelingTransaction((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(transaction.order_id || transaction._id);
+        return newSet;
+      });
+    }
+  };
+
   // Handle delete account
   const handleDeleteAccount = async () => {
     if (!user) return;
@@ -457,6 +542,7 @@ export function useStateProfile() {
     transactions,
     transactionsLoading,
     continuingPayment,
+    cancelingTransaction,
     isUploadingPicture,
     fileInputRef,
     isChangePasswordOpen,
@@ -476,6 +562,7 @@ export function useStateProfile() {
     handleEditPicture,
     handleFileChange,
     handleContinuePayment,
+    handleCancelTransaction,
     handleDeleteAccount,
     refreshTransactions,
   };

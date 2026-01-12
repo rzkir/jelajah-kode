@@ -3,15 +3,21 @@ import { NextRequest, NextResponse } from "next/server";
 const BACKEND_URL = process.env.NEXT_PUBLIC_API;
 const API_SECRET = process.env.NEXT_PUBLIC_API_SECRET;
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    // Build the backend URL with query parameters
+    const url = new URL(`${BACKEND_URL}/api/products/framework`);
+    request.nextUrl.searchParams.forEach((value, key) => {
+      url.searchParams.append(key, value);
+    });
+
     // Forward request to backend with API_SECRET
     const headers: HeadersInit = {
       "Content-Type": "application/json",
       Authorization: `Bearer ${API_SECRET}`,
     };
 
-    const backendResponse = await fetch(`${BACKEND_URL}/api/products/type`, {
+    const backendResponse = await fetch(url.toString(), {
       method: "GET",
       headers,
       cache: "no-store",
@@ -25,7 +31,7 @@ export async function GET() {
     });
   } catch {
     return NextResponse.json(
-      { error: "Failed to fetch types" },
+      { error: "Failed to fetch frameworks" },
       { status: 500 }
     );
   }
@@ -41,12 +47,15 @@ export async function POST(request: NextRequest) {
       Authorization: `Bearer ${API_SECRET}`,
     };
 
-    const backendResponse = await fetch(`${BACKEND_URL}/api/products/type`, {
-      method: "POST",
-      headers,
-      body: JSON.stringify(body),
-      cache: "no-store",
-    });
+    const backendResponse = await fetch(
+      `${BACKEND_URL}/api/products/framework`,
+      {
+        method: "POST",
+        headers,
+        body: JSON.stringify(body),
+        cache: "no-store",
+      }
+    );
 
     const data = await backendResponse.json();
 
@@ -56,7 +65,7 @@ export async function POST(request: NextRequest) {
     });
   } catch {
     return NextResponse.json(
-      { error: "Failed to create type" },
+      { error: "Failed to create framework" },
       { status: 500 }
     );
   }
@@ -66,13 +75,19 @@ export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
 
+    // Build the backend URL with query parameters
+    const url = new URL(`${BACKEND_URL}/api/products/framework`);
+    request.nextUrl.searchParams.forEach((value, key) => {
+      url.searchParams.append(key, value);
+    });
+
     // Forward request to backend with API_SECRET
     const headers: HeadersInit = {
       "Content-Type": "application/json",
       Authorization: `Bearer ${API_SECRET}`,
     };
 
-    const backendResponse = await fetch(`${BACKEND_URL}/api/products/type`, {
+    const backendResponse = await fetch(url.toString(), {
       method: "PUT",
       headers,
       body: JSON.stringify(body),
@@ -87,7 +102,7 @@ export async function PUT(request: NextRequest) {
     });
   } catch {
     return NextResponse.json(
-      { error: "Failed to update type" },
+      { error: "Failed to update framework" },
       { status: 500 }
     );
   }
@@ -95,7 +110,11 @@ export async function PUT(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    const body = await request.json();
+    // Build the backend URL with query parameters
+    const url = new URL(`${BACKEND_URL}/api/products/framework`);
+    request.nextUrl.searchParams.forEach((value, key) => {
+      url.searchParams.append(key, value);
+    });
 
     // Forward request to backend with API_SECRET
     const headers: HeadersInit = {
@@ -103,10 +122,9 @@ export async function DELETE(request: NextRequest) {
       Authorization: `Bearer ${API_SECRET}`,
     };
 
-    const backendResponse = await fetch(`${BACKEND_URL}/api/products/type`, {
+    const backendResponse = await fetch(url.toString(), {
       method: "DELETE",
       headers,
-      body: JSON.stringify(body),
       cache: "no-store",
     });
 
@@ -118,7 +136,7 @@ export async function DELETE(request: NextRequest) {
     });
   } catch {
     return NextResponse.json(
-      { error: "Failed to delete type" },
+      { error: "Failed to delete framework" },
       { status: 500 }
     );
   }

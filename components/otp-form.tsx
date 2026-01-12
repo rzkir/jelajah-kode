@@ -1,20 +1,18 @@
 "use client";
 
 import { GalleryVerticalEnd } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { toast } from "sonner";
 
 import { cn } from "@/lib/utils";
-import { API_CONFIG } from "@/lib/config";
-import { getApiUrl } from "@/lib/development";
+
 import { Button } from "@/components/ui/button";
+
 import {
   Field,
   FieldDescription,
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
+
 import {
   InputOTP,
   InputOTPGroup,
@@ -22,115 +20,14 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 
+import { useAuth } from "@/utils/context/AuthContext";
+
 export function OTPForm({ className, email, ...props }: React.ComponentProps<"div"> & { email?: string }) {
-  const [otp, setOtp] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
+  const { otp, setOtp, otpIsLoading, otpIsResending, handleOtpSubmit, handleResendOTP } = useAuth();
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-
-    if (!otp || otp.length !== 6) {
-      toast.error("Please enter a valid 6-digit code");
-      return;
-    }
-
-    setIsLoading(true);
-
-    try {
-      // Use getApiUrl to handle development/production routing
-      const verificationUrl = getApiUrl(
-        "/api/auth/proxy-verification",
-        API_CONFIG.ENDPOINTS.verification
-      );
-
-      const response = await fetch(verificationUrl, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({ token: otp }),
-      });
-
-      // Check content type before parsing JSON
-      const contentType = response.headers.get("content-type");
-      if (!contentType || !contentType.includes("application/json")) {
-        throw new Error("Invalid response format from server");
-      }
-
-      const result = await response.json();
-
-      if (!response.ok || result.error) {
-        throw new Error(result.error || "Failed to verify OTP");
-      }
-
-      toast.success("Email verified successfully!");
-      // Redirect to dashboard or home based on user role
-      if (result.user?.role === "admins") {
-        router.push("/dashboard");
-      } else {
-        router.push("/");
-      }
-    } catch (error: unknown) {
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : "Failed to verify OTP. Please try again.";
-      toast.error(errorMessage);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const [isResending, setIsResending] = useState(false);
-
-  const handleResendOTP = async () => {
-    if (!email) {
-      toast.error("Email is required to resend verification code");
-      return;
-    }
-
-    setIsResending(true);
-
-    try {
-      // Use getApiUrl to handle development/production routing
-      const verificationUrl = getApiUrl(
-        "/api/auth/proxy-verification",
-        API_CONFIG.ENDPOINTS.verification
-      );
-
-      const response = await fetch(verificationUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({ email }),
-      });
-
-      // Check content type before parsing JSON
-      const contentType = response.headers.get("content-type");
-      if (!contentType || !contentType.includes("application/json")) {
-        throw new Error("Invalid response format from server");
-      }
-
-      const result = await response.json();
-
-      if (!response.ok || result.error) {
-        throw new Error(result.error || "Failed to resend verification code");
-      }
-
-      toast.success("Verification code resent successfully!");
-    } catch (error: unknown) {
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : "Failed to resend verification code. Please try again.";
-      toast.error(errorMessage);
-    } finally {
-      setIsResending(false);
-    }
+    await handleOtpSubmit(otp);
   };
 
   return (
@@ -180,17 +77,17 @@ export function OTPForm({ className, email, ...props }: React.ComponentProps<"di
               Didn&apos;t receive the code?{" "}
               <button
                 type="button"
-                onClick={handleResendOTP}
-                disabled={isResending}
+                onClick={() => email && handleResendOTP(email)}
+                disabled={otpIsResending}
                 className="text-blue-600 hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isResending ? "Resending..." : "Resend"}
+                {otpIsResending ? "Resending..." : "Resend"}
               </button>
             </FieldDescription>
           </Field>
           <Field>
-            <Button type="submit" disabled={isLoading}>
-              {isLoading ? "Verifying..." : "Verify"}
+            <Button type="submit" disabled={otpIsLoading}>
+              {otpIsLoading ? "Verifying..." : "Verify"}
             </Button>
           </Field>
         </FieldGroup>

@@ -5,7 +5,10 @@ import type React from "react";
 import { toast } from "sonner";
 
 import { generateFrameworkId } from "@/hooks/TextFormatter";
+
 import { API_CONFIG } from "@/lib/config";
+
+import { getApiUrl, shouldUseProxy } from "@/lib/development";
 
 export default function useStateFrameworks() {
   const [frameworks, setFrameworks] = useState<Framework[]>([]);
@@ -56,10 +59,22 @@ export default function useStateFrameworks() {
   const fetchFrameworks = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch(API_CONFIG.ENDPOINTS.products.framework, {
+      // Use getApiUrl to handle development/production routing
+      const frameworksUrl = getApiUrl(
+        "/api/proxy-products/framework",
+        API_CONFIG.ENDPOINTS.products.framework
+      );
+
+      // Determine if we're using proxy or direct URL
+      const isUsingProxy = shouldUseProxy() && typeof window !== "undefined";
+
+      const response = await fetch(frameworksUrl, {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${API_CONFIG.SECRET}`,
+          // Only send Authorization header when using direct URL (not proxy)
+          ...(isUsingProxy
+            ? {}
+            : { Authorization: `Bearer ${API_CONFIG.SECRET}` }),
         },
       });
       const data = await response.json();
@@ -100,13 +115,16 @@ export default function useStateFrameworks() {
         const form = new FormData();
         form.append("file", file);
 
-        const response = await fetch(
-          API_CONFIG.ENDPOINTS.products.frameworkUpload,
-          {
-            method: "POST",
-            body: form,
-          }
+        // Use getApiUrl to handle development/production routing
+        const frameworkUploadUrl = getApiUrl(
+          "/api/proxy-products/framework/upload",
+          API_CONFIG.ENDPOINTS.products.frameworkUpload
         );
+
+        const response = await fetch(frameworkUploadUrl, {
+          method: "POST",
+          body: form,
+        });
         if (!response.ok) throw new Error("Upload failed");
 
         const data = await response.json();
@@ -160,35 +178,56 @@ export default function useStateFrameworks() {
     try {
       setIsSubmitting(true);
 
+      // Determine if we're using proxy or direct URL
+      const isUsingProxy = shouldUseProxy() && typeof window !== "undefined";
+
       if (isEditing) {
-        const response = await fetch(
-          API_CONFIG.ENDPOINTS.products.frameworkById(formData._id),
-          {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              thumbnail: pendingUploads[0].imageUrl,
-              title: pendingUploads[0].title,
-              frameworkId: generateFrameworkId(pendingUploads[0].title),
-            }),
-          }
+        // Use getApiUrl to handle development/production routing
+        const frameworkByIdUrl = getApiUrl(
+          `/api/proxy-products/framework?id=${formData._id}`,
+          API_CONFIG.ENDPOINTS.products.frameworkById(formData._id)
         );
+
+        const response = await fetch(frameworkByIdUrl, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            // Only send Authorization header when using direct URL (not proxy)
+            ...(isUsingProxy
+              ? {}
+              : { Authorization: `Bearer ${API_CONFIG.SECRET}` }),
+          },
+          body: JSON.stringify({
+            thumbnail: pendingUploads[0].imageUrl,
+            title: pendingUploads[0].title,
+            frameworkId: generateFrameworkId(pendingUploads[0].title),
+          }),
+        });
         if (!response.ok) throw new Error("Failed to update framework");
         toast.success("Framework updated successfully");
       } else {
+        // Use getApiUrl to handle development/production routing
+        const frameworksUrl = getApiUrl(
+          "/api/proxy-products/framework",
+          API_CONFIG.ENDPOINTS.products.framework
+        );
+
         const savePromises = pendingUploads.map(async (upload) => {
-          const response = await fetch(
-            API_CONFIG.ENDPOINTS.products.framework,
-            {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                thumbnail: upload.imageUrl,
-                title: upload.title,
-                frameworkId: generateFrameworkId(upload.title),
-              }),
-            }
-          );
+          const response = await fetch(frameworksUrl, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              // Only send Authorization header when using direct URL (not proxy)
+              ...(isUsingProxy
+                ? {}
+                : { Authorization: `Bearer ${API_CONFIG.SECRET}` }),
+            },
+            body: JSON.stringify({
+              thumbnail: upload.imageUrl,
+              title: upload.title,
+              frameworkId: generateFrameworkId(upload.title),
+            }),
+          });
           if (!response.ok) throw new Error("Failed to save framework");
           return response.json();
         });
@@ -222,12 +261,24 @@ export default function useStateFrameworks() {
   const handleDelete = async (id: string) => {
     try {
       setIsDeleting(true);
-      const response = await fetch(
-        API_CONFIG.ENDPOINTS.products.frameworkById(id),
-        {
-          method: "DELETE",
-        }
+      // Use getApiUrl to handle development/production routing
+      const frameworkByIdUrl = getApiUrl(
+        `/api/proxy-products/framework?id=${id}`,
+        API_CONFIG.ENDPOINTS.products.frameworkById(id)
       );
+
+      // Determine if we're using proxy or direct URL
+      const isUsingProxy = shouldUseProxy() && typeof window !== "undefined";
+
+      const response = await fetch(frameworkByIdUrl, {
+        method: "DELETE",
+        headers: {
+          // Only send Authorization header when using direct URL (not proxy)
+          ...(isUsingProxy
+            ? {}
+            : { Authorization: `Bearer ${API_CONFIG.SECRET}` }),
+        },
+      });
       if (!response.ok) throw new Error("Failed to delete framework");
       toast.success("Framework deleted successfully");
       void fetchFrameworks();

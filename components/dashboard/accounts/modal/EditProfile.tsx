@@ -23,6 +23,7 @@ import { toast } from "sonner";
 import { API_CONFIG } from "@/lib/config";
 import { getApiUrl } from "@/lib/development";
 import { useAuth } from "@/utils/context/AuthContext";
+import { handleRateLimitError } from "@/lib/rate-limit-handler";
 
 interface EditProfileProps {
     open: boolean;
@@ -70,6 +71,16 @@ export default function EditProfile({ open, onOpenChange }: EditProfileProps) {
             });
 
             if (!response.ok) {
+                // Handle rate limit errors
+                if (response.status === 429) {
+                    const handled = await handleRateLimitError(
+                        response,
+                        "Terlalu banyak permintaan. Silakan coba lagi nanti."
+                    );
+                    if (handled) {
+                        return;
+                    }
+                }
                 const errorData = await response.json();
                 throw new Error(errorData.error || "Failed to update profile");
             }

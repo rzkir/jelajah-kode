@@ -25,6 +25,8 @@ import { PasswordInput } from "@/components/ui/password-input";
 
 import { useAuth } from "@/utils/context/AuthContext";
 
+import Link from "next/link";
+
 export function SignupForm({
   className,
   ...props
@@ -137,7 +139,7 @@ export function SignupForm({
         </Field>
 
         <FieldDescription className="px-6 text-center">
-          Already have an account? <a href="/signin">Sign in</a>
+          Already have an account? <Link href="/signin">Sign in</Link>
         </FieldDescription>
       </FieldGroup>
     </form>

@@ -89,6 +89,19 @@ export function useStateAccounts() {
       });
 
       if (!updateResponse.ok) {
+        // Handle rate limit errors
+        if (updateResponse.status === 429) {
+          const { handleRateLimitError } = await import(
+            "@/lib/rate-limit-handler"
+          );
+          const handled = await handleRateLimitError(
+            updateResponse,
+            "Terlalu banyak permintaan. Silakan coba lagi nanti."
+          );
+          if (handled) {
+            return;
+          }
+        }
         const errorData = await updateResponse.json();
         throw new Error(errorData.error || "Failed to update profile");
       }
