@@ -259,6 +259,28 @@ export default function useStateProduct() {
     setCurrentPage(1); // Reset to first page when filtering
   };
 
+  const totalProducts = products.length;
+  const filteredProductsCount = filteredProducts.length;
+  const publishedProducts = filteredProducts.filter(
+    (p) => p.status === "publish"
+  ).length;
+  const draftProducts = filteredProducts.filter(
+    (p) => p.status === "draft"
+  ).length;
+  const totalStock = filteredProducts.reduce(
+    (sum, p) => sum + (p.stock || 0),
+    0
+  );
+  const totalValue = filteredProducts.reduce(
+    (sum, p) => sum + p.price * (p.stock || 0),
+    0
+  );
+  const hasActiveFilters =
+    selectedCategory !== "all" ||
+    selectedType !== "all" ||
+    selectedStatus !== "all" ||
+    searchTerm !== "";
+
   return {
     // Data
     products,
@@ -266,6 +288,13 @@ export default function useStateProduct() {
     types,
     currentProducts,
     filteredProducts,
+    totalProducts,
+    filteredProductsCount,
+    publishedProducts,
+    draftProducts,
+    totalStock,
+    totalValue,
+    hasActiveFilters,
 
     // Loading states
     isLoading,

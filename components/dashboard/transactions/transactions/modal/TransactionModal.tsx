@@ -1,8 +1,11 @@
 "use client";
 
 import Image from "next/image";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
 import { Badge } from "@/components/ui/badge";
+
 import {
     Dialog,
     DialogContent,
@@ -10,7 +13,9 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
+
 import { formatIDR } from "@/hooks/FormatPrice";
+
 import {
     Receipt,
     FileText,
@@ -23,55 +28,23 @@ import {
 
 import useFormatDate from "@/hooks/FormatDate";
 
-
-
-interface TransactionModalProps {
-    transaction: Transaction | null;
-    isOpen: boolean;
-    onClose: () => void;
-}
+import { getStatusVariant, getStatusColor } from "@/hooks/TextFormatter";
 
 export default function TransactionModal({
     transaction,
     isOpen,
     onClose,
 }: TransactionModalProps) {
-    const { formatDate } = useFormatDate();
+    const { formatDate: formatDateHook } = useFormatDate();
 
-    // Format currency helper
+    const formatDate = (dateString?: string) => {
+        if (!dateString) return "N/A";
+        return formatDateHook(dateString);
+    };
+
     const formatCurrency = (amount?: number) => {
         if (!amount) return "Rp 0";
         return `Rp ${formatIDR(amount)}`;
-    };
-
-    // Get status badge variant and styling
-    const getStatusVariant = (status: string) => {
-        switch (status) {
-            case "success":
-                return "default";
-            case "pending":
-                return "secondary";
-            case "expired":
-            case "canceled":
-                return "destructive";
-            default:
-                return "secondary";
-        }
-    };
-
-    // Get status color class
-    const getStatusColor = (status: string) => {
-        switch (status) {
-            case "success":
-                return "bg-green-500/10 text-green-700 dark:text-green-400 border-green-500/20";
-            case "pending":
-                return "bg-yellow-500/10 text-yellow-700 dark:text-yellow-400 border-yellow-500/20";
-            case "expired":
-            case "canceled":
-                return "bg-red-500/10 text-red-700 dark:text-red-400 border-red-500/20";
-            default:
-                return "";
-        }
     };
 
     if (!transaction) return null;

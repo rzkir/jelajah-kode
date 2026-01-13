@@ -1,7 +1,5 @@
 "use client";
 
-import { useState, useEffect } from "react";
-
 import {
     Table,
     TableBody,
@@ -14,8 +12,6 @@ import {
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 
 import { Badge } from "@/components/ui/badge";
-
-import { Skeleton } from "@/components/ui/skeleton";
 
 import { Input } from "@/components/ui/input";
 
@@ -41,10 +37,6 @@ import DeleteModalTransaction from "@/components/dashboard/transactions/pending/
 
 import { getStatusVariant, getStatusColor } from "@/hooks/TextFormatter";
 
-import { toast } from "sonner";
-
-import { API_CONFIG } from "@/lib/config";
-
 import {
     Menubar,
     MenubarContent,
@@ -54,269 +46,64 @@ import {
     MenubarTrigger,
 } from "@/components/ui/menubar";
 
+import {
+    Pagination,
+    PaginationContent,
+    PaginationEllipsis,
+    PaginationItem,
+    PaginationLink,
+    PaginationNext,
+    PaginationPrevious,
+} from "@/components/ui/pagination";
+
+import { useStateTransaction } from "@/components/dashboard/transactions/transactions/lib/useStateTransaction";
+
+import TransactionSkelaton from "@/components/dashboard/transactions/transactions/TransactionSkelaton";
+
 export default function Transactions() {
-    const [transactions, setTransactions] = useState<Transaction[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-    const [searchTerm, setSearchTerm] = useState("");
-    const [selectedStatus, setSelectedStatus] = useState<string>("all");
-    const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>("all");
-    const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [isRatingsDialogOpen, setIsRatingsDialogOpen] = useState(false);
-    const [sendingEmails, setSendingEmails] = useState<Set<string>>(new Set());
-    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-    const [isDeleting, setIsDeleting] = useState(false);
-
-    useEffect(() => {
-        const fetchTransactions = async () => {
-            setIsLoading(true);
-            try {
-                const response = await fetch(API_CONFIG.ENDPOINTS.transactions, {
-                    method: "GET",
-                    credentials: "include",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                });
-
-                if (!response.ok) {
-                    const errorData = await response.json().catch(() => ({}));
-                    throw new Error(errorData.error || `Failed to fetch transactions: ${response.status}`);
-                }
-
-                const data = await response.json();
-                setTransactions(Array.isArray(data) ? data : []);
-                setError(null);
-            } catch (error) {
-                console.error("Error fetching transactions:", error);
-                setTransactions([]);
-                setError(error instanceof Error ? error.message : "Failed to load transactions");
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        fetchTransactions();
-    }, []);
-
-    // Refresh transactions after delete
-    const refreshTransactions = async () => {
-        try {
-            const response = await fetch(API_CONFIG.ENDPOINTS.transactions, {
-                method: "GET",
-                credentials: "include",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                setTransactions(Array.isArray(data) ? data : []);
-            }
-        } catch (error) {
-            console.error("Error refreshing transactions:", error);
-        }
-    };
-
-    // Format date helper
-    const formatDate = (dateString?: string) => {
-        if (!dateString) return "N/A";
-        const date = new Date(dateString);
-        return date.toLocaleDateString("id-ID", {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-            hour: "2-digit",
-            minute: "2-digit",
-        });
-    };
-
-    // Handle view details
-    const handleViewDetails = (transaction: Transaction) => {
-        setSelectedTransaction(transaction);
-        setIsDialogOpen(true);
-    };
-
-    // Handle view ratings
-    const handleViewRatings = (transaction: Transaction) => {
-        setSelectedTransaction(transaction);
-        setIsRatingsDialogOpen(true);
-    };
-
-    // Send email notification
-    const handleSendEmail = async (transaction: Transaction) => {
-        if (!transaction.order_id) {
-            toast.error("Order ID tidak ditemukan");
-            return;
-        }
-
-        setSendingEmails((prev) => new Set(prev).add(transaction.order_id!));
-
-        try {
-            const response = await fetch(`${API_CONFIG.ENDPOINTS.transactions}/send-email`, {
-                method: "POST",
-                credentials: "include",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    order_id: transaction.order_id,
-                }),
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.error || "Failed to send email");
-            }
-
-            toast.success(`Email berhasil dikirim ke ${transaction.user?.email || "pengguna"}`);
-        } catch (error) {
-            console.error("Error sending email:", error);
-            toast.error(
-                error instanceof Error ? error.message : "Gagal mengirim email"
-            );
-        } finally {
-            setSendingEmails((prev) => {
-                const newSet = new Set(prev);
-                newSet.delete(transaction.order_id!);
-                return newSet;
-            });
-        }
-    };
-
-    // Handle delete transaction
-    const handleDeleteClick = (transaction: Transaction) => {
-        setSelectedTransaction(transaction);
-        setDeleteModalOpen(true);
-    };
-
-    const handleDeleteConfirm = async () => {
-        if (!selectedTransaction) return;
-
-        setIsDeleting(true);
-
-        try {
-            const transactionId = selectedTransaction._id;
-            const orderId = selectedTransaction.order_id;
-
-            const url = new URL(`${API_CONFIG.ENDPOINTS.transactions}/delete`, window.location.origin);
-            if (transactionId) {
-                url.searchParams.append("id", transactionId);
-            } else if (orderId) {
-                url.searchParams.append("order_id", orderId);
-            }
-
-            const response = await fetch(url.toString(), {
-                method: "DELETE",
-                credentials: "include",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.error || "Failed to delete transaction");
-            }
-
-            toast.success("Transaction deleted successfully");
-            setDeleteModalOpen(false);
-            setSelectedTransaction(null);
-
-            // Refresh transactions list
-            await refreshTransactions();
-        } catch (error) {
-            console.error("Error deleting transaction:", error);
-            toast.error(
-                error instanceof Error ? error.message : "Gagal menghapus transaksi"
-            );
-        } finally {
-            setIsDeleting(false);
-        }
-    };
-
-    const handleDeleteCancel = () => {
-        setDeleteModalOpen(false);
-        setSelectedTransaction(null);
-    };
-
-    // Filter transactions
-    const filteredTransactions = transactions.filter((transaction) => {
-        // Search filter - search by order_id, user name/email, or product titles
-        const matchesSearch =
-            searchTerm === "" ||
-            (transaction.order_id?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                transaction.user?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                transaction.user?.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                transaction.products?.some((product) =>
-                    product.title?.toLowerCase().includes(searchTerm.toLowerCase())
-                ));
-
-        // Status filter
-        const matchesStatus =
-            selectedStatus === "all" || transaction.status === selectedStatus;
-
-        // Payment method filter
-        const matchesPaymentMethod =
-            selectedPaymentMethod === "all" ||
-            transaction.paymentMethod === selectedPaymentMethod;
-
-        return matchesSearch && matchesStatus && matchesPaymentMethod;
-    });
+    const {
+        transactions,
+        isLoading,
+        error,
+        searchTerm,
+        selectedStatus,
+        selectedPaymentMethod,
+        selectedTransaction,
+        isDialogOpen,
+        isRatingsDialogOpen,
+        productRatings,
+        ratingsLoading,
+        sendingEmails,
+        deleteModalOpen,
+        isDeleting,
+        pagination,
+        filteredTransactions,
+        setSearchTerm,
+        setSelectedStatus,
+        setSelectedPaymentMethod,
+        setPage,
+        setIsDialogOpen,
+        setIsRatingsDialogOpen,
+        setDeleteModalOpen,
+        handleViewDetails,
+        handleViewRatings,
+        handleSendEmail,
+        handleDeleteClick,
+        handleDeleteConfirm,
+        handleDeleteCancel,
+        formatDate,
+        hasActiveFilters,
+        totalFilteredAmount,
+        totalAllAmount,
+        totalSuccessAmount,
+        totalPendingAmount,
+    } = useStateTransaction();
 
     if (isLoading) {
         return (
-            <section className="flex flex-col gap-6">
-                <Card className="border-2">
-                    <CardHeader className="pb-4">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <CardTitle className="text-2xl font-bold">Transactions</CardTitle>
-                                <CardDescription className="mt-1">Loading transaction data...</CardDescription>
-                            </div>
-                            <Skeleton className="h-10 w-32" />
-                        </div>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="space-y-3 mb-6">
-                            <Skeleton className="h-10 w-full" />
-                            <div className="flex gap-3">
-                                <Skeleton className="h-10 w-40" />
-                                <Skeleton className="h-10 w-40" />
-                            </div>
-                        </div>
-                        <div className="space-y-3">
-                            {[1, 2, 3, 4, 5].map((i) => (
-                                <Skeleton key={i} className="h-24 w-full rounded-lg" />
-                            ))}
-                        </div>
-                    </CardContent>
-                </Card>
-            </section>
+            <TransactionSkelaton />
         );
     }
-
-    const hasActiveFilters = searchTerm || selectedStatus !== "all" || selectedPaymentMethod !== "all";
-
-    // Calculate totals
-    const totalFilteredAmount = filteredTransactions.reduce((sum, transaction) => {
-        return sum + (transaction.total_amount || 0);
-    }, 0);
-
-    const totalAllAmount = transactions.reduce((sum, transaction) => {
-        return sum + (transaction.total_amount || 0);
-    }, 0);
-
-    // Calculate totals by status
-    const totalSuccessAmount = filteredTransactions
-        .filter(t => t.status === "success")
-        .reduce((sum, transaction) => sum + (transaction.total_amount || 0), 0);
-
-    const totalPendingAmount = filteredTransactions
-        .filter(t => t.status === "pending")
-        .reduce((sum, transaction) => sum + (transaction.total_amount || 0), 0);
 
     return (
         <section className="flex flex-col gap-6">
@@ -450,10 +237,8 @@ export default function Transactions() {
                             {/* Status Filter */}
                             <Select value={selectedStatus} onValueChange={setSelectedStatus}>
                                 <SelectTrigger className="w-full sm:w-[180px] h-11 border-2">
-                                    <div className="flex items-center gap-2">
-                                        <Filter className="h-4 w-4 text-muted-foreground" />
-                                        <SelectValue placeholder="Filter by Status" />
-                                    </div>
+                                    <Filter className="h-4 w-4 text-muted-foreground shrink-0" />
+                                    <SelectValue placeholder="Filter by Status" />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="all">All Status</SelectItem>
@@ -470,10 +255,8 @@ export default function Transactions() {
                                 onValueChange={setSelectedPaymentMethod}
                             >
                                 <SelectTrigger className="w-full sm:w-[180px] h-11 border-2">
-                                    <div className="flex items-center gap-2">
-                                        <CreditCard className="h-4 w-4 text-muted-foreground" />
-                                        <SelectValue placeholder="Filter by Payment" />
-                                    </div>
+                                    <CreditCard className="h-4 w-4 text-muted-foreground shrink-0" />
+                                    <SelectValue placeholder="Filter by Payment" />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="all">All Payment Methods</SelectItem>
@@ -699,6 +482,86 @@ export default function Transactions() {
                             </div>
                         </div>
                     )}
+
+                    {/* Pagination */}
+                    {pagination && pagination.totalPages > 1 && (
+                        <div className="mt-6 flex items-center justify-between">
+                            <div className="text-sm text-muted-foreground">
+                                Showing {((pagination.page - 1) * pagination.limit) + 1} to{" "}
+                                {Math.min(pagination.page * pagination.limit, pagination.total)} of{" "}
+                                {pagination.total} transactions
+                            </div>
+                            <Pagination>
+                                <PaginationContent>
+                                    <PaginationItem>
+                                        <PaginationPrevious
+                                            onClick={() => {
+                                                if (pagination.hasPrevPage) {
+                                                    setPage((prev) => Math.max(1, prev - 1));
+                                                }
+                                            }}
+                                            className={
+                                                !pagination.hasPrevPage
+                                                    ? "pointer-events-none opacity-50"
+                                                    : "cursor-pointer"
+                                            }
+                                        />
+                                    </PaginationItem>
+
+                                    {/* Page numbers */}
+                                    {Array.from({ length: pagination.totalPages }, (_, i) => i + 1).map((pageNum) => {
+                                        // Show first page, last page, current page, and pages around current
+                                        const showPage =
+                                            pageNum === 1 ||
+                                            pageNum === pagination.totalPages ||
+                                            (pageNum >= pagination.page - 1 && pageNum <= pagination.page + 1);
+
+                                        if (!showPage) {
+                                            // Show ellipsis
+                                            if (
+                                                pageNum === pagination.page - 2 ||
+                                                pageNum === pagination.page + 2
+                                            ) {
+                                                return (
+                                                    <PaginationItem key={pageNum}>
+                                                        <PaginationEllipsis />
+                                                    </PaginationItem>
+                                                );
+                                            }
+                                            return null;
+                                        }
+
+                                        return (
+                                            <PaginationItem key={pageNum}>
+                                                <PaginationLink
+                                                    onClick={() => setPage(pageNum)}
+                                                    isActive={pageNum === pagination.page}
+                                                    className="cursor-pointer"
+                                                >
+                                                    {pageNum}
+                                                </PaginationLink>
+                                            </PaginationItem>
+                                        );
+                                    })}
+
+                                    <PaginationItem>
+                                        <PaginationNext
+                                            onClick={() => {
+                                                if (pagination.hasNextPage) {
+                                                    setPage((prev) => prev + 1);
+                                                }
+                                            }}
+                                            className={
+                                                !pagination.hasNextPage
+                                                    ? "pointer-events-none opacity-50"
+                                                    : "cursor-pointer"
+                                            }
+                                        />
+                                    </PaginationItem>
+                                </PaginationContent>
+                            </Pagination>
+                        </div>
+                    )}
                 </CardContent>
             </Card>
 
@@ -714,6 +577,8 @@ export default function Transactions() {
                 transaction={selectedTransaction}
                 isOpen={isRatingsDialogOpen}
                 onClose={() => setIsRatingsDialogOpen(false)}
+                productRatings={productRatings}
+                isLoading={ratingsLoading}
             />
 
             {/* Delete Confirmation Modal */}

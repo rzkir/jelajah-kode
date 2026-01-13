@@ -1,7 +1,5 @@
 "use client";
 
-import { useState, useEffect } from "react";
-
 import Image from "next/image";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,59 +14,18 @@ import {
 
 import { Star, Package, Loader2 } from "lucide-react";
 
-import { fetchProductsRatings } from "@/utils/fetching/FetchProducts";
-
 import RatingsCard from "@/components/ui/ratings/RatingsCard";
 
 export default function TransactionRatings({
     transaction,
     isOpen,
     onClose,
+    productRatings,
+    isLoading,
 }: TransactionRatingsProps) {
-    const [productRatings, setProductRatings] = useState<Record<string, Rating | null>>({});
-    const [isLoading, setIsLoading] = useState(false);
-
-    // Fetch ratings for products when modal opens
-    // Mengambil dari collection ratings sama seperti di product details
-    useEffect(() => {
-        if (!isOpen || !transaction || transaction.status !== "success" || !transaction.products) {
-            return;
-        }
-
-        const fetchRatings = async () => {
-            setIsLoading(true);
-            const ratings: Record<string, Rating | null> = {};
-
-            for (const product of transaction.products) {
-                try {
-                    // Mengambil semua ratings dari collection ratings seperti di product details
-                    const allRatings = await fetchProductsRatings(product.productsId, 1, 100);
-
-                    // Filter untuk mendapatkan rating dari user yang melakukan transaksi
-                    const userRating = allRatings.find(
-                        (rating: Rating) => rating.author._id === transaction.user._id
-                    );
-
-                    ratings[product.productsId] = userRating || null;
-                } catch (error) {
-                    console.error(
-                        `Failed to fetch rating for product ${product.productsId}:`,
-                        error
-                    );
-                    ratings[product.productsId] = null;
-                }
-            }
-
-            setProductRatings(ratings);
-            setIsLoading(false);
-        };
-
-        fetchRatings();
-    }, [isOpen, transaction]);
 
     if (!transaction) return null;
 
-    // Get all products from transaction (no filter)
     const allProducts = transaction.products || [];
 
     return (

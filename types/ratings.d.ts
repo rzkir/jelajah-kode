@@ -19,6 +19,8 @@ interface TransactionRatingsProps {
   transaction: Transaction | null;
   isOpen: boolean;
   onClose: () => void;
+  productRatings: Record<string, Rating | null>;
+  isLoading: boolean;
 }
 
 interface Rating {

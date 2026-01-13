@@ -49,6 +49,15 @@ type UseStateCheckoutSuccessParams = {
   status?: string;
 };
 
+interface PaginationInfo {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
+}
+
 //====================== Checkout ======================//
 
 interface CheckoutProduct {
@@ -147,4 +156,10 @@ interface CheckoutPageProps {
     productId?: string;
     title?: string;
   }>;
+}
+
+interface TransactionModalProps {
+  transaction: Transaction | null;
+  isOpen: boolean;
+  onClose: () => void;
 }

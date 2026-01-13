@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
+
 import { Skeleton } from "@/components/ui/skeleton";
 
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -15,16 +16,15 @@ import {
 } from "@/components/ui/table";
 
 export default function ProductsSkelaton() {
-    const [viewMode, setViewMode] = useState<"card" | "table">("table");
-
-    useEffect(() => {
+    const [viewMode] = useState<"card" | "table">(() => {
         if (typeof window !== "undefined") {
             const savedViewMode = localStorage.getItem("productsViewMode");
             if (savedViewMode === "card" || savedViewMode === "table") {
-                setViewMode(savedViewMode);
+                return savedViewMode as "card" | "table";
             }
         }
-    }, []);
+        return "table";
+    });
     return (
         <section className="flex flex-col gap-6">
             {/* Header Section Skeleton */}
@@ -38,13 +38,33 @@ export default function ProductsSkelaton() {
                     </div>
                 </div>
 
-                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full">
-                    <div className="flex flex-wrap items-center gap-3 flex-1">
-                        <Skeleton className="h-10 w-64" />
-                        <Skeleton className="h-10 w-24" />
-                    </div>
+                <div className="flex items-center gap-3">
                     <Skeleton className="h-10 w-40" />
                 </div>
+            </div>
+
+            {/* Summary Cards Skeleton */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {[1, 2, 3, 4].map((i) => (
+                    <Card key={i} className="border-2 shadow-md">
+                        <CardContent className="pt-6">
+                            <div className="flex items-center justify-between">
+                                <div className="space-y-2 flex-1">
+                                    <Skeleton className="h-4 w-32" />
+                                    <Skeleton className="h-8 w-24" />
+                                    <Skeleton className="h-3 w-20" />
+                                </div>
+                                <Skeleton className="h-12 w-12 rounded-full" />
+                            </div>
+                        </CardContent>
+                    </Card>
+                ))}
+            </div>
+
+            {/* Search and Filter Section Skeleton */}
+            <div className="flex flex-wrap items-center gap-3 flex-1">
+                <Skeleton className="h-10 w-64" />
+                <Skeleton className="h-10 w-24" />
             </div>
 
             {/* Content Section Skeleton - Conditional based on viewMode */}

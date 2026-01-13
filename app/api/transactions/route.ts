@@ -43,15 +43,43 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const orderId = searchParams.get("order_id");
 
-    // If no order_id, return transactions
+    // If no order_id, return transactions with pagination
     // If user is admin, return all transactions; otherwise return only user's transactions
     if (!orderId) {
-      const queryFilter =
+      // Build query filter
+      const baseFilter: Record<string, unknown> =
         user.role === "admins" ? {} : { "user._id": user._id.toString() };
 
+      // Add status filter if provided
+      const statusParam = searchParams.get("status");
+      if (
+        statusParam &&
+        ["success", "pending", "expired", "canceled"].includes(statusParam)
+      ) {
+        baseFilter.status = statusParam;
+      }
+
+      const queryFilter = baseFilter;
+
+      // Get pagination params (optional - for backward compatibility)
+      const pageParam = searchParams.get("page");
+      const limitParam = searchParams.get("limit");
+      const usePagination = pageParam !== null || limitParam !== null;
+
+      const page = pageParam ? parseInt(pageParam, 10) : 1;
+      const limit = limitParam ? parseInt(limitParam, 10) : 10;
+      const skip = (page - 1) * limit;
+
+      // Get total count for pagination (only if using pagination)
+      const totalTransactions = usePagination
+        ? await Transactions.countDocuments(queryFilter)
+        : 0;
+
+      // Get transactions with pagination
       const allTransactions = await Transactions.find(queryFilter)
         .sort({ createdAt: -1 })
-        .limit(100);
+        .skip(usePagination ? skip : 0)
+        .limit(limit);
 
       const transactionsList = allTransactions.map(
         (txn: { toObject: () => unknown }) => {
@@ -86,7 +114,27 @@ export async function GET(request: NextRequest) {
         }
       );
 
-      return NextResponse.json(transactionsList, { status: 200 });
+      // Always return array directly, but include pagination info in headers if pagination is used
+      const headers = new Headers();
+      if (usePagination) {
+        headers.set("X-Pagination-Page", page.toString());
+        headers.set("X-Pagination-Limit", limit.toString());
+        headers.set("X-Pagination-Total", totalTransactions.toString());
+        headers.set(
+          "X-Pagination-TotalPages",
+          Math.ceil(totalTransactions / limit).toString()
+        );
+        headers.set(
+          "X-Pagination-HasNextPage",
+          (page < Math.ceil(totalTransactions / limit)).toString()
+        );
+        headers.set("X-Pagination-HasPrevPage", (page > 1).toString());
+      }
+
+      return NextResponse.json(transactionsList, {
+        status: 200,
+        headers,
+      });
     }
 
     // Find transaction by order_id
