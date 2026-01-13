@@ -7,12 +7,10 @@ import {
   deleteTag,
 } from "@/services/tagService";
 
-import { API_CONFIG } from "@/lib/config";
+import { checkAuthorization } from "@/lib/auth-utils";
 
 export async function GET(request: Request) {
-  const authHeader = request.headers.get("authorization");
-
-  if (authHeader !== `Bearer ${API_CONFIG.SECRET}`) {
+  if (!checkAuthorization(request)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -41,6 +39,10 @@ export async function GET(request: Request) {
 
 // POST create new tag
 export async function POST(request: Request) {
+  if (!checkAuthorization(request)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const { title, tagsId } = await request.json();
 
@@ -67,6 +69,10 @@ export async function POST(request: Request) {
 
 // PUT update tag
 export async function PUT(request: Request) {
+  if (!checkAuthorization(request)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const { id, title, tagsId } = await request.json();
 
@@ -99,6 +105,10 @@ export async function PUT(request: Request) {
 
 // DELETE tag
 export async function DELETE(request: Request) {
+  if (!checkAuthorization(request)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const { id } = await request.json();
 

@@ -4,10 +4,16 @@ import { connectMongoDB } from "@/lib/mongodb";
 
 import Products from "@/models/Products";
 
+import { checkAuthorization } from "@/lib/auth-utils";
+
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ categoryId: string }> }
 ) {
+  if (!checkAuthorization(request)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const { categoryId } = await params;
 

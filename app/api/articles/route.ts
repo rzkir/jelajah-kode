@@ -8,8 +8,15 @@ import mongoose from "mongoose";
 
 import Articles from "@/models/Articles";
 
+import { checkAuthorization } from "@/lib/auth-utils";
+
 export async function GET(request: Request) {
   try {
+    // Check authorization
+    if (!checkAuthorization(request)) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     await connectMongoDB();
 
     // Get query parameters for pagination and filtering
@@ -20,15 +27,6 @@ export async function GET(request: Request) {
 
     // Check if there's an id parameter for single article lookup
     const id = searchParams.get("id");
-
-    // For single article lookup by ID, allow without auth (public access)
-    // For listing/search operations, require auth
-    if (!id) {
-      const authHeader = request.headers.get("authorization");
-      if (authHeader !== `Bearer ${process.env.NEXT_PUBLIC_API_SECRET}`) {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-      }
-    }
 
     // Calculate skip value for pagination
     const skip = (page - 1) * limit;
@@ -133,6 +131,11 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
+    // Check authorization
+    if (!checkAuthorization(request)) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     await connectMongoDB();
     const body = await request.json();
 
@@ -386,6 +389,11 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
   try {
+    // Check authorization
+    if (!checkAuthorization(request)) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     await connectMongoDB();
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
@@ -589,6 +597,11 @@ export async function PUT(request: Request) {
 
 export async function DELETE(request: Request) {
   try {
+    // Check authorization
+    if (!checkAuthorization(request)) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     await connectMongoDB();
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");

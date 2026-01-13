@@ -104,7 +104,7 @@ interface AuthContextType {
 
 export interface IAccount extends mongoose.Document {
   email: string;
-  password?: string; // Optional for OAuth users
+  password?: string;
   name: string;
   role: UserRole;
   picture?: string;

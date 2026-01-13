@@ -24,12 +24,18 @@ export default function useStateArticlesCategories() {
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch(API_CONFIG.ENDPOINTS.articles.categories, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${API_CONFIG.SECRET}`,
-        },
-      });
+      const apiSecret = API_CONFIG.SECRET;
+      const url = API_CONFIG.ENDPOINTS.articles.categories;
+
+      const headers: HeadersInit = {
+        "Content-Type": "application/json",
+      };
+
+      if (apiSecret) {
+        headers.Authorization = `Bearer ${apiSecret}`;
+      }
+
+      const response = await fetch(url, { headers });
       if (!response.ok) {
         throw new Error("Failed to fetch categories");
       }
@@ -63,6 +69,7 @@ export default function useStateArticlesCategories() {
     e.preventDefault();
     setIsSubmitting(true);
     try {
+      const apiSecret = API_CONFIG.SECRET;
       const url = API_CONFIG.ENDPOINTS.articles.categories;
       const method = editingCategory ? "PUT" : "POST";
       const body = editingCategory
@@ -73,9 +80,14 @@ export default function useStateArticlesCategories() {
           }
         : { title: formData.title, categoryId: formData.categoryId };
 
+      const headers: HeadersInit = { "Content-Type": "application/json" };
+      if (apiSecret) {
+        headers.Authorization = `Bearer ${apiSecret}`;
+      }
+
       const response = await fetch(url, {
         method,
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify(body),
       });
 
@@ -105,10 +117,17 @@ export default function useStateArticlesCategories() {
 
     setIsDeleting(true);
     try {
-      const url = `${API_CONFIG.ENDPOINTS.articles.categories}?id=${categoryToDelete._id}`;
+      const apiSecret = API_CONFIG.SECRET;
+      const url = API_CONFIG.ENDPOINTS.articles.categories;
+
+      const headers: HeadersInit = { "Content-Type": "application/json" };
+      if (apiSecret) {
+        headers.Authorization = `Bearer ${apiSecret}`;
+      }
+
       const response = await fetch(url, {
         method: "DELETE",
-        headers: { "Content-Type": "application/json" },
+        headers,
       });
 
       if (!response.ok) throw new Error("Failed to delete category");

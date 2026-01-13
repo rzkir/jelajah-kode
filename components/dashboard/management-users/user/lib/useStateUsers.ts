@@ -77,12 +77,18 @@ export default function useStateUsers(options?: UseStateUsersOptions) {
   const fetchUsers = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch(API_CONFIG.ENDPOINTS.users.base, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${API_CONFIG.SECRET}`,
-        },
-      });
+      const apiSecret = API_CONFIG.SECRET;
+      const url = API_CONFIG.ENDPOINTS.users.base;
+
+      const headers: HeadersInit = {
+        "Content-Type": "application/json",
+      };
+
+      if (apiSecret) {
+        headers.Authorization = `Bearer ${apiSecret}`;
+      }
+
+      const response = await fetch(url, { headers });
 
       if (!response.ok) {
         throw new Error("Failed to fetch users");
@@ -124,12 +130,19 @@ export default function useStateUsers(options?: UseStateUsersOptions) {
   ) => {
     try {
       setIsUpdating(true);
-      const response = await fetch(API_CONFIG.ENDPOINTS.users.base, {
+      const apiSecret = API_CONFIG.SECRET;
+      const url = API_CONFIG.ENDPOINTS.users.base;
+
+      const headers: HeadersInit = {
+        "Content-Type": "application/json",
+      };
+      if (apiSecret) {
+        headers.Authorization = `Bearer ${apiSecret}`;
+      }
+
+      const response = await fetch(url, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${API_CONFIG.SECRET}`,
-        },
+        headers,
         body: JSON.stringify({
           userId,
           status: newStatus,
@@ -164,12 +177,19 @@ export default function useStateUsers(options?: UseStateUsersOptions) {
   const deleteUser = async (userId: string) => {
     try {
       setIsDeleting(true);
-      const response = await fetch(API_CONFIG.ENDPOINTS.users.base, {
+      const apiSecret = API_CONFIG.SECRET;
+      const url = API_CONFIG.ENDPOINTS.users.base;
+
+      const headers: HeadersInit = {
+        "Content-Type": "application/json",
+      };
+      if (apiSecret) {
+        headers.Authorization = `Bearer ${apiSecret}`;
+      }
+
+      const response = await fetch(url, {
         method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${API_CONFIG.SECRET}`,
-        },
+        headers,
         body: JSON.stringify({
           userId,
         }),

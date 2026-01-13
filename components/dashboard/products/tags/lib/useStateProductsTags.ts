@@ -22,12 +22,18 @@ export default function useStateProjectsTags() {
 
   const fetchTags = async () => {
     try {
-      const response = await fetch(API_CONFIG.ENDPOINTS.products.tags, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${API_CONFIG.SECRET}`,
-        },
-      });
+      const apiSecret = API_CONFIG.SECRET;
+      const url = API_CONFIG.ENDPOINTS.products.tags;
+
+      const headers: HeadersInit = {
+        "Content-Type": "application/json",
+      };
+
+      if (apiSecret) {
+        headers.Authorization = `Bearer ${apiSecret}`;
+      }
+
+      const response = await fetch(url, { headers });
       if (!response.ok) {
         throw new Error("Failed to fetch tags");
       }
@@ -70,12 +76,20 @@ export default function useStateProjectsTags() {
           }
         : { title: formData.title, tagsId: formData.tagsId };
 
-      const response = await fetch(API_CONFIG.ENDPOINTS.products.tags, {
+      const apiSecret = API_CONFIG.SECRET;
+      const url = API_CONFIG.ENDPOINTS.products.tags;
+
+      const headers: HeadersInit = {
+        "Content-Type": "application/json",
+      };
+
+      if (apiSecret) {
+        headers.Authorization = `Bearer ${apiSecret}`;
+      }
+
+      const response = await fetch(url, {
         method,
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${API_CONFIG.SECRET}`,
-        },
+        headers,
         body: JSON.stringify(body),
       });
 
@@ -101,12 +115,20 @@ export default function useStateProjectsTags() {
 
     setIsDeleting(true);
     try {
-      const response = await fetch(API_CONFIG.ENDPOINTS.products.tags, {
+      const apiSecret = API_CONFIG.SECRET;
+      const url = API_CONFIG.ENDPOINTS.products.tags;
+
+      const headers: HeadersInit = {
+        "Content-Type": "application/json",
+      };
+
+      if (apiSecret) {
+        headers.Authorization = `Bearer ${apiSecret}`;
+      }
+
+      const response = await fetch(url, {
         method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${API_CONFIG.SECRET}`,
-        },
+        headers,
         body: JSON.stringify({ id: tagToDelete._id }),
       });
 

@@ -2,14 +2,21 @@ import { API_CONFIG } from "@/lib/config";
 
 export const fetchProducts = async (): Promise<Products[]> => {
   try {
-    const response = await fetch(API_CONFIG.ENDPOINTS.products.base, {
-      next: {
-        revalidate: 0,
-      },
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${API_CONFIG.SECRET}`,
-      },
+    const apiSecret = API_CONFIG.SECRET;
+    const url = API_CONFIG.ENDPOINTS.products.base;
+
+    const headers: HeadersInit = {
+      "Content-Type": "application/json",
+    };
+
+    // Always add Authorization header with API_SECRET
+    if (apiSecret) {
+      headers.Authorization = `Bearer ${apiSecret}`;
+    }
+
+    const response = await fetch(url, {
+      next: { revalidate: 0 },
+      headers,
     });
 
     if (!response.ok) {
@@ -30,14 +37,21 @@ export const fetchProductsById = async (
   productsId: string
 ): Promise<ProductsDetails> => {
   try {
+    const apiSecret = API_CONFIG.SECRET;
+    const headers: HeadersInit = {
+      "Content-Type": "application/json",
+    };
+
+    // Always add Authorization header with API_SECRET
+    if (apiSecret) {
+      headers.Authorization = `Bearer ${apiSecret}`;
+    }
+
     const response = await fetch(
       API_CONFIG.ENDPOINTS.products.byProductsId(productsId),
       {
         next: { revalidate: 0 },
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${API_CONFIG.SECRET}`,
-        },
+        headers,
       }
     );
 
@@ -59,6 +73,7 @@ export const fetchProductsBySearch = async (
   searchParams: Record<string, string | string[] | undefined>
 ): Promise<ProductsSearchResponse> => {
   try {
+    const apiSecret = API_CONFIG.SECRET;
     const params = new URLSearchParams();
 
     // Add all search params to URLSearchParams
@@ -72,12 +87,18 @@ export const fetchProductsBySearch = async (
       }
     });
 
+    const headers: HeadersInit = {
+      "Content-Type": "application/json",
+    };
+
+    // Always add Authorization header with API_SECRET
+    if (apiSecret) {
+      headers.Authorization = `Bearer ${apiSecret}`;
+    }
+
     const response = await fetch(API_CONFIG.ENDPOINTS.products.search(params), {
       next: { revalidate: 0 },
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${API_CONFIG.SECRET}`,
-      },
+      headers,
     });
 
     if (!response.ok) {
@@ -105,12 +126,21 @@ export const fetchProductsBySearch = async (
 
 export const fetchProductCategories = async (): Promise<Category[]> => {
   try {
-    const response = await fetch(API_CONFIG.ENDPOINTS.products.categories, {
+    const apiSecret = API_CONFIG.SECRET;
+    const url = API_CONFIG.ENDPOINTS.products.categories;
+
+    const headers: HeadersInit = {
+      "Content-Type": "application/json",
+    };
+
+    // Always add Authorization header with API_SECRET
+    if (apiSecret) {
+      headers.Authorization = `Bearer ${apiSecret}`;
+    }
+
+    const response = await fetch(url, {
       cache: "no-store",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${API_CONFIG.SECRET}`,
-      },
+      headers,
     });
 
     if (!response.ok) {
@@ -129,12 +159,21 @@ export const fetchProductCategories = async (): Promise<Category[]> => {
 
 export const fetchProductType = async (): Promise<Type[]> => {
   try {
-    const response = await fetch(API_CONFIG.ENDPOINTS.products.type, {
+    const apiSecret = API_CONFIG.SECRET;
+    const url = API_CONFIG.ENDPOINTS.products.type;
+
+    const headers: HeadersInit = {
+      "Content-Type": "application/json",
+    };
+
+    // Always add Authorization header with API_SECRET
+    if (apiSecret) {
+      headers.Authorization = `Bearer ${apiSecret}`;
+    }
+
+    const response = await fetch(url, {
       cache: "no-store",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${API_CONFIG.SECRET}`,
-      },
+      headers,
     });
 
     if (!response.ok) {
@@ -156,14 +195,21 @@ export const fetchProductsDiscount = async (
   limit: number = 10
 ): Promise<ProductsDiscountResponse> => {
   try {
+    const apiSecret = API_CONFIG.SECRET;
+    const headers: HeadersInit = {
+      "Content-Type": "application/json",
+    };
+
+    // Always add Authorization header with API_SECRET
+    if (apiSecret) {
+      headers.Authorization = `Bearer ${apiSecret}`;
+    }
+
     const response = await fetch(
       API_CONFIG.ENDPOINTS.products.discount(page, limit),
       {
         next: { revalidate: 0 },
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${API_CONFIG.SECRET}`,
-        },
+        headers,
       }
     );
 
@@ -196,14 +242,21 @@ export const fetchProductsMostSaled = async (
   limit: number = 10
 ): Promise<ProductsMostSaledResponse> => {
   try {
+    const apiSecret = API_CONFIG.SECRET;
+    const headers: HeadersInit = {
+      "Content-Type": "application/json",
+    };
+
+    // Always add Authorization header with API_SECRET
+    if (apiSecret) {
+      headers.Authorization = `Bearer ${apiSecret}`;
+    }
+
     const response = await fetch(
       API_CONFIG.ENDPOINTS.products.mostSaled(page, limit),
       {
         next: { revalidate: 0 },
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${API_CONFIG.SECRET}`,
-        },
+        headers,
       }
     );
 
@@ -236,14 +289,21 @@ export const fetchProductsPopular = async (
   limit: number = 10
 ): Promise<ProductsPopularResponse> => {
   try {
+    const apiSecret = API_CONFIG.SECRET;
+    const headers: HeadersInit = {
+      "Content-Type": "application/json",
+    };
+
+    // Always add Authorization header with API_SECRET
+    if (apiSecret) {
+      headers.Authorization = `Bearer ${apiSecret}`;
+    }
+
     const response = await fetch(
       API_CONFIG.ENDPOINTS.products.popular(page, limit),
       {
         next: { revalidate: 0 },
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${API_CONFIG.SECRET}`,
-        },
+        headers,
       }
     );
 
@@ -277,16 +337,22 @@ export const fetchProductsRatings = async (
   limit: number = 10
 ): Promise<Ratings[]> => {
   try {
-    const response = await fetch(
-      API_CONFIG.ENDPOINTS.products.ratings(productsId, page, limit),
-      {
-        next: { revalidate: 0 },
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${API_CONFIG.SECRET}`,
-        },
-      }
-    );
+    const apiSecret = API_CONFIG.SECRET;
+    const url = API_CONFIG.ENDPOINTS.products.ratings(productsId, page, limit);
+
+    const headers: HeadersInit = {
+      "Content-Type": "application/json",
+    };
+
+    // Always add Authorization header with API_SECRET
+    if (apiSecret) {
+      headers.Authorization = `Bearer ${apiSecret}`;
+    }
+
+    const response = await fetch(url, {
+      next: { revalidate: 0 },
+      headers,
+    });
 
     if (!response.ok) {
       throw new Error(
@@ -311,13 +377,21 @@ export const fetchProductsByCategory = async (
   sort: string = "newest"
 ): Promise<ProductsByCategoryResponse> => {
   try {
+    const apiSecret = API_CONFIG.SECRET;
+    const headers: HeadersInit = {
+      "Content-Type": "application/json",
+    };
+
+    // Always add Authorization header with API_SECRET
+    if (apiSecret) {
+      headers.Authorization = `Bearer ${apiSecret}`;
+    }
+
     const response = await fetch(
       API_CONFIG.ENDPOINTS.products.byCategory(categoryId, page, limit, sort),
       {
         next: { revalidate: 0 },
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers,
       }
     );
 
@@ -352,13 +426,21 @@ export const fetchProductsByType = async (
   sort: string = "newest"
 ): Promise<ProductsByTypeResponse> => {
   try {
+    const apiSecret = API_CONFIG.SECRET;
+    const headers: HeadersInit = {
+      "Content-Type": "application/json",
+    };
+
+    // Always add Authorization header with API_SECRET
+    if (apiSecret) {
+      headers.Authorization = `Bearer ${apiSecret}`;
+    }
+
     const response = await fetch(
       API_CONFIG.ENDPOINTS.products.byType(typeId, page, limit, sort),
       {
         next: { revalidate: 0 },
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers,
       }
     );
 
@@ -393,13 +475,21 @@ export const fetchProductsByTags = async (
   sort: string = "newest"
 ): Promise<ProductsByTagsResponse> => {
   try {
+    const apiSecret = API_CONFIG.SECRET;
+    const headers: HeadersInit = {
+      "Content-Type": "application/json",
+    };
+
+    // Always add Authorization header with API_SECRET
+    if (apiSecret) {
+      headers.Authorization = `Bearer ${apiSecret}`;
+    }
+
     const response = await fetch(
       API_CONFIG.ENDPOINTS.products.byTags(tagsId, page, limit, sort),
       {
         next: { revalidate: 0 },
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers,
       }
     );
 

@@ -1,6 +1,6 @@
 import { generateProductsCategoryMetadata } from "@/helper/meta/Metadata";
 
-import Products from "@/components/content/products/products/Products";
+import Products from "@/components/pages/products/products/Products";
 
 import {
     fetchProductsByCategory,

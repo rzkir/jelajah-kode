@@ -4,12 +4,10 @@ import { connectMongoDB } from "@/lib/mongodb";
 
 import Products from "@/models/Products";
 
-import { API_CONFIG } from "@/lib/config";
+import { checkAuthorization } from "@/lib/auth-utils";
 
 export async function GET(request: Request) {
-  const authHeader = request.headers.get("authorization");
-
-  if (authHeader !== `Bearer ${API_CONFIG.SECRET}`) {
+  if (!checkAuthorization(request)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

@@ -1,53 +1,26 @@
 import { API_CONFIG } from "@/lib/config";
 
-interface AdminData {
-  _id: string;
-  name: string;
-  email: string;
-  picture?: string;
-  role: string;
-  status: string;
-  created_at: string;
-  stats: {
-    products: number;
-    articles: number;
-    rating: number;
-    downloads: number;
-  };
-}
-
-interface AdminProductsResponse {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  data: any[];
-  pagination: {
-    page: number;
-    limit: number;
-    total: number;
-    pages: number;
-  };
-}
-
-interface AdminArticlesResponse {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  data: any[];
-  pagination: {
-    page: number;
-    limit: number;
-    total: number;
-    pages: number;
-  };
-}
-
 export const fetchAdminById = async (
   adminId: string
 ): Promise<AdminData | null> => {
   try {
+    const apiSecret = API_CONFIG.SECRET;
+    const headers: HeadersInit = {
+      "Content-Type": "application/json",
+    };
+
+    // Always add Authorization header with API_SECRET
+    if (apiSecret) {
+      headers.Authorization = `Bearer ${apiSecret}`;
+    }
+
     const response = await fetch(
-      `${API_CONFIG.ENDPOINTS.base}/api/admins/${adminId}`,
+      `${API_CONFIG.ENDPOINTS.admins.byId(adminId)}`,
       {
         next: {
           revalidate: 60,
         },
+        headers,
       }
     );
 
@@ -71,15 +44,27 @@ export const fetchAdminById = async (
 export const fetchAdminProducts = async (
   adminId: string,
   page: number = 1,
-  limit: number = 12
+  limit: number = 12,
+  sort?: string
 ): Promise<AdminProductsResponse> => {
   try {
+    const apiSecret = API_CONFIG.SECRET;
+    const headers: HeadersInit = {
+      "Content-Type": "application/json",
+    };
+
+    // Always add Authorization header with API_SECRET
+    if (apiSecret) {
+      headers.Authorization = `Bearer ${apiSecret}`;
+    }
+
     const response = await fetch(
-      `${API_CONFIG.ENDPOINTS.base}/api/admins/${adminId}/products?page=${page}&limit=${limit}`,
+      `${API_CONFIG.ENDPOINTS.admins.products(adminId, page, limit, sort)}`,
       {
         next: {
           revalidate: 60,
         },
+        headers,
       }
     );
 
@@ -111,12 +96,23 @@ export const fetchAdminArticles = async (
   limit: number = 12
 ): Promise<AdminArticlesResponse> => {
   try {
+    const apiSecret = API_CONFIG.SECRET;
+    const headers: HeadersInit = {
+      "Content-Type": "application/json",
+    };
+
+    // Always add Authorization header with API_SECRET
+    if (apiSecret) {
+      headers.Authorization = `Bearer ${apiSecret}`;
+    }
+
     const response = await fetch(
-      `${API_CONFIG.ENDPOINTS.base}/api/admins/${adminId}/articles?page=${page}&limit=${limit}`,
+      `${API_CONFIG.ENDPOINTS.admins.articles(adminId, page, limit)}`,
       {
         next: {
           revalidate: 60,
         },
+        headers,
       }
     );
 

@@ -4,10 +4,15 @@ import { connectMongoDB } from "@/lib/mongodb";
 
 import { Account } from "@/models/Account";
 
-import { API_CONFIG } from "@/lib/config";
+import { checkAuthorization } from "@/lib/auth-utils";
 
 export async function GET(request: Request) {
   try {
+    // Check authorization
+    if (!checkAuthorization(request)) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     await connectMongoDB();
 
     // Get query parameters for pagination and filtering
@@ -17,12 +22,6 @@ export async function GET(request: Request) {
     const search = searchParams.get("search") || "";
     const status = searchParams.get("status") || "";
     const isVerified = searchParams.get("isVerified") || "";
-
-    // Check authorization
-    const authHeader = request.headers.get("authorization");
-    if (authHeader !== `Bearer ${API_CONFIG.SECRET}`) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
 
     // Calculate skip value for pagination
     const skip = (page - 1) * limit;
@@ -96,13 +95,12 @@ export async function GET(request: Request) {
 
 export async function PUT(request: Request) {
   try {
-    await connectMongoDB();
-
     // Check authorization
-    const authHeader = request.headers.get("authorization");
-    if (authHeader !== `Bearer ${API_CONFIG.SECRET}`) {
+    if (!checkAuthorization(request)) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+
+    await connectMongoDB();
 
     // Parse request body
     const body = await request.json();
@@ -165,13 +163,12 @@ export async function PUT(request: Request) {
 
 export async function DELETE(request: Request) {
   try {
-    await connectMongoDB();
-
     // Check authorization
-    const authHeader = request.headers.get("authorization");
-    if (authHeader !== `Bearer ${API_CONFIG.SECRET}`) {
+    if (!checkAuthorization(request)) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+
+    await connectMongoDB();
 
     // Parse request body
     const body = await request.json();

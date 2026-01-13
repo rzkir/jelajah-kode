@@ -1,6 +1,6 @@
 const API_BASE_URL = process.env.NEXT_PUBLIC_API;
 
-const API_SECRET = process.env.API_SECRET;
+const API_SECRET = process.env.NEXT_PUBLIC_API_SECRET;
 
 const API_CHAT_BASE_URL = process.env.NEXT_PUBLIC_CHAT_BASE_URL;
 
@@ -80,6 +80,14 @@ export const API_CONFIG = {
     checkout: `${API_BASE_URL}/checkout`,
     ratings: `${API_BASE_URL}/ratings`,
     transactions: `${API_BASE_URL}/transactions`,
+    admins: {
+      base: `${API_BASE_URL}/admins`,
+      byId: (adminId: string) => `${API_BASE_URL}/admins/${adminId}`,
+      products: (adminId: string, page: number = 1, limit: number = 12, sort?: string) =>
+        `${API_BASE_URL}/admins/${adminId}/products?page=${page}&limit=${limit}${sort ? `&sort=${sort}` : ''}`,
+      articles: (adminId: string, page: number = 1, limit: number = 12) =>
+        `${API_BASE_URL}/admins/${adminId}/articles?page=${page}&limit=${limit}`,
+    },
     users: {
       base: `${API_BASE_URL}/users`,
     },

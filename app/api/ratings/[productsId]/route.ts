@@ -1,12 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
+
 import { connectMongoDB } from "@/lib/mongodb";
+
 import Ratings from "@/models/Ratings";
 
-// GET - Get all ratings for a product (public endpoint, no auth required)
+import { checkAuthorization } from "@/lib/auth-utils";
+
+// GET - Get all ratings for a product
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ productsId: string }> }
 ) {
+  if (!checkAuthorization(request)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     await connectMongoDB();
 

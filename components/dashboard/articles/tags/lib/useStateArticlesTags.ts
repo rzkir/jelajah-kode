@@ -22,12 +22,18 @@ export default function useStateArticlesTags() {
 
   const fetchTags = async () => {
     try {
-      const response = await fetch(API_CONFIG.ENDPOINTS.articles.tags, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${API_CONFIG.SECRET}`,
-        },
-      });
+      const apiSecret = API_CONFIG.SECRET;
+      const url = API_CONFIG.ENDPOINTS.articles.tags;
+
+      const headers: HeadersInit = {
+        "Content-Type": "application/json",
+      };
+
+      if (apiSecret) {
+        headers.Authorization = `Bearer ${apiSecret}`;
+      }
+
+      const response = await fetch(url, { headers });
       if (!response.ok) {
         throw new Error("Failed to fetch tags");
       }
@@ -99,11 +105,15 @@ export default function useStateArticlesTags() {
 
     setIsDeleting(true);
     try {
-      const url = `${API_CONFIG.ENDPOINTS.articles.tags}?id=${tagToDelete._id}`;
-      const response = await fetch(url, {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-      });
+      const apiSecret = API_CONFIG.SECRET;
+      const url = API_CONFIG.ENDPOINTS.articles.tags;
+
+      const headers: HeadersInit = { "Content-Type": "application/json" };
+      if (apiSecret) {
+        headers.Authorization = `Bearer ${apiSecret}`;
+      }
+
+      const response = await fetch(url, { method: "DELETE", headers });
 
       if (!response.ok) throw new Error("Failed to delete tag");
 

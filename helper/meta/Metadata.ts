@@ -1739,3 +1739,124 @@ export const LicenseAgreementMetadata: Metadata = {
     images: ["/images/license-agreement-og-image.jpg"],
   },
 };
+
+//====================================== Admins Page Metadata ======================================//
+export const AdminsPageMetadata: Metadata = {
+  title: "Admin Profile - jelajah Code",
+  description:
+    "View admin profile, products, and articles on jelajah Code platform",
+  openGraph: {
+    title: "Admin Profile - jelajah Code",
+    description:
+      "View admin profile, products, and articles on jelajah Code platform",
+    url: `${API_CONFIG.ENDPOINTS.base}/admins`,
+    siteName: "jelajah Code",
+    images: [
+      {
+        url: "/images/admin-og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Admin Profile - jelajah Code",
+      },
+    ],
+    locale: "en_US",
+    type: "profile",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Admin Profile - jelajah Code",
+    description:
+      "View admin profile, products, and articles on jelajah Code platform",
+    images: ["/images/admin-og-image.jpg"],
+  },
+};
+
+export async function generateAdminsPageMetadata(
+  params: Promise<{ admins: string }>
+): Promise<Metadata> {
+  const { admins: adminId } = await params;
+
+  try {
+    const { fetchAdminById } = await import("@/utils/fetching/FetchAdmins");
+
+    const admin = await fetchAdminById(adminId);
+
+    if (admin) {
+      const adminName = admin.name || "Admin";
+      const adminPicture = admin.picture || "/images/admin-og-image.jpg";
+      const productsCount = admin.stats?.products || 0;
+      const articlesCount = admin.stats?.articles || 0;
+      const rating = admin.stats?.rating || 0;
+
+      const title = `${adminName} - Admin Profile - jelajah Code`;
+      const description = `View ${adminName}'s profile on jelajah Code. ${productsCount} product${
+        productsCount !== 1 ? "s" : ""
+      }, ${articlesCount} article${articlesCount !== 1 ? "s" : ""}, and ${
+        rating > 0 ? `${rating.toFixed(1)}★ rating` : "no rating yet"
+      }.`;
+
+      const adminUrl = `${API_CONFIG.ENDPOINTS.base}/admins/${adminId}`;
+
+      return {
+        title,
+        description,
+        openGraph: {
+          title,
+          description,
+          url: adminUrl,
+          siteName: "jelajah Code",
+          images: [
+            {
+              url: adminPicture,
+              width: 1200,
+              height: 630,
+              alt: `${adminName}'s Profile`,
+            },
+          ],
+          locale: "en_US",
+          type: "profile",
+        },
+        twitter: {
+          card: "summary_large_image",
+          title,
+          description,
+          images: [adminPicture],
+        },
+      };
+    }
+  } catch {
+    // Fallback to default metadata if fetch fails
+  }
+
+  // Fallback metadata
+  const fallbackTitle = `Admin Profile - jelajah Code`;
+  const fallbackDescription = `View admin profile on jelajah Code platform`;
+  const adminUrl = `${API_CONFIG.ENDPOINTS.base}/admins/${adminId}`;
+
+  return {
+    title: fallbackTitle,
+    description: fallbackDescription,
+    openGraph: {
+      title: fallbackTitle,
+      description: fallbackDescription,
+      url: adminUrl,
+      siteName: "jelajah Code",
+      images: [
+        {
+          url: "/images/admin-og-image.jpg",
+          width: 1200,
+          height: 630,
+          alt: "Admin Profile",
+        },
+      ],
+      locale: "en_US",
+      type: "profile",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: fallbackTitle,
+      description: fallbackDescription,
+      images: ["/images/admin-og-image.jpg"],
+    },
+  };
+}

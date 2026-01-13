@@ -1,4 +1,4 @@
-import ProductsDetails from "@/components/content/products/productsDetails/ProductsDetails"
+import ProductsDetails from "@/components/pages/products/products-details/ProductsDetails"
 
 import { generateProductsDetailsMetadata } from "@/helper/meta/Metadata"
 

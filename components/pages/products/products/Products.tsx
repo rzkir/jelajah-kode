@@ -8,7 +8,7 @@ import ProductsCard from "@/components/ui/products/ProductsCard"
 
 import SearchProductsFilter from "@/components/pages/search/SearchProductsFilter"
 
-import { useStateProducts } from "@/components/content/products/products/lib/useStateProducts"
+import { useStateProducts } from "@/components/pages/products/products/lib/useStateProducts"
 
 import {
     Select,

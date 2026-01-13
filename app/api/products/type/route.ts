@@ -7,18 +7,12 @@ import {
   deleteType,
 } from "@/services/typeServices";
 
-import { API_CONFIG } from "@/lib/config";
+import { checkAuthorization } from "@/lib/auth-utils";
 
 // GET all types
 export async function GET(request: Request) {
-  const authHeader = request.headers.get("authorization");
-
-  if (authHeader !== `Bearer ${API_CONFIG.SECRET}`) {
-    const response = NextResponse.json(
-      { error: "Unauthorized" },
-      { status: 401 }
-    );
-    return response;
+  if (!checkAuthorization(request)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   try {
@@ -49,6 +43,10 @@ export async function GET(request: Request) {
 
 // POST create new type
 export async function POST(request: Request) {
+  if (!checkAuthorization(request)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const { title, typeId } = await request.json();
 
@@ -75,6 +73,10 @@ export async function POST(request: Request) {
 
 // PUT update type
 export async function PUT(request: Request) {
+  if (!checkAuthorization(request)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const { id, title, typeId } = await request.json();
 
@@ -107,6 +109,10 @@ export async function PUT(request: Request) {
 
 // DELETE type
 export async function DELETE(request: Request) {
+  if (!checkAuthorization(request)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const { id } = await request.json();
 

@@ -6,10 +6,16 @@ import { Types } from "mongoose";
 
 import Products from "@/models/Products";
 
+import { checkAuthorization } from "@/lib/auth-utils";
+
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ adminId: string }> }
 ) {
+  if (!checkAuthorization(request)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const { adminId } = await params;
 
@@ -34,6 +40,13 @@ export async function GET(
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "12");
     const skip = (page - 1) * limit;
+    const sortBy = searchParams.get("sort") || "createdAt"; // "createdAt" or "popular"
+
+    // Determine sort order
+    let sortOrder: Record<string, 1 | -1> = { createdAt: -1 };
+    if (sortBy === "popular") {
+      sortOrder = { downloadCount: -1, createdAt: -1 };
+    }
 
     // Fetch products by author/admin
     const products = await Products.find({
@@ -42,7 +55,7 @@ export async function GET(
     })
       .skip(skip)
       .limit(limit)
-      .sort({ createdAt: -1 });
+      .sort(sortOrder);
 
     // Get total count
     const totalCount = await Products.countDocuments({

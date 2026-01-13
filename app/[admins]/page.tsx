@@ -1,13 +1,21 @@
 import AdminProfile from "@/components/pages/admins/AdminProfile"
 
-import { fetchAdminById, fetchAdminProducts, fetchAdminArticles } from "@/utils/fetching/FetchAdmins"
+import { fetchAdminById, fetchAdminProducts } from "@/utils/fetching/FetchAdmins"
+
+import { generateAdminsPageMetadata } from "@/helper/meta/Metadata"
 
 import { notFound } from "next/navigation"
+
+import { Metadata } from "next"
 
 interface PageProps {
     params: Promise<{
         admins: string
     }>
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+    return generateAdminsPageMetadata(params)
 }
 
 export default async function Page({ params }: PageProps) {
@@ -17,11 +25,11 @@ export default async function Page({ params }: PageProps) {
         notFound()
     }
 
-    // Fetch admin data and initial products/articles in parallel
-    const [admin, productsData, articlesData] = await Promise.all([
+    // Fetch admin data and initial products/popular products in parallel
+    const [admin, productsData, popularProductsData] = await Promise.all([
         fetchAdminById(adminId),
         fetchAdminProducts(adminId, 1, 12),
-        fetchAdminArticles(adminId, 1, 12),
+        fetchAdminProducts(adminId, 1, 12, "popular"),
     ])
 
     if (!admin) {
@@ -33,7 +41,7 @@ export default async function Page({ params }: PageProps) {
             adminId={adminId}
             initialAdmin={admin}
             initialProducts={productsData.data}
-            initialArticles={articlesData.data}
+            initialPopularProducts={popularProductsData.data}
         />
     )
 }

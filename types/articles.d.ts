@@ -145,3 +145,15 @@ interface ArticlesDetails {
   createdAt: string;
   updatedAt: string;
 }
+
+//====================== Admin Data ======================//
+interface AdminArticlesResponse {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  data: any[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    pages: number;
+  };
+}

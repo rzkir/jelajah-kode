@@ -32,7 +32,7 @@ export default function TransactionExpired() {
         const fetchTransactions = async () => {
             setIsLoading(true);
             try {
-                const response = await fetch("API_CONFIG.ENDPOINTS.transactions", {
+                const response = await fetch(API_CONFIG.ENDPOINTS.transactions, {
                     method: "GET",
                     credentials: "include",
                     headers: {
@@ -67,7 +67,7 @@ export default function TransactionExpired() {
     // Refresh transactions after delete
     const refreshTransactions = async () => {
         try {
-            const response = await fetch("API_CONFIG.ENDPOINTS.transactions", {
+            const response = await fetch(API_CONFIG.ENDPOINTS.transactions, {
                 method: "GET",
                 credentials: "include",
                 headers: {

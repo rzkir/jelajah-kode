@@ -24,12 +24,18 @@ export default function useStateProjectsCategories() {
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch(API_CONFIG.ENDPOINTS.products.categories, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${API_CONFIG.SECRET}`,
-        },
-      });
+      const apiSecret = API_CONFIG.SECRET;
+      const url = API_CONFIG.ENDPOINTS.products.categories;
+
+      const headers: HeadersInit = {
+        "Content-Type": "application/json",
+      };
+
+      if (apiSecret) {
+        headers.Authorization = `Bearer ${apiSecret}`;
+      }
+
+      const response = await fetch(url, { headers });
       if (!response.ok) {
         throw new Error("Failed to fetch categories");
       }
@@ -72,12 +78,20 @@ export default function useStateProjectsCategories() {
           }
         : { title: formData.title, categoryId: formData.categoryId };
 
-      const response = await fetch(API_CONFIG.ENDPOINTS.products.categories, {
+      const apiSecret = API_CONFIG.SECRET;
+      const url = API_CONFIG.ENDPOINTS.products.categories;
+
+      const headers: HeadersInit = {
+        "Content-Type": "application/json",
+      };
+
+      if (apiSecret) {
+        headers.Authorization = `Bearer ${apiSecret}`;
+      }
+
+      const response = await fetch(url, {
         method,
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${API_CONFIG.SECRET}`,
-        },
+        headers,
         body: JSON.stringify(body),
       });
 
@@ -107,12 +121,20 @@ export default function useStateProjectsCategories() {
 
     setIsDeleting(true);
     try {
-      const response = await fetch(API_CONFIG.ENDPOINTS.products.categories, {
+      const apiSecret = API_CONFIG.SECRET;
+      const url = API_CONFIG.ENDPOINTS.products.categories;
+
+      const headers: HeadersInit = {
+        "Content-Type": "application/json",
+      };
+
+      if (apiSecret) {
+        headers.Authorization = `Bearer ${apiSecret}`;
+      }
+
+      const response = await fetch(url, {
         method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${API_CONFIG.SECRET}`,
-        },
+        headers,
         body: JSON.stringify({ id: categoryToDelete._id }),
       });
 

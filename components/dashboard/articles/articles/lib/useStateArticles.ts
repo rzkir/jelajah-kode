@@ -126,12 +126,18 @@ export default function useStateArticles() {
   const fetchArticles = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch(API_CONFIG.ENDPOINTS.articles.base, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${API_CONFIG.SECRET}`,
-        },
-      });
+      const apiSecret = API_CONFIG.SECRET;
+      const url = API_CONFIG.ENDPOINTS.articles.base;
+
+      const headers: HeadersInit = {
+        "Content-Type": "application/json",
+      };
+
+      if (apiSecret) {
+        headers.Authorization = `Bearer ${apiSecret}`;
+      }
+
+      const response = await fetch(url, { headers });
 
       if (!response.ok) {
         throw new Error("Failed to fetch articles");
@@ -159,15 +165,21 @@ export default function useStateArticles() {
 
     try {
       setIsSubmitting(true);
-      const response = await fetch(
-        `${API_CONFIG.ENDPOINTS.articles.base}?id=${deleteId}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${API_CONFIG.SECRET}`,
-          },
-        }
-      );
+      const apiSecret = API_CONFIG.SECRET;
+      const url = apiSecret
+        ? `${API_CONFIG.ENDPOINTS.articles.base}?id=${deleteId}`
+        : `/api/articles?id=${deleteId}`;
+
+      const headers: HeadersInit = {};
+
+      if (apiSecret) {
+        headers.Authorization = `Bearer ${apiSecret}`;
+      }
+
+      const response = await fetch(url, {
+        method: "DELETE",
+        headers,
+      });
 
       if (!response.ok) {
         throw new Error("Failed to delete article");

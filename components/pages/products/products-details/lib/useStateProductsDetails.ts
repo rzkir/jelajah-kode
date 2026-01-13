@@ -43,8 +43,13 @@ export default function useStateProductsDetails({
   const [selectedImage, setSelectedImage] = useState(product.thumbnail);
   const [relatedProducts, setRelatedProducts] = useState<Products[]>([]);
   const [ratings, setRatings] = useState<Rating[]>([]);
+  const [ratingsLoading, setRatingsLoading] = useState<boolean>(false);
   const [authorProductsCount, setAuthorProductsCount] = useState<number>(0);
   const [authorAverageRating, setAuthorAverageRating] = useState<number>(0);
+  const [ratingFilter, setRatingFilter] = useState<number | null>(null); // null = all, 1-5 = specific rating
+  const [sortOrder, setSortOrder] = useState<
+    "newest" | "oldest" | "highest" | "lowest"
+  >("newest");
 
   const { originalPrice, discountedPrice, activeDiscount, hasActiveDiscount } =
     useDiscount(product.price, product.discount);
@@ -63,6 +68,38 @@ export default function useStateProductsDetails({
     () => [product.thumbnail, ...(product.images || [])].filter(Boolean),
     [product.thumbnail, product.images]
   );
+
+  // Filter and sort ratings
+  const filteredRatings = useMemo(() => {
+    let filtered = [...ratings];
+
+    // Filter by rating value
+    if (ratingFilter !== null) {
+      filtered = filtered.filter((rating) => rating.rating === ratingFilter);
+    }
+
+    // Sort ratings
+    filtered.sort((a, b) => {
+      switch (sortOrder) {
+        case "newest":
+          return (
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+          );
+        case "oldest":
+          return (
+            new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+          );
+        case "highest":
+          return b.rating - a.rating;
+        case "lowest":
+          return a.rating - b.rating;
+        default:
+          return 0;
+      }
+    });
+
+    return filtered;
+  }, [ratings, ratingFilter, sortOrder]);
 
   useEffect(() => {
     // Fetch related products by category and count author products
@@ -120,10 +157,14 @@ export default function useStateProductsDetails({
 
   const fetchRatings = async () => {
     try {
+      setRatingsLoading(true);
       const ratings = await fetchProductsRatings(product.productsId, 1, 20);
       setRatings(ratings);
     } catch (error) {
       console.error("Error fetching ratings:", error);
+      setRatings([]);
+    } finally {
+      setRatingsLoading(false);
     }
   };
 
@@ -165,6 +206,8 @@ export default function useStateProductsDetails({
     setSelectedImage,
     relatedProducts,
     ratings,
+    filteredRatings,
+    ratingsLoading,
     originalPrice,
     discountedPrice,
     activeDiscount,
@@ -175,5 +218,9 @@ export default function useStateProductsDetails({
     handleBuyNow,
     authorProductsCount,
     authorAverageRating,
+    ratingFilter,
+    setRatingFilter,
+    sortOrder,
+    setSortOrder,
   };
 }

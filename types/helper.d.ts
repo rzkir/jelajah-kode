@@ -69,3 +69,28 @@ interface Step {
   url: string;
   status: StepStatus;
 }
+
+//=================== Follow Steps Modal ===================//
+interface AdminData {
+  _id: string;
+  name: string;
+  email: string;
+  picture?: string;
+  role: string;
+  status: string;
+  created_at: string;
+  stats: {
+    products: number;
+    articles: number;
+    rating: number;
+    downloads: number;
+    sold: number;
+  };
+}
+
+interface AdminProfileProps {
+  adminId: string;
+  initialAdmin?: AdminData;
+  initialProducts?: Products[];
+  initialPopularProducts?: Products[];
+}

@@ -7,11 +7,11 @@ import {
   deleteArticlesCategory,
 } from "@/services/articlesCategoryService";
 
+import { checkAuthorization } from "@/lib/auth-utils";
+
 // GET all categories
 export async function GET(request: Request) {
-  const authHeader = request.headers.get("authorization");
-
-  if (authHeader !== `Bearer ${process.env.NEXT_PUBLIC_API_SECRET}`) {
+  if (!checkAuthorization(request)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -40,6 +40,10 @@ export async function GET(request: Request) {
 
 // POST create new category
 export async function POST(request: Request) {
+  if (!checkAuthorization(request)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const { title, categoryId } = await request.json();
 
@@ -66,6 +70,10 @@ export async function POST(request: Request) {
 
 // PUT update category
 export async function PUT(request: Request) {
+  if (!checkAuthorization(request)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const { id, title, categoryId } = await request.json();
 
@@ -101,6 +109,10 @@ export async function PUT(request: Request) {
 
 // DELETE category
 export async function DELETE(request: Request) {
+  if (!checkAuthorization(request)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");

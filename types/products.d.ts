@@ -855,3 +855,30 @@ interface ProductsTagsPageProps {
     sort?: string;
   }>;
 }
+
+//====================== Admin Products Response ======================//
+interface AdminProductsResponse {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  data: any[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    pages: number;
+  };
+}
+
+interface Rating {
+  _id: string;
+  productsId: string;
+  rating: number;
+  comment: string;
+  author: {
+      _id: string;
+      name: string;
+      picture?: string;
+      role: string;
+  };
+  created_at: string;
+  updated_at: string;
+}

@@ -7,20 +7,12 @@ import {
   deleteCategory,
 } from "@/services/categoryService";
 
-import { API_CONFIG } from "@/lib/config";
+import { checkAuthorization } from "@/lib/auth-utils";
 
-// GET all categories
 export async function GET(request: Request) {
-  const authHeader = request.headers.get("authorization");
-
-  if (authHeader !== `Bearer ${API_CONFIG.SECRET}`) {
-    const response = NextResponse.json(
-      { error: "Unauthorized" },
-      { status: 401 }
-    );
-    return response;
+  if (!checkAuthorization(request)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-
   try {
     const categories = await getAllCategories();
 
@@ -49,6 +41,10 @@ export async function GET(request: Request) {
 
 // POST create new category
 export async function POST(request: Request) {
+  if (!checkAuthorization(request)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const { title, categoryId } = await request.json();
 
@@ -75,6 +71,10 @@ export async function POST(request: Request) {
 
 // PUT update category
 export async function PUT(request: Request) {
+  if (!checkAuthorization(request)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const { id, title, categoryId } = await request.json();
 
@@ -110,6 +110,10 @@ export async function PUT(request: Request) {
 
 // DELETE category
 export async function DELETE(request: Request) {
+  if (!checkAuthorization(request)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const { id } = await request.json();
 

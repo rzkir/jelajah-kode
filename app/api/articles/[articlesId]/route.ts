@@ -4,13 +4,13 @@ import { connectMongoDB } from "@/lib/mongodb";
 
 import Articles from "@/models/Articles";
 
+import { checkAuthorization } from "@/lib/auth-utils";
+
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ articlesId: string }> }
 ) {
-  const authHeader = request.headers.get("authorization");
-
-  if (authHeader !== `Bearer ${process.env.NEXT_PUBLIC_API_SECRET}`) {
+  if (!checkAuthorization(request)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

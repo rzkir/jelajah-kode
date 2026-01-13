@@ -6,10 +6,16 @@ import { Types } from "mongoose";
 
 import Articles from "@/models/Articles";
 
+import { checkAuthorization } from "@/lib/auth-utils";
+
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ adminId: string }> }
 ) {
+  if (!checkAuthorization(request)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const { adminId } = await params;
 

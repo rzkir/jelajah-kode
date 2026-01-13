@@ -10,10 +10,16 @@ import Products from "@/models/Products";
 
 import Articles from "@/models/Articles";
 
+import { checkAuthorization } from "@/lib/auth-utils";
+
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ adminId: string }> }
 ) {
+  if (!checkAuthorization(request)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const { adminId } = await params;
 
@@ -84,23 +90,25 @@ export async function GET(
       averageRating = totalRating / ratingsWithValues.length;
     }
 
-    // Get total download count
-    const totalDownloads = await Products.aggregate([
-      {
-        $match: {
-          "author._id": new Types.ObjectId(adminId),
-          status: "publish",
-        },
-      },
-      {
-        $group: {
-          _id: null,
-          total: { $sum: "$downloadCount" },
-        },
-      },
-    ]);
+    // Get total download count and sold count from all published products
+    const productsWithStats = await Products.find({
+      "author._id": adminId,
+      status: "publish",
+    }).select("downloadCount sold");
 
-    const downloadCount = totalDownloads[0]?.total || 0;
+    const downloadCount = productsWithStats.reduce(
+      (total: number, product: { downloadCount?: number }) => {
+        return total + (product.downloadCount || 0);
+      },
+      0
+    );
+
+    const totalSold = productsWithStats.reduce(
+      (total: number, product: { sold?: number }) => {
+        return total + (product.sold || 0);
+      },
+      0
+    );
 
     // Format admin response
     const adminObj = admin.toObject() as {
@@ -126,6 +134,7 @@ export async function GET(
         articles: articlesCount,
         rating: parseFloat(averageRating.toFixed(1)),
         downloads: downloadCount,
+        sold: totalSold,
       },
     };
 

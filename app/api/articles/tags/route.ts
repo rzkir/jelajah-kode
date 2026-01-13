@@ -7,10 +7,10 @@ import {
   deleteArticlesTag,
 } from "@/services/articlesTagsServices";
 
-export async function GET(request: Request) {
-  const authHeader = request.headers.get("authorization");
+import { checkAuthorization } from "@/lib/auth-utils";
 
-  if (authHeader !== `Bearer ${process.env.NEXT_PUBLIC_API_SECRET}`) {
+export async function GET(request: Request) {
+  if (!checkAuthorization(request)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -39,6 +39,10 @@ export async function GET(request: Request) {
 
 // POST create new tag
 export async function POST(request: Request) {
+  if (!checkAuthorization(request)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const { title, tagsId } = await request.json();
 
@@ -65,6 +69,10 @@ export async function POST(request: Request) {
 
 // PUT update tag
 export async function PUT(request: Request) {
+  if (!checkAuthorization(request)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const { id, title, tagsId } = await request.json();
 
@@ -97,6 +105,10 @@ export async function PUT(request: Request) {
 
 // DELETE tag
 export async function DELETE(request: Request) {
+  if (!checkAuthorization(request)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");

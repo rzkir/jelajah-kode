@@ -1,8 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
+
 import Image from "next/image";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
 import {
     Dialog,
     DialogContent,
@@ -10,29 +13,12 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
+
 import { Star, Package, Loader2 } from "lucide-react";
+
 import { fetchProductsRatings } from "@/utils/fetching/FetchProducts";
 
-interface TransactionRatingsProps {
-    transaction: Transaction | null;
-    isOpen: boolean;
-    onClose: () => void;
-}
-
-interface Rating {
-    _id: string;
-    productsId: string;
-    rating: number;
-    comment: string;
-    author: {
-        _id: string;
-        name: string;
-        picture?: string;
-        role: string;
-    };
-    created_at: string;
-    updated_at: string;
-}
+import RatingsCard from "@/components/ui/ratings/RatingsCard";
 
 export default function TransactionRatings({
     transaction,
@@ -148,49 +134,16 @@ export default function TransactionRatings({
                                             )}
                                             <div className="flex-1 space-y-4">
                                                 {hasRating && ratingData ? (
-                                                    <>
-                                                        <div>
-                                                            <p className="text-sm font-medium text-muted-foreground mb-2">
-                                                                Rating
-                                                            </p>
-                                                            <div className="flex items-center gap-2">
-                                                                <div className="flex items-center gap-1">
-                                                                    {[1, 2, 3, 4, 5].map((star) => (
-                                                                        <Star
-                                                                            key={star}
-                                                                            className={`h-5 w-5 ${star <= (ratingData.rating || 0)
-                                                                                ? "fill-yellow-400 text-yellow-400"
-                                                                                : "text-muted-foreground"
-                                                                                }`}
-                                                                        />
-                                                                    ))}
-                                                                </div>
-                                                                <span className="text-sm font-semibold text-muted-foreground">
-                                                                    {ratingData.rating}/5
-                                                                </span>
-                                                            </div>
-                                                        </div>
-
-                                                        {ratingData.comment && (
-                                                            <div>
-                                                                <p className="text-sm font-medium text-muted-foreground mb-2">
-                                                                    Review
-                                                                </p>
-                                                                <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-4 border border-border">
-                                                                    <p className="text-sm leading-relaxed text-foreground">
-                                                                        {ratingData.comment}
-                                                                    </p>
-                                                                </div>
-                                                            </div>
-                                                        )}
-
-                                                        <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
-                                                            <span>Product ID: {product.productsId}</span>
-                                                            {ratingData._id && (
-                                                                <span>• Rating ID: {ratingData._id}</span>
-                                                            )}
-                                                        </div>
-                                                    </>
+                                                    <RatingsCard
+                                                        item={{
+                                                            ...ratingData,
+                                                            product: {
+                                                                productsId: product.productsId,
+                                                                title: product.title,
+                                                                thumbnail: product.thumbnail,
+                                                            },
+                                                        }}
+                                                    />
                                                 ) : (
                                                     <div className="py-4 text-center">
                                                         <div className="flex flex-col items-center gap-2">

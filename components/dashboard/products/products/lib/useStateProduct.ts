@@ -167,12 +167,18 @@ export default function useStateProduct() {
   const fetchProducts = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch(API_CONFIG.ENDPOINTS.products.base, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${API_CONFIG.SECRET}`,
-        },
-      });
+      const apiSecret = API_CONFIG.SECRET;
+      const url = API_CONFIG.ENDPOINTS.products.base;
+
+      const headers: HeadersInit = {
+        "Content-Type": "application/json",
+      };
+
+      if (apiSecret) {
+        headers.Authorization = `Bearer ${apiSecret}`;
+      }
+
+      const response = await fetch(url, { headers });
 
       if (!response.ok) {
         throw new Error("Failed to fetch products");
@@ -200,15 +206,21 @@ export default function useStateProduct() {
 
     try {
       setIsSubmitting(true);
-      const response = await fetch(
-        API_CONFIG.ENDPOINTS.products.byId(deleteId),
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${API_CONFIG.SECRET}`,
-          },
-        }
-      );
+      const apiSecret = API_CONFIG.SECRET;
+      const url = apiSecret
+        ? API_CONFIG.ENDPOINTS.products.byId(deleteId)
+        : `/api/products?id=${deleteId}`;
+
+      const headers: HeadersInit = {};
+
+      if (apiSecret) {
+        headers.Authorization = `Bearer ${apiSecret}`;
+      }
+
+      const response = await fetch(url, {
+        method: "DELETE",
+        headers,
+      });
 
       if (!response.ok) {
         throw new Error("Failed to delete product");

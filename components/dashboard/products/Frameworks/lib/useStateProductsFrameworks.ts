@@ -57,12 +57,18 @@ export default function useStateFrameworks() {
   const fetchFrameworks = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch(API_CONFIG.ENDPOINTS.products.framework, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${API_CONFIG.SECRET}`,
-        },
-      });
+      const apiSecret = API_CONFIG.SECRET;
+      const url = API_CONFIG.ENDPOINTS.products.framework;
+
+      const headers: HeadersInit = {
+        "Content-Type": "application/json",
+      };
+
+      if (apiSecret) {
+        headers.Authorization = `Bearer ${apiSecret}`;
+      }
+
+      const response = await fetch(url, { headers });
       const data = await response.json();
       setFrameworks(data);
     } catch {
@@ -101,16 +107,19 @@ export default function useStateFrameworks() {
         const form = new FormData();
         form.append("file", file);
 
-        const response = await fetch(
-          API_CONFIG.ENDPOINTS.products.frameworkUpload,
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${API_CONFIG.SECRET}`,
-            },
-            body: form,
-          }
-        );
+        const apiSecret = API_CONFIG.SECRET;
+        const url = API_CONFIG.ENDPOINTS.products.frameworkUpload;
+
+        const headers: HeadersInit = {};
+        if (apiSecret) {
+          headers.Authorization = `Bearer ${apiSecret}`;
+        }
+
+        const response = await fetch(url, {
+          method: "POST",
+          headers,
+          body: form,
+        });
         if (!response.ok) throw new Error("Upload failed");
 
         const data = await response.json();
@@ -165,40 +174,48 @@ export default function useStateFrameworks() {
       setIsSubmitting(true);
 
       if (isEditing) {
-        const response = await fetch(
-          API_CONFIG.ENDPOINTS.products.frameworkById(formData._id),
-          {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${API_CONFIG.SECRET}`,
-            },
-            body: JSON.stringify({
-              thumbnail: pendingUploads[0].imageUrl,
-              title: pendingUploads[0].title,
-              frameworkId: generateFrameworkId(pendingUploads[0].title),
-            }),
-          }
-        );
+        const apiSecret = API_CONFIG.SECRET;
+        const url = API_CONFIG.ENDPOINTS.products.frameworkById(formData._id);
+
+        const headers: HeadersInit = {
+          "Content-Type": "application/json",
+        };
+        if (apiSecret) {
+          headers.Authorization = `Bearer ${apiSecret}`;
+        }
+
+        const response = await fetch(url, {
+          method: "PUT",
+          headers,
+          body: JSON.stringify({
+            thumbnail: pendingUploads[0].imageUrl,
+            title: pendingUploads[0].title,
+            frameworkId: generateFrameworkId(pendingUploads[0].title),
+          }),
+        });
         if (!response.ok) throw new Error("Failed to update framework");
         toast.success("Framework updated successfully");
       } else {
         const savePromises = pendingUploads.map(async (upload) => {
-          const response = await fetch(
-            API_CONFIG.ENDPOINTS.products.framework,
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${API_CONFIG.SECRET}`,
-              },
-              body: JSON.stringify({
-                thumbnail: upload.imageUrl,
-                title: upload.title,
-                frameworkId: generateFrameworkId(upload.title),
-              }),
-            }
-          );
+          const apiSecret = API_CONFIG.SECRET;
+          const url = API_CONFIG.ENDPOINTS.products.framework;
+
+          const headers: HeadersInit = {
+            "Content-Type": "application/json",
+          };
+          if (apiSecret) {
+            headers.Authorization = `Bearer ${apiSecret}`;
+          }
+
+          const response = await fetch(url, {
+            method: "POST",
+            headers,
+            body: JSON.stringify({
+              thumbnail: upload.imageUrl,
+              title: upload.title,
+              frameworkId: generateFrameworkId(upload.title),
+            }),
+          });
           if (!response.ok) throw new Error("Failed to save framework");
           return response.json();
         });
@@ -232,15 +249,18 @@ export default function useStateFrameworks() {
   const handleDelete = async (id: string) => {
     try {
       setIsDeleting(true);
-      const response = await fetch(
-        API_CONFIG.ENDPOINTS.products.frameworkById(id),
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${API_CONFIG.SECRET}`,
-          },
-        }
-      );
+      const apiSecret = API_CONFIG.SECRET;
+      const url = API_CONFIG.ENDPOINTS.products.frameworkById(id);
+
+      const headers: HeadersInit = {};
+      if (apiSecret) {
+        headers.Authorization = `Bearer ${apiSecret}`;
+      }
+
+      const response = await fetch(url, {
+        method: "DELETE",
+        headers,
+      });
       if (!response.ok) throw new Error("Failed to delete framework");
       toast.success("Framework deleted successfully");
       void fetchFrameworks();

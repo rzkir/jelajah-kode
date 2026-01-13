@@ -22,12 +22,18 @@ export default function useStateProductsType() {
 
   const fetchTypes = async () => {
     try {
-      const response = await fetch(API_CONFIG.ENDPOINTS.products.type, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${API_CONFIG.SECRET}`,
-        },
-      });
+      const apiSecret = API_CONFIG.SECRET;
+      const url = API_CONFIG.ENDPOINTS.products.type;
+
+      const headers: HeadersInit = {
+        "Content-Type": "application/json",
+      };
+
+      if (apiSecret) {
+        headers.Authorization = `Bearer ${apiSecret}`;
+      }
+
+      const response = await fetch(url, { headers });
       if (!response.ok) {
         throw new Error("Failed to fetch types");
       }
@@ -70,12 +76,20 @@ export default function useStateProductsType() {
           }
         : { title: formData.title, typeId: formData.typeId };
 
-      const response = await fetch(API_CONFIG.ENDPOINTS.products.type, {
+      const apiSecret = API_CONFIG.SECRET;
+      const url = API_CONFIG.ENDPOINTS.products.type;
+
+      const headers: HeadersInit = {
+        "Content-Type": "application/json",
+      };
+
+      if (apiSecret) {
+        headers.Authorization = `Bearer ${apiSecret}`;
+      }
+
+      const response = await fetch(url, {
         method,
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${API_CONFIG.SECRET}`,
-        },
+        headers,
         body: JSON.stringify(body),
       });
 
@@ -101,12 +115,20 @@ export default function useStateProductsType() {
 
     setIsDeleting(true);
     try {
-      const response = await fetch(API_CONFIG.ENDPOINTS.products.type, {
+      const apiSecret = API_CONFIG.SECRET;
+      const url = API_CONFIG.ENDPOINTS.products.type;
+
+      const headers: HeadersInit = {
+        "Content-Type": "application/json",
+      };
+
+      if (apiSecret) {
+        headers.Authorization = `Bearer ${apiSecret}`;
+      }
+
+      const response = await fetch(url, {
         method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${API_CONFIG.SECRET}`,
-        },
+        headers,
         body: JSON.stringify({ id: typeToDelete._id }),
       });
 
