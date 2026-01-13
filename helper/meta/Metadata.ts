@@ -392,6 +392,83 @@ export async function generateProductsDetailsMetadata(
   }
 }
 
+//====================================== Products Ratings Metadata ======================================//
+export async function generateProductsRatingsMetadata(
+  params: Promise<{ productsId: string }>
+): Promise<Metadata> {
+  const { productsId } = await params;
+
+  try {
+    const product = await fetchProductsById(productsId);
+    const title = product.title;
+    const thumbnail = product.thumbnail;
+    const ratingAverage = product.ratingAverage || 0;
+    const ratingCount = product.ratingCount || 0;
+    const url = `${API_CONFIG.ENDPOINTS.base}/products/${productsId}/ratings`;
+
+    const ratingsDescription = `View ratings and reviews for ${title} on jelajah Code. ${ratingCount} review${
+      ratingCount !== 1 ? "s" : ""
+    } with an average rating of ${
+      ratingAverage > 0 ? ratingAverage.toFixed(1) : "0"
+    }★.`;
+
+    return {
+      title: `Ratings & Reviews - ${title} - jelajah Code`,
+      description: ratingsDescription,
+      openGraph: {
+        title: `Ratings & Reviews - ${title} - jelajah Code`,
+        description: ratingsDescription,
+        url: url,
+        siteName: "jelajah Code",
+        images: [
+          {
+            url: thumbnail,
+            width: 1200,
+            height: 630,
+            alt: `Ratings & Reviews - ${title}`,
+          },
+        ],
+        locale: "en_US",
+        type: "website",
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: `Ratings & Reviews - ${title} - jelajah Code`,
+        description: ratingsDescription,
+        images: [thumbnail],
+      },
+    };
+  } catch {
+    // Fallback metadata if product fetch fails
+    return {
+      title: `Ratings & Reviews - Product ${productsId} - jelajah Code`,
+      description: `View ratings and reviews for product ${productsId} on jelajah Code platform`,
+      openGraph: {
+        title: `Ratings & Reviews - Product ${productsId} - jelajah Code`,
+        description: `View ratings and reviews for product ${productsId} on jelajah Code platform`,
+        url: `${API_CONFIG.ENDPOINTS.base}/products/${productsId}/ratings`,
+        siteName: "jelajah Code",
+        images: [
+          {
+            url: "/images/product-default-og-image.jpg",
+            width: 1200,
+            height: 630,
+            alt: `Ratings & Reviews - Product ${productsId}`,
+          },
+        ],
+        locale: "en_US",
+        type: "website",
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: `Ratings & Reviews - Product ${productsId} - jelajah Code`,
+        description: `View ratings and reviews for product ${productsId} on jelajah Code platform`,
+        images: ["/images/product-default-og-image.jpg"],
+      },
+    };
+  }
+}
+
 //====================================== Checkout Metadata ======================================//
 export const CheckoutMetadata: Metadata = {
   title: "Checkout - jelajah Code",

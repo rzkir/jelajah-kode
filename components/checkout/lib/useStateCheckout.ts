@@ -15,9 +15,12 @@ import {
 
 import { useAuth } from "@/utils/context/AuthContext";
 
+import { useCart } from "@/utils/context/CartContext";
+
 const useStateCheckout = (productsParam: string) => {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
+  const { clearCart } = useCart();
 
   const [products, setProducts] = useState<CheckoutProduct[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -231,6 +234,8 @@ const useStateCheckout = (productsParam: string) => {
         }
 
         toast.success("Checkout successful!");
+        // Clear cart when checkout is successful for free products
+        clearCart();
         setIsProcessing(false);
 
         setTimeout(() => {
@@ -302,7 +307,7 @@ const useStateCheckout = (productsParam: string) => {
       toast.error(error instanceof Error ? error.message : "Checkout failed");
       setIsProcessing(false);
     }
-  }, [fetchPaymentDetails, products, router, user]);
+  }, [fetchPaymentDetails, products, router, user, clearCart]);
 
   const handleCheckout = useCallback(() => {
     if (!user) {

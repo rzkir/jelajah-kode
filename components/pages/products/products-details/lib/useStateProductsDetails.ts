@@ -13,6 +13,8 @@ import { useDiscount } from "@/hooks/discountServices";
 
 import { useAuth } from "@/utils/context/AuthContext";
 
+import { useCart } from "@/utils/context/CartContext";
+
 import { toast } from "sonner";
 
 interface Rating {
@@ -39,6 +41,7 @@ export default function useStateProductsDetails({
 }: UseStateProductsDetailsProps) {
   const router = useRouter();
   const { user } = useAuth();
+  const { addToCart, isInCart } = useCart();
   const [activeTab, setActiveTab] = useState("overview");
   const [selectedImage, setSelectedImage] = useState(product.thumbnail);
   const [relatedProducts, setRelatedProducts] = useState<Products[]>([]);
@@ -199,6 +202,28 @@ export default function useStateProductsDetails({
     router.push(`/checkout?products=${product._id}:1`);
   };
 
+  const handleAddToCart = () => {
+    // Check if product is available
+    if (product.status !== "publish") {
+      toast.error("This product is not available");
+      return;
+    }
+
+    // Check stock availability
+    if (product.stock < 1) {
+      toast.error("Product is out of stock");
+      return;
+    }
+
+    // Add to cart
+    addToCart(product, 1);
+  };
+
+  const productInCart = useMemo(
+    () => isInCart(product._id),
+    [isInCart, product._id]
+  );
+
   return {
     activeTab,
     setActiveTab,
@@ -216,6 +241,8 @@ export default function useStateProductsDetails({
     allImages,
     handleShare,
     handleBuyNow,
+    handleAddToCart,
+    isInCart: productInCart,
     authorProductsCount,
     authorAverageRating,
     ratingFilter,

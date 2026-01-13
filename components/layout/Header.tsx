@@ -14,11 +14,16 @@ import NavMain from "@/components/layout/NavMain"
 
 import ProfileMenu from "@/components/layout/ProfileMenu"
 
+import { useCart } from "@/utils/context/CartContext"
+
 const navigationLinks = [
   { label: "Explore Products", href: "/products" }
 ]
 
 export default function Header() {
+  const { getTotalItems, setCartSheetOpen } = useCart();
+  const cartItemCount = getTotalItems();
+
   return (
     <Fragment>
       <NavMain />
@@ -57,13 +62,18 @@ export default function Header() {
               </div>
 
               {/* Cart Icon */}
-              <Link
-                href="/cart"
+              <button
+                onClick={() => setCartSheetOpen(true)}
                 className="hidden sm:flex items-center justify-center size-10 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors relative"
                 aria-label="Shopping cart"
               >
                 <ShoppingCart className="size-5 text-gray-700 dark:text-gray-300" />
-              </Link>
+                {cartItemCount > 0 && (
+                  <span className="absolute -top-1 -right-1 flex items-center justify-center min-w-[20px] h-5 px-1.5 text-xs font-bold text-white bg-red-500 rounded-full">
+                    {cartItemCount > 99 ? "99+" : cartItemCount}
+                  </span>
+                )}
+              </button>
 
               {/* Theme Toggle */}
               <ThemeToggle />

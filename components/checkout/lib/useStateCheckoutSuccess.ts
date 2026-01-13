@@ -12,10 +12,13 @@ import { API_CONFIG } from "@/lib/config";
 
 import { useAuth } from "@/utils/context/AuthContext";
 
+import { useCart } from "@/utils/context/CartContext";
+
 const useStateCheckoutSuccess = ({ status }: UseStateCheckoutSuccessParams) => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
+  const { clearCart } = useCart();
 
   const [transaction, setTransaction] = useState<Transaction | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -31,6 +34,7 @@ const useStateCheckoutSuccess = ({ status }: UseStateCheckoutSuccessParams) => {
   >({});
   const [isContinuingPayment, setIsContinuingPayment] = useState(false);
   const confettiTriggered = useRef(false);
+  const cartCleared = useRef(false);
 
   const fetchTransaction = useCallback(
     async (orderId: string) => {
@@ -150,6 +154,20 @@ const useStateCheckoutSuccess = ({ status }: UseStateCheckoutSuccessParams) => {
 
     fetchTransaction(orderId);
   }, [authLoading, fetchTransaction, router, searchParams, status, user]);
+
+  // Clear cart when transaction is successful (only once)
+  useEffect(() => {
+    if (
+      !authLoading &&
+      !isLoading &&
+      transaction?.status === "success" &&
+      !cartCleared.current
+    ) {
+      // Clear cart when checkout is successful
+      clearCart();
+      cartCleared.current = true;
+    }
+  }, [authLoading, isLoading, transaction?.status, clearCart]);
 
   // Trigger confetti celebration when success page is first loaded
   // Wait for loading to complete before showing confetti

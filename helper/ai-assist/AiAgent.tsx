@@ -52,7 +52,7 @@ export default function Cta({
                     setIsOpen(true);
                 }}
                 className={cn(
-                    "fixed bottom-6 right-6 px-5 py-3.5 rounded-full cursor-pointer bg-linear-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 transition-all shadow-xl hover:shadow-2xl z-40 flex items-center gap-2.5 font-semibold text-sm",
+                    "fixed bottom-24 md:bottom-6 right-6 px-5 py-3.5 rounded-full cursor-pointer bg-linear-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 transition-all shadow-xl hover:shadow-2xl z-40 flex items-center gap-2.5 font-semibold text-sm",
                     className
                 )}
                 whileHover={{ scale: 1.05, y: -2 }}

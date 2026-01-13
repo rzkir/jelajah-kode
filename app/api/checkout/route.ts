@@ -48,7 +48,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Parse products from query string format: "id1:qty1,id2:qty2"
-    const productEntries = productsParam.split(",").map((entry) => {
+    const productEntriesRaw = productsParam.split(",").map((entry) => {
       const [id, qty] = entry.split(":");
       return {
         productId: id,
@@ -56,9 +56,32 @@ export async function GET(request: NextRequest) {
       };
     });
 
-    if (productEntries.length === 0) {
+    if (productEntriesRaw.length === 0) {
       return NextResponse.json([]);
     }
+
+    // Gabungkan produk dengan productId yang sama dan jumlahkan quantity-nya
+    const mergedProductsMap = new Map<
+      string,
+      { productId: string; quantity: number }
+    >();
+
+    for (const entry of productEntriesRaw) {
+      const productId = entry.productId;
+      const quantity = entry.quantity || 1;
+
+      if (mergedProductsMap.has(productId)) {
+        // Jika produk sudah ada, tambahkan quantity-nya
+        const existing = mergedProductsMap.get(productId)!;
+        existing.quantity += quantity;
+      } else {
+        // Jika produk belum ada, tambahkan ke map
+        mergedProductsMap.set(productId, { productId, quantity });
+      }
+    }
+
+    // Convert map back to array
+    const productEntries = Array.from(mergedProductsMap.values());
 
     // Fetch products from database
     const productIds = productEntries.map((p) => p.productId);
@@ -144,8 +167,31 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Gabungkan produk dengan productId yang sama dan jumlahkan quantity-nya
+    const mergedProductsMap = new Map<
+      string,
+      { productId: string; quantity: number }
+    >();
+
+    for (const productData of products) {
+      const productId = productData.productId;
+      const quantity = productData.quantity || 1;
+
+      if (mergedProductsMap.has(productId)) {
+        // Jika produk sudah ada, tambahkan quantity-nya
+        const existing = mergedProductsMap.get(productId)!;
+        existing.quantity += quantity;
+      } else {
+        // Jika produk belum ada, tambahkan ke map
+        mergedProductsMap.set(productId, { productId, quantity });
+      }
+    }
+
+    // Convert map back to array
+    const mergedProducts = Array.from(mergedProductsMap.values());
+
     // Validate and fetch products
-    const productIds = products.map((p: { productId: string }) => p.productId);
+    const productIds = mergedProducts.map((p) => p.productId);
     const dbProducts = await Products.find({
       _id: { $in: productIds },
       status: "publish",
@@ -165,7 +211,7 @@ export async function POST(request: NextRequest) {
       (p: { paymentType: string }) => p.paymentType === "paid"
     );
 
-    for (const productData of products) {
+    for (const productData of mergedProducts) {
       const dbProduct = dbProducts.find(
         (p: { _id: { toString(): string } }) =>
           p._id.toString() === productData.productId
@@ -249,21 +295,45 @@ export async function POST(request: NextRequest) {
     // Generate Midtrans snap token for paid products
     if (paymentMethod === "paid" && totalAmount > 0) {
       try {
+        // Prepare item_details with proper length limits for Midtrans
+        // Midtrans limits: id (50 chars), name (50 chars)
+        const itemDetails = transactionProducts.map((tp) => {
+          const productId = tp.productsId || tp._id;
+          const productName = tp.title || "Product";
+
+          return {
+            id: productId.length > 50 ? productId.substring(0, 50) : productId,
+            price: Math.round(tp.price), // Ensure price is integer
+            quantity: tp.quantity,
+            name:
+              productName.length > 50
+                ? productName.substring(0, 50)
+                : productName,
+          };
+        });
+
+        // Verify total amount matches sum of (price * quantity)
+        // Midtrans requires gross_amount to exactly match sum of (price * quantity) in item_details
+        const calculatedTotal = itemDetails.reduce(
+          (sum, item) => sum + item.price * item.quantity,
+          0
+        );
+
+        // Use calculated total to ensure Midtrans validation passes
+        // Round to ensure it's an integer (Midtrans requirement)
+        const finalTotalAmount = Math.round(calculatedTotal);
+
         const parameter = {
           transaction_details: {
             order_id: transaction.order_id,
-            gross_amount: totalAmount,
+            gross_amount: finalTotalAmount,
           },
           customer_details: {
-            first_name: user.name,
+            first_name:
+              user.name.length > 50 ? user.name.substring(0, 50) : user.name,
             email: user.email,
           },
-          item_details: transactionProducts.map((tp) => ({
-            id: tp.productsId,
-            price: tp.price,
-            quantity: tp.quantity,
-            name: tp.title,
-          })),
+          item_details: itemDetails,
         };
 
         const snapResponse = await snap.createTransaction(parameter);

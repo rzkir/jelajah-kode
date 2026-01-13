@@ -165,8 +165,15 @@ export function useStateEditArticles() {
         });
       }, 200);
 
+      const apiSecret = API_CONFIG.SECRET;
+      const headers: HeadersInit = {};
+      if (apiSecret) {
+        headers.Authorization = `Bearer ${apiSecret}`;
+      }
+
       const response = await fetch(API_CONFIG.ENDPOINTS.products.upload, {
         method: "POST",
+        headers,
         body: uploadFormData,
       });
 

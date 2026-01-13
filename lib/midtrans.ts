@@ -1,7 +1,7 @@
 import midtransClient from "midtrans-client";
 
 if (!process.env.MIDTRANS_SERVER_KEY) {
-  throw new Error("MIDTRANS_SERVER_KEY is not defined");
+  throw new Error("NEXT_PUBLIC_MIDTRANS_MIDTRANS_SERVER_KEY is not defined");
 }
 
 if (!process.env.MIDTRANS_CLIENT_KEY) {

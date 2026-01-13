@@ -14,8 +14,13 @@ import AiAgent from "@/helper/ai-assist/AiAgent"
 
 import { Toaster } from "sonner";
 
+import CartSheet from "@/components/cart/CartSheet";
+
+import { useCart } from "@/utils/context/CartContext";
+
 const Pathname = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname();
+  const { cartSheetOpen, setCartSheetOpen } = useCart();
 
   const isRoute =
     pathname?.includes("/signin") ||
@@ -46,6 +51,8 @@ const Pathname = ({ children }: { children: React.ReactNode }) => {
       {!isRoute && <div className="fixed bottom-6 right-6 z-50">
         <AiAgent />
       </div>}
+      {/* Cart Sheet - Always available */}
+      <CartSheet open={cartSheetOpen} onOpenChange={setCartSheetOpen} />
     </Fragment>
   );
 };

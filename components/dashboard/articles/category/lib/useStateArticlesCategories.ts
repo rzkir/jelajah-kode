@@ -128,6 +128,7 @@ export default function useStateArticlesCategories() {
       const response = await fetch(url, {
         method: "DELETE",
         headers,
+        body: JSON.stringify({ id: categoryToDelete._id }),
       });
 
       if (!response.ok) throw new Error("Failed to delete category");

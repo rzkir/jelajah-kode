@@ -33,14 +33,18 @@ import Image from "next/image";
 
 import { Search, Filter, X, Calendar, DollarSign, User, Package, CreditCard, TrendingUp, Eye, Mail, Loader2, Trash2, Star } from "lucide-react";
 
-import TransactionModal from "./modal/TransactionModal";
-import TransactionRatings from "./modal/TransactionRatings";
+import TransactionModal from "@/components/dashboard/transactions/transactions/modal/TransactionModal";
 
-import DeleteModalTransaction from "../pending/modal/DeleteModalTransaction";
+import TransactionRatings from "@/components/dashboard/transactions/transactions/modal/TransactionRatings";
+
+import DeleteModalTransaction from "@/components/dashboard/transactions/pending/modal/DeleteModalTransaction";
 
 import { getStatusVariant, getStatusColor } from "@/hooks/TextFormatter";
+
 import { toast } from "sonner";
+
 import { API_CONFIG } from "@/lib/config";
+
 import {
     Menubar,
     MenubarContent,

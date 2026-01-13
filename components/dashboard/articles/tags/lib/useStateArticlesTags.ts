@@ -67,6 +67,7 @@ export default function useStateArticlesTags() {
     e.preventDefault();
     setIsSubmitting(true);
     try {
+      const apiSecret = API_CONFIG.SECRET;
       const url = API_CONFIG.ENDPOINTS.articles.tags;
       const method = editingTag ? "PUT" : "POST";
       const body = editingTag
@@ -77,9 +78,14 @@ export default function useStateArticlesTags() {
           }
         : { title: formData.title, tagsId: formData.tagsId };
 
+      const headers: HeadersInit = { "Content-Type": "application/json" };
+      if (apiSecret) {
+        headers.Authorization = `Bearer ${apiSecret}`;
+      }
+
       const response = await fetch(url, {
         method,
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify(body),
       });
 
@@ -113,7 +119,11 @@ export default function useStateArticlesTags() {
         headers.Authorization = `Bearer ${apiSecret}`;
       }
 
-      const response = await fetch(url, { method: "DELETE", headers });
+      const response = await fetch(url, {
+        method: "DELETE",
+        headers,
+        body: JSON.stringify({ id: tagToDelete._id }),
+      });
 
       if (!response.ok) throw new Error("Failed to delete tag");
 

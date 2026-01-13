@@ -18,14 +18,19 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 import { Skeleton } from "@/components/ui/skeleton";
 
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
 import { Star, ArrowLeft, Search } from "lucide-react";
 
 import { fetchProductsRatings, fetchProductsById } from "@/utils/fetching/FetchProducts";
+
+import useFormatDate from "@/hooks/FormatDate";
 
 export default function RatingsDetails() {
     const params = useParams();
     const router = useRouter();
     const productsId = params?.productsId as string;
+    const { formatDate } = useFormatDate();
 
     const [ratings, setRatings] = useState<Rating[]>([]);
     const [ratingsLoading, setRatingsLoading] = useState<boolean>(true);
@@ -122,14 +127,6 @@ export default function RatingsDetails() {
             ))}
         </div>
     );
-
-    const formatDate = (dateString: string) => {
-        return new Date(dateString).toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-        });
-    };
 
     if (!productsId) {
         return (
@@ -291,24 +288,36 @@ export default function RatingsDetails() {
                                 className="bg-card/50 backdrop-blur-sm border-border/50 hover:border-primary/50 transition-colors"
                             >
                                 <CardContent className="p-6">
-                                    <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-4">
-                                        <div className="flex-1">
-                                            <div className="flex items-center gap-2 mb-2">
-                                                <span className="font-semibold text-foreground">{rating.author.name}</span>
-                                                {product && (
-                                                    <Badge variant="outline" className="text-xs bg-muted/50 border-border/50">
-                                                        {product.title}
-                                                    </Badge>
-                                                )}
+                                    <div className="flex items-start gap-4 mb-4">
+                                        <Avatar className="w-10 h-10 ring-2 ring-border/50 shadow-md shrink-0">
+                                            <AvatarImage
+                                                src={rating.author.picture}
+                                                alt={rating.author.name}
+                                            />
+                                            <AvatarFallback className="bg-linear-to-br from-primary/20 to-primary/10 font-semibold text-sm">
+                                                {rating.author.name.charAt(0).toUpperCase()}
+                                            </AvatarFallback>
+                                        </Avatar>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-2 md:gap-4 mb-2">
+                                                <div className="flex-1">
+                                                    <div className="flex items-center gap-2 mb-2 flex-wrap">
+                                                        <span className="font-semibold text-foreground">{rating.author.name}</span>
+                                                        {product && (
+                                                            <Badge variant="outline" className="text-xs bg-muted/50 border-border/50">
+                                                                {product.title}
+                                                            </Badge>
+                                                        )}
+                                                    </div>
+                                                    <div className="mb-2">{renderStars(rating.rating)}</div>
+                                                </div>
+                                                <div className="text-right">
+                                                    <div className="text-sm text-muted-foreground">{formatDate(rating.created_at)}</div>
+                                                </div>
                                             </div>
-                                            <div className="mb-2">{renderStars(rating.rating)}</div>
-                                        </div>
-                                        <div className="text-right">
-                                            <div className="text-sm text-muted-foreground">{formatDate(rating.created_at)}</div>
+                                            <p className="text-muted-foreground text-sm leading-relaxed">{rating.comment}</p>
                                         </div>
                                     </div>
-
-                                    <p className="text-muted-foreground text-sm leading-relaxed">{rating.comment}</p>
                                 </CardContent>
                             </Card>
                         ))}

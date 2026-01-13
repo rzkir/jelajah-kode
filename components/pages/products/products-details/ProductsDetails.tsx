@@ -14,7 +14,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
-import { Star, Share2, Download, Check, Filter } from 'lucide-react'
+import { Star, Share2, Download, Check, Filter, ShoppingCart } from 'lucide-react'
 
 import ProductsCard from '@/components/ui/products/ProductsCard'
 
@@ -52,6 +52,8 @@ export default function ProductsDetails({ product }: ProductsDetailsProps) {
         allImages,
         handleShare,
         handleBuyNow,
+        handleAddToCart,
+        isInCart,
         authorProductsCount,
         authorAverageRating,
         ratingFilter,
@@ -498,21 +500,33 @@ export default function ProductsDetails({ product }: ProductsDetailsProps) {
                                     </div>
 
                                     {/* Action Buttons */}
-                                    <div className="flex items-center gap-2 sm:gap-3">
+                                    <div className="space-y-2 sm:space-y-3">
+                                        <div className="flex items-center gap-2 sm:gap-3">
+                                            <Button
+                                                size="lg"
+                                                onClick={handleBuyNow}
+                                                className="flex-1 h-11 sm:h-12 text-sm sm:text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]"
+                                            >
+                                                Buy Now
+                                            </Button>
+                                            <button
+                                                onClick={handleShare}
+                                                className="p-2.5 sm:p-3 h-11 sm:h-12 w-11 sm:w-12 rounded-lg text-muted-foreground hover:text-foreground hover:bg-primary/10 transition-all duration-300 transform hover:scale-110 border border-border/50 hover:border-primary/30 flex items-center justify-center shrink-0"
+                                                title="Share"
+                                            >
+                                                <Share2 className="w-4 h-4 sm:w-5 sm:h-5" />
+                                            </button>
+                                        </div>
                                         <Button
                                             size="lg"
-                                            onClick={handleBuyNow}
-                                            className="flex-1 h-11 sm:h-12 text-sm sm:text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]"
+                                            variant={isInCart ? "outline" : "default"}
+                                            onClick={handleAddToCart}
+                                            className="w-full h-11 sm:h-12 text-sm sm:text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] flex items-center justify-center gap-2"
+                                            disabled={product.stock < 1}
                                         >
-                                            Buy Now
+                                            <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5" />
+                                            {isInCart ? "Already in Cart" : "Add to Cart"}
                                         </Button>
-                                        <button
-                                            onClick={handleShare}
-                                            className="p-2.5 sm:p-3 h-11 sm:h-12 w-11 sm:w-12 rounded-lg text-muted-foreground hover:text-foreground hover:bg-primary/10 transition-all duration-300 transform hover:scale-110 border border-border/50 hover:border-primary/30 flex items-center justify-center shrink-0"
-                                            title="Share"
-                                        >
-                                            <Share2 className="w-4 h-4 sm:w-5 sm:h-5" />
-                                        </button>
                                     </div>
                                 </div>
 
