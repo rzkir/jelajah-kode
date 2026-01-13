@@ -10,6 +10,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -19,7 +20,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { Search, Filter, Trash2 } from "lucide-react";
+import { Search, Filter, Trash2, Users, UserCheck, UserX, CheckCircle, UserCog } from "lucide-react";
 import BottomSheet from "@/helper/bottomsheets/BottomShets";
 import useStateUsers from "./lib/useStateUsers";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -35,7 +36,9 @@ export default function ManagementUser() {
     } | null>(null);
 
     const {
+        users,
         currentUsers,
+        filteredUsers,
         isLoading,
         isUpdating,
         isDeleting,
@@ -56,6 +59,20 @@ export default function ManagementUser() {
         deleteUser,
         formatDate,
     } = useStateUsers();
+
+    // Calculate statistics
+    const totalUsers = users.length;
+    const filteredUsersCount = filteredUsers.length;
+    const activeUsers = filteredUsers.filter((u) => u.status === "active").length;
+    const inactiveUsers = filteredUsers.filter((u) => u.status === "inactive").length;
+    const verifiedUsers = filteredUsers.filter(
+        (u) => u.isVerified === "true" || u.isVerified === true
+    ).length;
+    const hasActiveFilters =
+        searchTerm !== "" ||
+        selectedStatus !== "all" ||
+        selectedRole !== "all" ||
+        selectedVerified !== "all";
 
     const handleDeleteClick = (user: { _id: string; name: string; email: string }) => {
         setSelectedUser(user);
@@ -82,6 +99,24 @@ export default function ManagementUser() {
     if (isLoading) {
         return (
             <section className="flex flex-col gap-6">
+                {/* Summary Cards Skeleton */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {[1, 2, 3, 4].map((i) => (
+                        <Card key={i} className="border-2 shadow-md">
+                            <CardContent className="pt-6">
+                                <div className="flex items-center justify-between">
+                                    <div className="space-y-2 flex-1">
+                                        <Skeleton className="h-4 w-32" />
+                                        <Skeleton className="h-8 w-24" />
+                                        <Skeleton className="h-3 w-20" />
+                                    </div>
+                                    <Skeleton className="h-12 w-12 rounded-full" />
+                                </div>
+                            </CardContent>
+                        </Card>
+                    ))}
+                </div>
+
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 px-6 py-6 border rounded-2xl">
                     <div className="flex flex-col gap-3">
                         <Skeleton className="h-9 w-48" />
@@ -122,304 +157,443 @@ export default function ManagementUser() {
 
     return (
         <section className="flex flex-col gap-6">
-            {/* Header Section */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 px-6 py-6 border rounded-2xl">
-                <div className="flex flex-col gap-3">
-                    <h3 className="text-3xl font-bold">Management Users</h3>
-                    <ol className="flex gap-2 items-center text-sm text-muted-foreground">
-                        <li className="flex items-center hover:text-primary transition-colors">
-                            <span>Dashboard</span>
-                            <svg
-                                className="w-4 h-4 mx-1"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M9 5l7 7-7 7"
-                                />
-                            </svg>
-                        </li>
-                        <li className="flex items-center text-primary font-medium">
-                            <span>Management Users</span>
-                        </li>
-                    </ol>
-                </div>
+            {/* Summary Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <Card className="border-2 shadow-md">
+                    <CardContent className="pt-6">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-sm font-medium text-muted-foreground">Total Users</p>
+                                <p className="text-2xl font-bold mt-1 text-primary">
+                                    {filteredUsersCount}
+                                </p>
+                                {hasActiveFilters && filteredUsersCount !== totalUsers && (
+                                    <p className="text-xs text-muted-foreground mt-1">
+                                        All: {totalUsers}
+                                    </p>
+                                )}
+                            </div>
+                            <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
+                                <Users className="h-6 w-6 text-primary" />
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                <Card className="border-2 shadow-md">
+                    <CardContent className="pt-6">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-sm font-medium text-muted-foreground">Active</p>
+                                <p className="text-2xl font-bold mt-1 text-green-600 dark:text-green-400">
+                                    {activeUsers}
+                                </p>
+                                {hasActiveFilters && (
+                                    <p className="text-xs text-muted-foreground mt-1">
+                                        {users.filter((u) => u.status === "active").length} total
+                                    </p>
+                                )}
+                            </div>
+                            <div className="h-12 w-12 rounded-full bg-green-500/10 flex items-center justify-center">
+                                <UserCheck className="h-6 w-6 text-green-600 dark:text-green-400" />
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                <Card className="border-2 shadow-md">
+                    <CardContent className="pt-6">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-sm font-medium text-muted-foreground">Inactive</p>
+                                <p className="text-2xl font-bold mt-1 text-yellow-600 dark:text-yellow-400">
+                                    {inactiveUsers}
+                                </p>
+                                {hasActiveFilters && (
+                                    <p className="text-xs text-muted-foreground mt-1">
+                                        {users.filter((u) => u.status === "inactive").length} total
+                                    </p>
+                                )}
+                            </div>
+                            <div className="h-12 w-12 rounded-full bg-yellow-500/10 flex items-center justify-center">
+                                <UserX className="h-6 w-6 text-yellow-600 dark:text-yellow-400" />
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                <Card className="border-2 shadow-md">
+                    <CardContent className="pt-6">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-sm font-medium text-muted-foreground">Verified</p>
+                                <p className="text-2xl font-bold mt-1 text-blue-600 dark:text-blue-400">
+                                    {verifiedUsers}
+                                </p>
+                                {hasActiveFilters && (
+                                    <p className="text-xs text-muted-foreground mt-1">
+                                        {users.filter(
+                                            (u) => u.isVerified === "true" || u.isVerified === true
+                                        ).length}{" "}
+                                        total
+                                    </p>
+                                )}
+                            </div>
+                            <div className="h-12 w-12 rounded-full bg-blue-500/10 flex items-center justify-center">
+                                <CheckCircle className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
             </div>
 
-            {/* Search and Filter Section */}
-            <div className="flex flex-wrap items-center gap-3 flex-1">
-                <div className="relative">
+            <div className="flex flex-row justify-between items-center gap-3 flex-1 p-4 bg-muted/30 rounded-lg border">
+                <div className="relative w-full">
                     <Input
                         placeholder="Search users by name or email..."
                         value={searchTerm}
                         onChange={handleSearchChange}
-                        className="w-64 pl-9"
+                        className="w-full pl-9"
                     />
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 </div>
 
-                <BottomSheet
-                    open={isFilterSheetOpen}
-                    onOpenChange={setIsFilterSheetOpen}
-                    trigger={
-                        <Button variant="outline" className="gap-2">
-                            <Filter className="w-4 h-4" />
-                            Filters
-                        </Button>
-                    }
-                    title="Filter Users"
-                    description="Filter users by status, role, and verification"
-                    side="right"
-                    contentClassName="w-full max-w-full"
-                    className="space-y-6 px-4 pb-4"
-                >
+                {/* Desktop Filters - Select Components */}
+                <div className="hidden md:flex items-center gap-3">
                     {/* Status Filter */}
-                    <div className="flex flex-col gap-3 mb-2">
-                        <label className="text-sm font-medium">Status</label>
-                        <div className="flex flex-wrap gap-2">
-                            <Button
-                                variant={selectedStatus === "all" ? "default" : "outline"}
-                                size="sm"
-                                onClick={() => handleStatusChange("all")}
-                                className="h-9"
-                            >
-                                All Status
-                            </Button>
-                            <Button
-                                variant={selectedStatus === "active" ? "default" : "outline"}
-                                size="sm"
-                                onClick={() => handleStatusChange("active")}
-                                className="h-9"
-                            >
-                                Active
-                            </Button>
-                            <Button
-                                variant={selectedStatus === "inactive" ? "default" : "outline"}
-                                size="sm"
-                                onClick={() => handleStatusChange("inactive")}
-                                className="h-9"
-                            >
-                                Inactive
-                            </Button>
-                        </div>
-                    </div>
+                    <Select
+                        value={selectedStatus}
+                        onValueChange={handleStatusChange}
+                    >
+                        <SelectTrigger className="w-[180px]">
+                            <SelectValue placeholder="All Status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">All Status</SelectItem>
+                            <SelectItem value="active">Active</SelectItem>
+                            <SelectItem value="inactive">Inactive</SelectItem>
+                        </SelectContent>
+                    </Select>
 
                     {/* Role Filter */}
-                    <div className="flex flex-col gap-3 mb-2">
-                        <label className="text-sm font-medium">Role</label>
-                        <div className="flex flex-wrap gap-2">
-                            <Button
-                                variant={selectedRole === "all" ? "default" : "outline"}
-                                size="sm"
-                                onClick={() => handleRoleChange("all")}
-                                className="h-9"
-                            >
-                                All Roles
-                            </Button>
-                            <Button
-                                variant={selectedRole === "user" ? "default" : "outline"}
-                                size="sm"
-                                onClick={() => handleRoleChange("user")}
-                                className="h-9"
-                            >
-                                User
-                            </Button>
-                            <Button
-                                variant={selectedRole === "admins" ? "default" : "outline"}
-                                size="sm"
-                                onClick={() => handleRoleChange("admins")}
-                                className="h-9"
-                            >
-                                Admin
-                            </Button>
-                        </div>
-                    </div>
+                    <Select
+                        value={selectedRole}
+                        onValueChange={handleRoleChange}
+                    >
+                        <SelectTrigger className="w-[180px]">
+                            <SelectValue placeholder="All Roles" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">All Roles</SelectItem>
+                            <SelectItem value="user">User</SelectItem>
+                            <SelectItem value="admins">Admin</SelectItem>
+                        </SelectContent>
+                    </Select>
 
                     {/* Verification Filter */}
-                    <div className="flex flex-col gap-3">
-                        <label className="text-sm font-medium">Verification</label>
-                        <div className="flex flex-wrap gap-2">
-                            <Button
-                                variant={selectedVerified === "all" ? "default" : "outline"}
-                                size="sm"
-                                onClick={() => handleVerifiedChange("all")}
-                                className="h-9"
-                            >
-                                All
+                    <Select
+                        value={selectedVerified}
+                        onValueChange={handleVerifiedChange}
+                    >
+                        <SelectTrigger className="w-[180px]">
+                            <SelectValue placeholder="All Verification" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">All</SelectItem>
+                            <SelectItem value="verified">Verified</SelectItem>
+                            <SelectItem value="unverified">Unverified</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+
+                {/* Mobile Filter - BottomSheet */}
+                <div className="md:hidden">
+                    <BottomSheet
+                        open={isFilterSheetOpen}
+                        onOpenChange={setIsFilterSheetOpen}
+                        trigger={
+                            <Button variant="outline" className="gap-2">
+                                <Filter className="w-4 h-4" />
+                                Filters
                             </Button>
-                            <Button
-                                variant={selectedVerified === "verified" ? "default" : "outline"}
-                                size="sm"
-                                onClick={() => handleVerifiedChange("verified")}
-                                className="h-9"
-                            >
-                                Verified
-                            </Button>
-                            <Button
-                                variant={selectedVerified === "unverified" ? "default" : "outline"}
-                                size="sm"
-                                onClick={() => handleVerifiedChange("unverified")}
-                                className="h-9"
-                            >
-                                Unverified
-                            </Button>
+                        }
+                        title="Filter Users"
+                        description="Filter users by status, role, and verification"
+                        side="right"
+                        contentClassName="w-full max-w-full"
+                        className="space-y-6 px-4 pb-4"
+                    >
+                        {/* Status Filter */}
+                        <div className="flex flex-col gap-3 mb-2">
+                            <label className="text-sm font-medium">Status</label>
+                            <div className="flex flex-wrap gap-2">
+                                <Button
+                                    variant={selectedStatus === "all" ? "default" : "outline"}
+                                    size="sm"
+                                    onClick={() => handleStatusChange("all")}
+                                    className="h-9"
+                                >
+                                    All Status
+                                </Button>
+                                <Button
+                                    variant={selectedStatus === "active" ? "default" : "outline"}
+                                    size="sm"
+                                    onClick={() => handleStatusChange("active")}
+                                    className="h-9"
+                                >
+                                    Active
+                                </Button>
+                                <Button
+                                    variant={selectedStatus === "inactive" ? "default" : "outline"}
+                                    size="sm"
+                                    onClick={() => handleStatusChange("inactive")}
+                                    className="h-9"
+                                >
+                                    Inactive
+                                </Button>
+                            </div>
                         </div>
-                    </div>
-                </BottomSheet>
+
+                        {/* Role Filter */}
+                        <div className="flex flex-col gap-3 mb-2">
+                            <label className="text-sm font-medium">Role</label>
+                            <div className="flex flex-wrap gap-2">
+                                <Button
+                                    variant={selectedRole === "all" ? "default" : "outline"}
+                                    size="sm"
+                                    onClick={() => handleRoleChange("all")}
+                                    className="h-9"
+                                >
+                                    All Roles
+                                </Button>
+                                <Button
+                                    variant={selectedRole === "user" ? "default" : "outline"}
+                                    size="sm"
+                                    onClick={() => handleRoleChange("user")}
+                                    className="h-9"
+                                >
+                                    User
+                                </Button>
+                                <Button
+                                    variant={selectedRole === "admins" ? "default" : "outline"}
+                                    size="sm"
+                                    onClick={() => handleRoleChange("admins")}
+                                    className="h-9"
+                                >
+                                    Admin
+                                </Button>
+                            </div>
+                        </div>
+
+                        {/* Verification Filter */}
+                        <div className="flex flex-col gap-3">
+                            <label className="text-sm font-medium">Verification</label>
+                            <div className="flex flex-wrap gap-2">
+                                <Button
+                                    variant={selectedVerified === "all" ? "default" : "outline"}
+                                    size="sm"
+                                    onClick={() => handleVerifiedChange("all")}
+                                    className="h-9"
+                                >
+                                    All
+                                </Button>
+                                <Button
+                                    variant={selectedVerified === "verified" ? "default" : "outline"}
+                                    size="sm"
+                                    onClick={() => handleVerifiedChange("verified")}
+                                    className="h-9"
+                                >
+                                    Verified
+                                </Button>
+                                <Button
+                                    variant={selectedVerified === "unverified" ? "default" : "outline"}
+                                    size="sm"
+                                    onClick={() => handleVerifiedChange("unverified")}
+                                    className="h-9"
+                                >
+                                    Unverified
+                                </Button>
+                            </div>
+                        </div>
+                    </BottomSheet>
+                </div>
             </div>
 
             {/* Table Section */}
-            <div className="border rounded-2xl border-border bg-card shadow-sm overflow-hidden">
-                {currentUsers.length === 0 ? (
-                    <div className="p-8 text-center">
-                        <div className="mx-auto h-12 w-12 text-muted-foreground/50">
-                            <svg
-                                className="w-full h-full"
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
-                                />
-                            </svg>
+            <Card className="border-2 shadow-lg">
+                <CardHeader className="pb-4 border-b bg-muted/20">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                        <div>
+                            <CardTitle className="text-2xl font-bold tracking-tight">All Users</CardTitle>
+                            <CardDescription className="mt-1.5 text-base">
+                                <span className="font-semibold text-foreground">{currentUsers.length}</span> user(s)
+                                {hasActiveFilters && filteredUsersCount !== totalUsers && (
+                                    <span className="text-muted-foreground"> of <span className="font-semibold">{totalUsers}</span> total</span>
+                                )}
+                            </CardDescription>
                         </div>
-                        <h3 className="mt-4 text-lg font-medium">No users found</h3>
-                        <p className="text-muted-foreground">
-                            {searchTerm
-                                ? `No users match your search for "${searchTerm}".`
-                                : "No users available."}
-                        </p>
+                        <div className="flex items-center gap-3">
+                            {hasActiveFilters && (
+                                <Badge variant="outline" className="w-fit gap-2 px-3 py-1.5">
+                                    <Filter className="h-3.5 w-3.5" />
+                                    Filters Active
+                                </Badge>
+                            )}
+                        </div>
                     </div>
-                ) : (
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>User</TableHead>
-                                <TableHead>Email</TableHead>
-                                <TableHead>Role</TableHead>
-                                <TableHead>Status</TableHead>
-                                <TableHead>Verified</TableHead>
-                                <TableHead>Created At</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {currentUsers.map((user) => (
-                                <TableRow key={user._id}>
-                                    <TableCell>
-                                        <div className="flex items-center gap-3">
-                                            <Avatar>
-                                                <AvatarImage
-                                                    src={
-                                                        user.picture ||
-                                                        `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`
-                                                    }
-                                                    alt={user.name}
-                                                />
-                                                <AvatarFallback>
-                                                    {user.name
-                                                        .split(" ")
-                                                        .map((n) => n[0])
-                                                        .join("")
-                                                        .toUpperCase()
-                                                        .slice(0, 2)}
-                                                </AvatarFallback>
-                                            </Avatar>
-                                            <div className="flex flex-col">
-                                                <span className="font-medium">{user.name}</span>
-                                            </div>
-                                        </div>
-                                    </TableCell>
-                                    <TableCell>{user.email}</TableCell>
-                                    <TableCell>
-                                        <Badge
-                                            variant={user.role === "admins" ? "default" : "secondary"}
-                                        >
-                                            {user.role}
-                                        </Badge>
-                                    </TableCell>
-                                    <TableCell>
-                                        <Select
-                                            value={user.status}
-                                            onValueChange={(value: "active" | "inactive") =>
-                                                updateUserStatus(user._id, value)
-                                            }
-                                            disabled={isUpdating}
-                                        >
-                                            <SelectTrigger className="w-36">
-                                                <SelectValue>
+                </CardHeader>
+                <CardContent>
+                    {currentUsers.length === 0 ? (
+                        <div className="text-center py-16 px-4">
+                            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-muted mb-4">
+                                <UserCog className="h-8 w-8 text-muted-foreground" />
+                            </div>
+                            <p className="text-foreground font-semibold text-lg mb-2">No users found</p>
+                            {hasActiveFilters ? (
+                                <p className="text-sm text-muted-foreground max-w-md mx-auto">
+                                    No users match your current filters. Try adjusting your search criteria.
+                                </p>
+                            ) : (
+                                <p className="text-sm text-muted-foreground">
+                                    {searchTerm
+                                        ? `No users match your search for "${searchTerm}".`
+                                        : "No users available."}
+                                </p>
+                            )}
+                        </div>
+                    ) : (
+                        <div className="rounded-lg border-2 overflow-hidden">
+                            <div className="overflow-x-auto">
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow className="bg-muted/50 hover:bg-muted/50 border-b-2">
+                                            <TableHead className="font-bold text-sm h-12">User</TableHead>
+                                            <TableHead className="font-bold text-sm">Email</TableHead>
+                                            <TableHead className="font-bold text-sm">Role</TableHead>
+                                            <TableHead className="font-bold text-sm">Status</TableHead>
+                                            <TableHead className="font-bold text-sm">Verified</TableHead>
+                                            <TableHead className="font-bold text-sm">Created At</TableHead>
+                                            <TableHead className="font-bold text-sm text-center">Actions</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {currentUsers.map((user) => (
+                                            <TableRow
+                                                key={user._id}
+                                                className="border-b hover:bg-muted/30 transition-colors group"
+                                            >
+                                                <TableCell className="py-4">
+                                                    <div className="flex items-center gap-3">
+                                                        <Avatar>
+                                                            <AvatarImage
+                                                                src={
+                                                                    user.picture ||
+                                                                    `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`
+                                                                }
+                                                                alt={user.name}
+                                                            />
+                                                            <AvatarFallback>
+                                                                {user.name
+                                                                    .split(" ")
+                                                                    .map((n) => n[0])
+                                                                    .join("")
+                                                                    .toUpperCase()
+                                                                    .slice(0, 2)}
+                                                            </AvatarFallback>
+                                                        </Avatar>
+                                                        <div className="flex flex-col">
+                                                            <span className="font-semibold text-sm">{user.name}</span>
+                                                        </div>
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell className="py-4">{user.email}</TableCell>
+                                                <TableCell className="py-4">
+                                                    <Badge
+                                                        variant={user.role === "admins" ? "default" : "secondary"}
+                                                        className="border font-semibold capitalize"
+                                                    >
+                                                        {user.role}
+                                                    </Badge>
+                                                </TableCell>
+                                                <TableCell className="py-4">
+                                                    <Select
+                                                        value={user.status}
+                                                        onValueChange={(value: "active" | "inactive") =>
+                                                            updateUserStatus(user._id, value)
+                                                        }
+                                                        disabled={isUpdating}
+                                                    >
+                                                        <SelectTrigger className="w-36">
+                                                            <SelectValue>
+                                                                <Badge
+                                                                    variant={
+                                                                        user.status === "active"
+                                                                            ? "default"
+                                                                            : "secondary"
+                                                                    }
+                                                                >
+                                                                    {user.status}
+                                                                </Badge>
+                                                            </SelectValue>
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            <SelectItem value="active">
+                                                                <Badge variant="default">Active</Badge>
+                                                            </SelectItem>
+                                                            <SelectItem value="inactive">
+                                                                <Badge variant="secondary">Inactive</Badge>
+                                                            </SelectItem>
+                                                        </SelectContent>
+                                                    </Select>
+                                                </TableCell>
+                                                <TableCell className="py-4">
                                                     <Badge
                                                         variant={
-                                                            user.status === "active"
+                                                            user.isVerified === "true" || user.isVerified === true
                                                                 ? "default"
                                                                 : "secondary"
                                                         }
+                                                        className="border font-semibold"
                                                     >
-                                                        {user.status}
+                                                        {user.isVerified === "true" || user.isVerified === true
+                                                            ? "Verified"
+                                                            : "Unverified"}
                                                     </Badge>
-                                                </SelectValue>
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="active">
-                                                    <Badge variant="default">Active</Badge>
-                                                </SelectItem>
-                                                <SelectItem value="inactive">
-                                                    <Badge variant="secondary">Inactive</Badge>
-                                                </SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                    </TableCell>
-                                    <TableCell>
-                                        <Badge
-                                            variant={
-                                                user.isVerified === "true" || user.isVerified === true
-                                                    ? "default"
-                                                    : "secondary"
-                                            }
-                                        >
-                                            {user.isVerified === "true" || user.isVerified === true
-                                                ? "Verified"
-                                                : "Unverified"}
-                                        </Badge>
-                                    </TableCell>
-                                    <TableCell>
-                                        {user.created_at
-                                            ? formatDate(user.created_at)
-                                            : "N/A"}
-                                    </TableCell>
-                                    <TableCell>
-                                        <Button
-                                            variant="destructive"
-                                            size="sm"
-                                            onClick={() =>
-                                                handleDeleteClick({
-                                                    _id: user._id,
-                                                    name: user.name,
-                                                    email: user.email,
-                                                })
-                                            }
-                                            disabled={isDeleting || isUpdating}
-                                            className="gap-2"
-                                        >
-                                            <Trash2 className="h-4 w-4" />
-                                            Delete
-                                        </Button>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                )}
-            </div>
+                                                </TableCell>
+                                                <TableCell className="py-4">
+                                                    {user.created_at
+                                                        ? formatDate(user.created_at)
+                                                        : "N/A"}
+                                                </TableCell>
+                                                <TableCell className="py-4">
+                                                    <div className="flex justify-center gap-2">
+                                                        <Button
+                                                            variant="destructive"
+                                                            size="sm"
+                                                            onClick={() =>
+                                                                handleDeleteClick({
+                                                                    _id: user._id,
+                                                                    name: user.name,
+                                                                    email: user.email,
+                                                                })
+                                                            }
+                                                            disabled={isDeleting || isUpdating}
+                                                            className="gap-2"
+                                                        >
+                                                            <Trash2 className="h-4 w-4" />
+                                                            Delete
+                                                        </Button>
+                                                    </div>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </div>
+                        </div>
+                    )}
+                </CardContent>
+            </Card>
 
             {/* Delete Confirmation Modal */}
             <DeleteModalUser

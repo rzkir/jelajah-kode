@@ -47,7 +47,6 @@ export default function useStateProduct() {
   const [selectedType, setSelectedType] = useState<string>("all");
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
   const [viewMode, setViewMode] = useState<"card" | "table">("table");
-  const [isViewModeInitialized, setIsViewModeInitialized] = useState(false);
   const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
   const itemsPerPage = 10;
 
@@ -145,24 +144,6 @@ export default function useStateProduct() {
   useEffect(() => {
     fetchProducts();
   }, []);
-
-  // Load viewMode from localStorage after component mounts (client-side only)
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const savedViewMode = localStorage.getItem("productsViewMode");
-      if (savedViewMode === "card" || savedViewMode === "table") {
-        setViewMode(savedViewMode);
-      }
-      setIsViewModeInitialized(true);
-    }
-  }, []);
-
-  // Save viewMode to localStorage whenever it changes (only after initialization)
-  useEffect(() => {
-    if (typeof window !== "undefined" && isViewModeInitialized) {
-      localStorage.setItem("productsViewMode", viewMode);
-    }
-  }, [viewMode, isViewModeInitialized]);
 
   const fetchProducts = async () => {
     try {

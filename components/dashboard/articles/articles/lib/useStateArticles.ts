@@ -213,12 +213,28 @@ export default function useStateArticles() {
     setCurrentPage(1); // Reset to first page when filtering
   };
 
+  const totalArticles = articles.length;
+  const filteredArticlesCount = filteredArticles.length;
+  const publishedArticles = filteredArticles.filter(
+    (a) => a.status === "publish"
+  ).length;
+  const draftArticles = filteredArticles.filter(
+    (a) => a.status === "draft"
+  ).length;
+  const hasActiveFilters =
+    selectedCategory !== "all" || selectedStatus !== "all" || searchTerm !== "";
+
   return {
     // Data
     articles,
     categories,
     currentArticles: currentArticles,
     filteredArticles,
+    totalArticles,
+    filteredArticlesCount,
+    publishedArticles,
+    draftArticles,
+    hasActiveFilters,
 
     // Loading states
     isLoading,
