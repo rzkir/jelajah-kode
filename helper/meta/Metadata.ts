@@ -1937,3 +1937,34 @@ export async function generateAdminsPageMetadata(
     },
   };
 }
+
+//====================================== Contact Page Metadata ======================================//
+export const ContactPageMetadata: Metadata = {
+  title: "Contact Us - jelajah Code",
+  description:
+    "Get in touch with jelajah Code. Have questions or feedback? We'd love to hear from you. Contact us via email, phone, or visit our office.",
+  openGraph: {
+    title: "Contact Us - jelajah Code",
+    description:
+      "Get in touch with jelajah Code. Have questions or feedback? We'd love to hear from you. Contact us via email, phone, or visit our office.",
+    url: `${API_CONFIG.ENDPOINTS.base}/contact`,
+    siteName: "jelajah Code",
+    images: [
+      {
+        url: "/images/contact-og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Contact Us - jelajah Code",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Contact Us - jelajah Code",
+    description:
+      "Get in touch with jelajah Code. Have questions or feedback? We'd love to hear from you. Contact us via email, phone, or visit our office.",
+    images: ["/images/contact-og-image.jpg"],
+  },
+};

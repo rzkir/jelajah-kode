@@ -16,16 +16,15 @@ const categorySchema = new mongoose.Schema(
     },
     categoryId: {
       type: String,
-      required: true, // Now required since it's generated from title
+      required: true,
       trim: true,
     },
   },
   {
-    timestamps: true, // This will automatically manage createdAt and updatedAt
+    timestamps: true,
   }
 );
 
-// Create the model with the proper Next.js pattern to avoid OverwriteModelError
 const CategoryModel = mongoose.models.Category
   ? mongoose.model<CategoryDocument>(
       process.env.NEXT_PUBLIC_CATEGORIES as string

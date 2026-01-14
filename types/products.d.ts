@@ -874,10 +874,10 @@ interface Rating {
   rating: number;
   comment: string;
   author: {
-      _id: string;
-      name: string;
-      picture?: string;
-      role: string;
+    _id: string;
+    name: string;
+    picture?: string;
+    role: string;
   };
   created_at: string;
   updated_at: string;

@@ -10,6 +10,10 @@ import Products from "@/models/Products";
 
 import { checkAuthorization } from "@/lib/auth-utils";
 
+import { Subscription } from "@/models/Subscription";
+
+import { getEmailService } from "@/lib/email-service";
+
 export async function GET(request: Request) {
   try {
     // Check authorization
@@ -507,6 +511,61 @@ export async function POST(request: Request) {
       created_at: savedProduct.createdAt,
       updated_at: savedProduct.updatedAt,
     };
+
+    // Send email notification to all subscribers (non-blocking, async)
+    // Only send if product status is "publish"
+    if (savedProduct.status === "publish") {
+      (async () => {
+        try {
+          const subscribers = await Subscription.find({})
+            .select("email")
+            .lean();
+
+          if (subscribers.length === 0) {
+            console.log("No subscribers found, skipping email notification");
+            return;
+          }
+
+          const emailService = getEmailService();
+
+          // Construct product URL (assuming frontend URL structure)
+          const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "";
+          const productUrl = baseUrl
+            ? `${baseUrl}/products/${savedProduct.productsId}`
+            : undefined;
+
+          // Send email to all subscribers in parallel (with rate limiting consideration)
+          const emailPromises = subscribers.map((subscriber) =>
+            emailService
+              .sendNewProductNotificationEmail(
+                subscriber.email,
+                savedProduct.title,
+                savedProduct.thumbnail,
+                savedProduct.description,
+                savedProduct.price,
+                savedProduct.paymentType,
+                productUrl
+              )
+              .catch((error) => {
+                // Log individual email failures but don't throw
+                console.error(
+                  `Failed to send email to ${subscriber.email}:`,
+                  error
+                );
+              })
+          );
+
+          // Wait for all emails to be sent (or fail gracefully)
+          await Promise.allSettled(emailPromises);
+          console.log(
+            `Sent new product notification to ${subscribers.length} subscribers`
+          );
+        } catch (error) {
+          // Log error but don't fail the product creation
+          console.error("Error sending product notification emails:", error);
+        }
+      })();
+    }
 
     return NextResponse.json(formattedProduct, { status: 201 });
   } catch (error) {

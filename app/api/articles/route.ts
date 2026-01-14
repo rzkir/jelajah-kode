@@ -10,6 +10,10 @@ import Articles from "@/models/Articles";
 
 import { checkAuthorization } from "@/lib/auth-utils";
 
+import { Subscription } from "@/models/Subscription";
+
+import { getEmailService } from "@/lib/email-service";
+
 export async function GET(request: Request) {
   try {
     // Check authorization
@@ -351,6 +355,59 @@ export async function POST(request: Request) {
       created_at: savedArticle.createdAt,
       updated_at: savedArticle.updatedAt,
     };
+
+    // Send email notification to all subscribers (non-blocking, async)
+    // Only send if article status is "publish"
+    if (savedArticle.status === "publish") {
+      (async () => {
+        try {
+          const subscribers = await Subscription.find({})
+            .select("email")
+            .lean();
+
+          if (subscribers.length === 0) {
+            console.log("No subscribers found, skipping email notification");
+            return;
+          }
+
+          const emailService = getEmailService();
+
+          // Construct article URL (assuming frontend URL structure)
+          const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "";
+          const articleUrl = baseUrl
+            ? `${baseUrl}/articles/${savedArticle.articlesId}`
+            : undefined;
+
+          // Send email to all subscribers in parallel (with rate limiting consideration)
+          const emailPromises = subscribers.map((subscriber) =>
+            emailService
+              .sendNewArticleNotificationEmail(
+                subscriber.email,
+                savedArticle.title,
+                savedArticle.thumbnail,
+                savedArticle.description,
+                articleUrl
+              )
+              .catch((error) => {
+                // Log individual email failures but don't throw
+                console.error(
+                  `Failed to send email to ${subscriber.email}:`,
+                  error
+                );
+              })
+          );
+
+          // Wait for all emails to be sent (or fail gracefully)
+          await Promise.allSettled(emailPromises);
+          console.log(
+            `Sent new article notification to ${subscribers.length} subscribers`
+          );
+        } catch (error) {
+          // Log error but don't fail the article creation
+          console.error("Error sending article notification emails:", error);
+        }
+      })();
+    }
 
     return NextResponse.json(formattedArticle, { status: 201 });
   } catch (error) {

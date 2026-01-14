@@ -1,7 +1,9 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+
 import { Input } from "@/components/ui/input";
+
 import {
     Table,
     TableBody,
@@ -10,9 +12,13 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
+
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+
 import { Badge } from "@/components/ui/badge";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
 import {
     Select,
     SelectContent,
@@ -20,12 +26,18 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+
 import { Search, Filter, Trash2, Users, UserCheck, UserX, CheckCircle, UserCog } from "lucide-react";
+
 import BottomSheet from "@/helper/bottomsheets/BottomShets";
-import useStateUsers from "./lib/useStateUsers";
-import { Skeleton } from "@/components/ui/skeleton";
-import DeleteModalUser from "./modal/DeleteModalUser";
+
+import useStateUsers from "@/components/dashboard/management-users/user/lib/useStateUsers";
+
+import DeleteModalUser from "@/components/dashboard/management-users/user/modal/DeleteModalUser";
+
 import { useState } from "react";
+
+import { ManagementUserSkelaton } from "@/components/dashboard/management-users/user/ManagementUserSkelaton";
 
 export default function ManagementUser() {
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -98,60 +110,7 @@ export default function ManagementUser() {
 
     if (isLoading) {
         return (
-            <section className="flex flex-col gap-6">
-                {/* Summary Cards Skeleton */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    {[1, 2, 3, 4].map((i) => (
-                        <Card key={i} className="border-2 shadow-md">
-                            <CardContent className="pt-6">
-                                <div className="flex items-center justify-between">
-                                    <div className="space-y-2 flex-1">
-                                        <Skeleton className="h-4 w-32" />
-                                        <Skeleton className="h-8 w-24" />
-                                        <Skeleton className="h-3 w-20" />
-                                    </div>
-                                    <Skeleton className="h-12 w-12 rounded-full" />
-                                </div>
-                            </CardContent>
-                        </Card>
-                    ))}
-                </div>
-
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 px-6 py-6 border rounded-2xl">
-                    <div className="flex flex-col gap-3">
-                        <Skeleton className="h-9 w-48" />
-                        <Skeleton className="h-5 w-64" />
-                    </div>
-                </div>
-                <div className="border rounded-2xl overflow-hidden">
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>User</TableHead>
-                                <TableHead>Email</TableHead>
-                                <TableHead>Role</TableHead>
-                                <TableHead>Status</TableHead>
-                                <TableHead>Verified</TableHead>
-                                <TableHead>Created At</TableHead>
-                                <TableHead>Actions</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {Array.from({ length: 5 }).map((_, i) => (
-                                <TableRow key={i}>
-                                    <TableCell><Skeleton className="h-10 w-10 rounded-full" /></TableCell>
-                                    <TableCell><Skeleton className="h-4 w-48" /></TableCell>
-                                    <TableCell><Skeleton className="h-4 w-20" /></TableCell>
-                                    <TableCell><Skeleton className="h-4 w-16" /></TableCell>
-                                    <TableCell><Skeleton className="h-4 w-16" /></TableCell>
-                                    <TableCell><Skeleton className="h-4 w-32" /></TableCell>
-                                    <TableCell><Skeleton className="h-8 w-20" /></TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </div>
-            </section>
+            <ManagementUserSkelaton />
         );
     }
 
@@ -473,6 +432,7 @@ export default function ManagementUser() {
                                             <TableHead className="font-bold text-sm">Status</TableHead>
                                             <TableHead className="font-bold text-sm">Verified</TableHead>
                                             <TableHead className="font-bold text-sm">Created At</TableHead>
+                                            <TableHead className="font-bold text-sm">Updated At</TableHead>
                                             <TableHead className="font-bold text-sm text-center">Actions</TableHead>
                                         </TableRow>
                                     </TableHeader>
@@ -563,6 +523,11 @@ export default function ManagementUser() {
                                                 <TableCell className="py-4">
                                                     {user.created_at
                                                         ? formatDate(user.created_at)
+                                                        : "N/A"}
+                                                </TableCell>
+                                                <TableCell className="py-4">
+                                                    {user.updated_at
+                                                        ? formatDate(user.updated_at)
                                                         : "N/A"}
                                                 </TableCell>
                                                 <TableCell className="py-4">

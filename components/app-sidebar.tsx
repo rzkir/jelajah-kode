@@ -5,22 +5,23 @@ import * as React from "react";
 import {
   ArrowLeftRight,
   Command,
-  Frame,
-  LifeBuoy,
-  Map,
   PieChart,
-  Send,
   Newspaper,
   LayoutDashboard,
   SquareUser,
   BriefcaseBusiness,
+  Podcast,
+  BookAlert,
+  BarChart3,
+  UserStar,
+  NotebookTabs
 } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
 
 import { NavProjects } from "@/components/nav-projects";
 
-import { NavSecondary } from "@/components/nav-secondary";
+import { NavEngagement } from "@/components/nav-engagement";
 
 import Link from "next/link";
 
@@ -142,33 +143,38 @@ const data = {
       ],
     },
   ],
-  navSecondary: [
-    {
-      title: "Support",
-      url: "#",
-      icon: LifeBuoy,
-    },
-    {
-      title: "Feedback",
-      url: "#",
-      icon: Send,
-    },
-  ],
   projects: [
     {
-      name: "Design Engineering",
-      url: "#",
-      icon: Frame,
+      name: "Rekaputasi",
+      url: "/dashboard/laporan/rekaputasi",
+      icon: BarChart3,
     },
     {
-      name: "Sales & Marketing",
-      url: "#",
+      name: "Penjualan Products",
+      url: "/dashboard/laporan/penjualan-products",
       icon: PieChart,
     },
     {
-      name: "Travel",
-      url: "#",
-      icon: Map,
+      name: "Ratings",
+      url: "/dashboard/laporan/ratings",
+      icon: UserStar,
+    },
+    {
+      name: "Bug Reports",
+      url: "/dashboard/laporan/bug-reports",
+      icon: BookAlert,
+    },
+  ],
+  engagement: [
+    {
+      name: "Subscription",
+      url: "/dashboard/subscription",
+      icon: Podcast,
+    },
+    {
+      name: "Contact",
+      url: "/dashboard/contact",
+      icon: NotebookTabs,
     },
   ],
 };
@@ -208,7 +214,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent>
         <NavMain items={data.navMain} />
         <NavProjects projects={data.projects} />
-        <NavSecondary items={data.navSecondary} className="mt-auto" />
+        <NavEngagement engagement={data.engagement} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={currentUser} onSignOut={signOut} />

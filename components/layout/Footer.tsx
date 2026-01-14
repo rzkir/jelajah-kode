@@ -8,16 +8,58 @@ import { Facebook, Github, Linkedin, Music2 } from "lucide-react"
 
 import { useState } from "react"
 
+import { emailSchema } from "@/hooks/validation"
+
 export function Footer() {
   const [email, setEmail] = useState("")
   const [subscribed, setSubscribed] = useState(false)
+  const [error, setError] = useState("")
+  const [loading, setLoading] = useState(false)
 
-  const handleSubscribe = (e: React.FormEvent) => {
+  const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (email) {
+    setError("")
+
+    if (!email) {
+      setError("Please enter your email")
+      return
+    }
+
+    // Validate email format and Gmail requirement
+    const emailValidation = emailSchema.safeParse(email)
+    if (!emailValidation.success) {
+      setError(emailValidation.error.issues[0]?.message || "Email must be a Gmail address (@gmail.com)")
+      return
+    }
+
+    setLoading(true)
+
+    try {
+      const response = await fetch("/api/subscription", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        setError(data.error || "Failed to subscribe")
+        return
+      }
+
       setSubscribed(true)
       setEmail("")
-      setTimeout(() => setSubscribed(false), 3000)
+      setTimeout(() => {
+        setSubscribed(false)
+      }, 3000)
+    } catch (err) {
+      setError("An error occurred. Please try again.")
+      console.error("Subscription error:", err)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -68,23 +110,35 @@ export function Footer() {
                 Get the latest source code releases and exclusive deals delivered to your inbox.
               </p>
             </div>
-            <form onSubmit={handleSubscribe} className="flex gap-2">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="flex-1 px-4 py-2 bg-secondary border border-border rounded-lg text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                required
-              />
-              <button
-                type="submit"
-                className="px-6 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:opacity-90 transition-opacity"
-              >
-                Subscribe
-              </button>
+            <form onSubmit={handleSubscribe} className="flex flex-col gap-2">
+              <div className="flex gap-2">
+                <input
+                  type="email"
+                  placeholder="Enter your email"
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value)
+                    setError("")
+                  }}
+                  className="flex-1 px-4 py-2 bg-secondary border border-border rounded-lg text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                  required
+                  disabled={loading}
+                />
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="px-6 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {loading ? "..." : "Subscribe"}
+                </button>
+              </div>
+              {subscribed && (
+                <p className="text-sm text-green-500">Thanks for subscribing!</p>
+              )}
+              {error && (
+                <p className="text-sm text-red-500">{error}</p>
+              )}
             </form>
-            {subscribed && <p className="text-sm text-green-500 md:col-span-2">Thanks for subscribing!</p>}
           </div>
         </div>
       </div>

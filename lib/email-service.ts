@@ -6,6 +6,12 @@ import { generatePasswordResetEmailTemplate } from "@/hooks/template-message";
 
 import { generateTransactionPendingEmailTemplate } from "@/hooks/template-message";
 
+import { generateSubscriptionWelcomeEmailTemplate } from "@/hooks/template-message";
+
+import { generateNewProductEmailTemplate } from "@/hooks/template-message";
+
+import { generateNewArticleEmailTemplate } from "@/hooks/template-message";
+
 class EmailService {
   private transporter: nodemailer.Transporter;
 
@@ -55,6 +61,68 @@ class EmailService {
       from: `"Jelajah Kode" <${process.env.EMAIL_ADMIN}>`,
       to,
       subject: "Transaksi Pending - Menunggu Pembayaran",
+      html,
+      text,
+    });
+  }
+
+  async sendSubscriptionWelcomeEmail(to: string): Promise<void> {
+    const { html, text } = generateSubscriptionWelcomeEmailTemplate(to);
+
+    await this.transporter.sendMail({
+      from: `"Jelajah Kode" <${process.env.EMAIL_ADMIN}>`,
+      to,
+      subject: "Selamat Bergabung dengan Newsletter Jelajah Kode!",
+      html,
+      text,
+    });
+  }
+
+  async sendNewProductNotificationEmail(
+    to: string,
+    productTitle: string,
+    productThumbnail: string,
+    productDescription: string,
+    productPrice: number,
+    productPaymentType: string,
+    productUrl?: string
+  ): Promise<void> {
+    const { html, text } = generateNewProductEmailTemplate(
+      productTitle,
+      productThumbnail,
+      productDescription,
+      productPrice,
+      productPaymentType,
+      productUrl
+    );
+
+    await this.transporter.sendMail({
+      from: `"Jelajah Kode" <${process.env.EMAIL_ADMIN}>`,
+      to,
+      subject: `🆕 Produk Baru: ${productTitle}`,
+      html,
+      text,
+    });
+  }
+
+  async sendNewArticleNotificationEmail(
+    to: string,
+    articleTitle: string,
+    articleThumbnail: string,
+    articleDescription: string,
+    articleUrl?: string
+  ): Promise<void> {
+    const { html, text } = generateNewArticleEmailTemplate(
+      articleTitle,
+      articleThumbnail,
+      articleDescription,
+      articleUrl
+    );
+
+    await this.transporter.sendMail({
+      from: `"Jelajah Kode" <${process.env.EMAIL_ADMIN}>`,
+      to,
+      subject: `📝 Artikel Baru: ${articleTitle}`,
       html,
       text,
     });
