@@ -10,7 +10,10 @@ import { useState } from "react"
 
 import { emailSchema } from "@/hooks/validation"
 
+import { useTranslation } from "@/hooks/useTranslation"
+
 export function Footer() {
+  const { t } = useTranslation()
   const [email, setEmail] = useState("")
   const [subscribed, setSubscribed] = useState(false)
   const [error, setError] = useState("")
@@ -21,14 +24,14 @@ export function Footer() {
     setError("")
 
     if (!email) {
-      setError("Please enter your email")
+      setError(t("footer.pleaseEnterEmail"))
       return
     }
 
     // Validate email format and Gmail requirement
     const emailValidation = emailSchema.safeParse(email)
     if (!emailValidation.success) {
-      setError(emailValidation.error.issues[0]?.message || "Email must be a Gmail address (@gmail.com)")
+      setError(emailValidation.error.issues[0]?.message || t("footer.emailMustBeGmail"))
       return
     }
 
@@ -46,7 +49,7 @@ export function Footer() {
       const data = await response.json()
 
       if (!response.ok) {
-        setError(data.error || "Failed to subscribe")
+        setError(data.error || t("footer.failedToSubscribe"))
         return
       }
 
@@ -56,7 +59,7 @@ export function Footer() {
         setSubscribed(false)
       }, 3000)
     } catch (err) {
-      setError("An error occurred. Please try again.")
+      setError(t("footer.anErrorOccurred"))
       console.error("Subscription error:", err)
     } finally {
       setLoading(false)
@@ -65,35 +68,35 @@ export function Footer() {
 
   const footerSections = [
     {
-      title: "Products",
+      title: t("footer.products"),
       links: [
-        { label: "Browse Products", href: "/products" },
-        { label: "New Arrivals", href: "/products?new=true" },
-        { label: "Most Popular", href: "/products?popular=true" },
+        { label: t("footer.browseProducts"), href: "/products" },
+        { label: t("footer.newArrivals"), href: "/products?new=true" },
+        { label: t("footer.mostPopular"), href: "/products?popular=true" },
       ],
     },
     {
-      title: "Resources",
+      title: t("footer.resources"),
       links: [
-        { label: "Documentation", href: "/documentation" },
-        { label: "Tutorials", href: "/articles?category=tutorials" },
+        { label: t("footer.documentation"), href: "/documentation" },
+        { label: t("footer.tutorials"), href: "/articles?category=tutorials" },
       ],
     },
     {
-      title: "Company",
+      title: t("footer.company"),
       links: [
-        { label: "About", href: "/about" },
-        { label: "Articles", href: "/articles" },
-        { label: "Contact Us", href: "/contact" },
+        { label: t("footer.about"), href: "/about" },
+        { label: t("footer.articles"), href: "/articles" },
+        { label: t("footer.contactUs"), href: "/contact" },
       ],
     },
     {
-      title: "Legal",
+      title: t("footer.legal"),
       links: [
-        { label: "Privacy Policy", href: "/privacy-policy" },
-        { label: "Terms of Service", href: "/terms-of-service" },
-        { label: "License Agreement", href: "/license-agreement" },
-        { label: "Refund Policy", href: "/refund-policy" },
+        { label: t("footer.privacyPolicy"), href: "/privacy-policy" },
+        { label: t("footer.termsOfService"), href: "/terms-of-service" },
+        { label: t("footer.licenseAgreement"), href: "/license-agreement" },
+        { label: t("footer.refundPolicy"), href: "/refund-policy" },
       ],
     },
   ]
@@ -105,16 +108,16 @@ export function Footer() {
         <div className="container max-w-6xl mx-auto px-4 py-12">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div>
-              <h3 className="text-lg font-semibold text-foreground mb-2">Stay Updated</h3>
-              <p className="text-sm text-muted-foreground">
-                Get the latest source code releases and exclusive deals delivered to your inbox.
+              <h3 className="text-lg font-semibold text-foreground mb-2" suppressHydrationWarning>{t("footer.stayUpdated")}</h3>
+              <p className="text-sm text-muted-foreground" suppressHydrationWarning>
+                {t("footer.newsletterDescription")}
               </p>
             </div>
             <form onSubmit={handleSubscribe} className="flex flex-col gap-2">
               <div className="flex gap-2">
                 <input
                   type="email"
-                  placeholder="Enter your email"
+                  placeholder={t("footer.enterEmail")}
                   value={email}
                   onChange={(e) => {
                     setEmail(e.target.value)
@@ -129,11 +132,11 @@ export function Footer() {
                   disabled={loading}
                   className="px-6 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {loading ? "..." : "Subscribe"}
+                  {loading ? "..." : t("footer.subscribe")}
                 </button>
               </div>
               {subscribed && (
-                <p className="text-sm text-green-500">Thanks for subscribing!</p>
+                <p className="text-sm text-green-500" suppressHydrationWarning>{t("footer.thanksForSubscribing")}</p>
               )}
               {error && (
                 <p className="text-sm text-red-500">{error}</p>
@@ -169,8 +172,8 @@ export function Footer() {
         <div className="border-t border-border pt-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
           <div>
             <h3 className="text-lg font-bold text-foreground mb-2">JelajahKode</h3>
-            <p className="text-sm text-muted-foreground">
-              Premium source code, templates, and components for developers.
+            <p className="text-sm text-muted-foreground" suppressHydrationWarning>
+              {t("footer.tagline")}
             </p>
           </div>
 
@@ -209,8 +212,8 @@ export function Footer() {
 
         {/* Copyright */}
         <div className="mt-8 pt-8 border-t border-border">
-          <p className="text-sm text-muted-foreground text-center">
-            &copy; 2026 - {new Date().getFullYear()} Jelajah Code. All rights reserved.
+          <p className="text-sm text-muted-foreground text-center" suppressHydrationWarning>
+            &copy; 2026 - {new Date().getFullYear()} Jelajah Code. {t("footer.allRightsReserved")}.
           </p>
         </div>
       </div>

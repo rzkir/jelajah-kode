@@ -12,6 +12,8 @@ import { ThemeProvider } from "@/utils/theme/theme-provider";
 
 import { HomePageMetadata } from "@/helper/meta/Metadata";
 
+import LanguageInitializer from "@/components/layout/LanguageInitializer";
+
 export const metadata = HomePageMetadata;
 
 export default function RootLayout({
@@ -22,10 +24,11 @@ export default function RootLayout({
   const midtransClientKey = process.env.MIDTRANS_CLIENT_KEY || "";
 
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="id" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <LanguageInitializer />
         {midtransClientKey && (
           <Script
             src="https://app.sandbox.midtrans.com/snap/snap.js"

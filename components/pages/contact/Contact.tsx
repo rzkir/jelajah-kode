@@ -1,27 +1,33 @@
+"use client"
+
 import { Mail, Phone, MapPin, MessageSquare } from "lucide-react"
 
 import Link from "next/link"
 
+import { useTranslation } from "@/hooks/useTranslation"
+
 export default function ContactPage() {
+    const { t } = useTranslation()
+
     const contactMethods = [
         {
             icon: Mail,
-            title: "Email",
-            description: "Send us an email anytime",
+            title: t("contact.email"),
+            description: t("contact.emailDescription"),
             value: process.env.NEXT_PUBLIC_GMAIL,
             href: `mailto:${process.env.NEXT_PUBLIC_GMAIL}`,
         },
         {
             icon: Phone,
-            title: "Phone",
-            description: "Call us during business hours",
+            title: t("contact.phone"),
+            description: t("contact.phoneDescription"),
             value: "+62 858-1166-8557",
             href: "https://wa.me/+6285811668557",
         },
         {
             icon: MapPin,
-            title: "Location",
-            description: "Visit our office",
+            title: t("contact.location"),
+            description: t("contact.locationDescription"),
             value: "Jl. Babakan, Leuwiliang, Kec. Leuwiliang, Kabupaten Bogor, Jawa Barat 16640",
             href: "https://maps.app.goo.gl/WZfaswMkJMqw9nTG6",
         },
@@ -32,9 +38,9 @@ export default function ContactPage() {
             <div className="border-b border-border bg-muted/30 mb-10">
                 <div className="container mx-auto px-4 py-16">
                     <div className="max-w-2xl mx-auto text-center">
-                        <h1 className="text-4xl md:text-5xl font-bold mb-4">Get in Touch</h1>
-                        <p className="text-lg text-muted-foreground">
-                            Have questions or feedback? We&apos;d love to hear from you.
+                        <h1 className="text-4xl md:text-5xl font-bold mb-4" suppressHydrationWarning>{t("contact.title")}</h1>
+                        <p className="text-lg text-muted-foreground" suppressHydrationWarning>
+                            {t("contact.subtitle")}
                         </p>
                     </div>
                 </div>
@@ -74,14 +80,14 @@ export default function ContactPage() {
                             <MessageSquare className="w-6 h-6 text-primary" />
                         </div>
                         <div>
-                            <h3 className="font-semibold text-xl mb-3">Prefer to reach out directly?</h3>
-                            <p className="text-muted-foreground mb-4">
-                                Feel free to contact us through any of the methods above. We typically respond within 24 hours during business days.
+                            <h3 className="font-semibold text-xl mb-3" suppressHydrationWarning>{t("contact.preferToReachOut")}</h3>
+                            <p className="text-muted-foreground mb-4" suppressHydrationWarning>
+                                {t("contact.contactDescription")}
                             </p>
                             <div className="space-y-2 text-sm text-muted-foreground">
-                                <p>• Email us at <Link href={`mailto:${process.env.NEXT_PUBLIC_GMAIL}`} className="text-primary hover:underline">{process.env.NEXT_PUBLIC_GMAIL}</Link></p>
-                                <p>• Call us at <Link href={"https://wa.me/+6285811668557"} className="text-primary hover:underline">+62 858-1166-8557</Link></p>
-                                <p>• Visit our office in Jl. Babakan, Leuwiliang, Kec. Leuwiliang, Kabupaten Bogor, Jawa Barat 16640</p>
+                                <p suppressHydrationWarning>• {t("contact.emailUsAt")} <Link href={`mailto:${process.env.NEXT_PUBLIC_GMAIL}`} className="text-primary hover:underline">{process.env.NEXT_PUBLIC_GMAIL}</Link></p>
+                                <p suppressHydrationWarning>• {t("contact.callUsAt")} <Link href={"https://wa.me/+6285811668557"} className="text-primary hover:underline">+62 858-1166-8557</Link></p>
+                                <p suppressHydrationWarning>• {t("contact.visitOurOffice")} Jl. Babakan, Leuwiliang, Kec. Leuwiliang, Kabupaten Bogor, Jawa Barat 16640</p>
                             </div>
                         </div>
                     </div>

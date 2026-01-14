@@ -18,6 +18,10 @@ import CartSheet from "@/components/cart/CartSheet";
 
 import { useCart } from "@/utils/context/CartContext";
 
+import BreadcrumbScript from "@/helper/breadchumb/Script";
+
+import { generateBreadcrumbItems } from "@/helper/breadchumb/generateBreadcrumb";
+
 const Pathname = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname();
   const { cartSheetOpen, setCartSheetOpen } = useCart();
@@ -34,6 +38,9 @@ const Pathname = ({ children }: { children: React.ReactNode }) => {
     pathname?.includes("/dashboard") ||
     false;
 
+  const shouldShowBreadcrumb = !pathname?.includes("/dashboard");
+  const breadcrumbItems = shouldShowBreadcrumb ? generateBreadcrumbItems(pathname) : [];
+
   return (
     <Fragment>
       <Toaster
@@ -44,6 +51,9 @@ const Pathname = ({ children }: { children: React.ReactNode }) => {
           className: "font-medium",
         }}
       />
+      {shouldShowBreadcrumb && breadcrumbItems.length > 0 && (
+        <BreadcrumbScript items={breadcrumbItems} />
+      )}
       {!isRoute && <Header />}
       {children}
       {!isRoute && <Footer />}
@@ -51,7 +61,6 @@ const Pathname = ({ children }: { children: React.ReactNode }) => {
       {!isRoute && <div className="fixed bottom-6 right-6 z-50">
         <AiAgent />
       </div>}
-      {/* Cart Sheet - Always available */}
       <CartSheet open={cartSheetOpen} onOpenChange={setCartSheetOpen} />
     </Fragment>
   );

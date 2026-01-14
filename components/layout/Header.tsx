@@ -16,13 +16,16 @@ import ProfileMenu from "@/components/layout/ProfileMenu"
 
 import { useCart } from "@/utils/context/CartContext"
 
-const navigationLinks = [
-  { label: "Explore Products", href: "/products" }
-]
+import { useTranslation } from "@/hooks/useTranslation"
 
 export default function Header() {
   const { getTotalItems, setCartSheetOpen } = useCart();
   const cartItemCount = getTotalItems();
+  const { t } = useTranslation();
+
+  const navigationLinks = [
+    { label: t("header.exploreProducts"), href: "/products" }
+  ]
 
   return (
     <Fragment>
@@ -56,7 +59,7 @@ export default function Header() {
                       "transition-colors duration-200"
                     )}
                   >
-                    {link.label}
+                    <span suppressHydrationWarning>{link.label}</span>
                   </Link>
                 ))}
               </div>
@@ -65,7 +68,7 @@ export default function Header() {
               <button
                 onClick={() => setCartSheetOpen(true)}
                 className="hidden sm:flex items-center justify-center size-10 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors relative"
-                aria-label="Shopping cart"
+                aria-label={t("common.shoppingCart")}
               >
                 <ShoppingCart className="size-5 text-gray-700 dark:text-gray-300" />
                 {cartItemCount > 0 && (
