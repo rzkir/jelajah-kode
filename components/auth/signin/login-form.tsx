@@ -23,6 +23,8 @@ import Link from "next/link";
 
 import { useAuth } from "@/utils/context/AuthContext";
 
+import { useTranslation } from "@/hooks/useTranslation";
+
 export function LoginForm({
   className,
   ...props
@@ -37,6 +39,7 @@ export function LoginForm({
     setLoginPassword,
     handleLoginSubmit,
   } = useAuth();
+  const { t } = useTranslation();
 
   // Timer countdown state
   const [timeLeft, setTimeLeft] = React.useState<number>(0);
@@ -73,17 +76,17 @@ export function LoginForm({
   }, [loginRateLimitResetTime, loginIsRateLimited]);
 
   const formatTime = (seconds: number): string => {
-    if (seconds <= 0) return "0 detik";
+    if (seconds <= 0) return "0";
 
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
 
     if (mins > 0 && secs > 0) {
-      return `${mins} menit ${secs} detik`;
+      return `${mins}m ${secs}s`;
     } else if (mins > 0) {
-      return `${mins} menit`;
+      return `${mins}m`;
     }
-    return `${secs} detik`;
+    return `${secs}s`;
   };
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -133,23 +136,27 @@ export function LoginForm({
               <div className="flex size-8 items-center justify-center rounded-md">
                 <Code className="size-6" />
               </div>
-              <span className="sr-only">Jelajah Kode 👾.</span>
+              <span className="sr-only">{t("auth.signinTitle")}</span>
             </a>
-            <h1 className="text-xl font-bold">Welcome to Jelajah Kode 👾.</h1>
+            <h1 className="text-xl font-bold">
+              {t("auth.signinTitle")}
+            </h1>
             <FieldDescription>
-              Don&apos;t have an account?{" "}
+              {t("auth.noAccount")}{" "}
               <Link href="/signup" rel="noopener noreferrer">
-                Sign up
+                {t("auth.signUp")}
               </Link>
             </FieldDescription>
           </div>
 
           <Field>
-            <FieldLabel htmlFor="email">Email</FieldLabel>
+            <FieldLabel htmlFor="email">
+              {t("auth.email")}
+            </FieldLabel>
             <Input
               id="email"
               type="email"
-              placeholder="m@example.com"
+              placeholder={t("auth.emailPlaceholder")}
               value={loginEmail}
               onChange={handleEmailChange}
               onKeyDown={handleKeyDown}
@@ -159,17 +166,19 @@ export function LoginForm({
           </Field>
           <Field>
             <div className="flex items-center justify-between">
-              <FieldLabel htmlFor="password">Password</FieldLabel>
+              <FieldLabel htmlFor="password">
+                {t("auth.password")}
+              </FieldLabel>
               <Link
                 href="/forget-password"
                 className="text-sm text-blue-600 hover:underline"
               >
-                Forgot password?
+                {t("auth.forgotPasswordQuestion")}
               </Link>
             </div>
             <PasswordInput
               id="password"
-              placeholder="Enter your password"
+              placeholder={t("auth.passwordPlaceholder")}
               value={loginPassword}
               onChange={(e) => setLoginPassword(e.target.value)}
               onKeyDown={handleKeyDown}
@@ -190,12 +199,13 @@ export function LoginForm({
               {loginIsLoading && (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               )}
-              {loginIsLoading ? "Signing in..." : "Sign in"}
+              {loginIsLoading ? t("auth.signingIn") : t("auth.signIn")}
             </Button>
             {loginIsRateLimited && timeLeft > 0 && (
               <FieldDescription className="mt-2 text-center text-sm text-muted-foreground">
-                Terlalu banyak percobaan login. Silakan coba lagi dalam{" "}
-                <span className="font-semibold">{formatTime(timeLeft)}</span>.
+                {t("auth.loginRateLimitedPrefix")}{" "}
+                <span className="font-semibold">{formatTime(timeLeft)}</span>
+                {t("auth.loginRateLimitedSuffix")}
               </FieldDescription>
             )}
           </Field>
@@ -203,8 +213,14 @@ export function LoginForm({
       </div>
 
       <FieldDescription className="px-6 text-center">
-        By clicking continue, you agree to our <a href="#">Terms of Service</a>{" "}
-        and <a href="#">Privacy Policy</a>.
+        {t("auth.tosNotice")}{" "}
+        <a href="#" className="underline">
+          {t("auth.tos")}
+        </a>{" "}
+        {t("auth.and")}{" "}
+        <a href="#" className="underline">
+          {t("auth.privacyPolicy")}
+        </a>
       </FieldDescription>
     </div>
   );

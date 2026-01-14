@@ -12,6 +12,8 @@ import Image from "next/image"
 
 import useFormatDate from "@/hooks/FormatDate"
 
+import { useTranslation } from "@/hooks/useTranslation"
+
 interface ArticlesCardProps {
     item: {
         articlesId: string;
@@ -53,6 +55,7 @@ export default function ArticlesCard({
     className = ""
 }: ArticlesCardProps) {
     const { formatDateArticle } = useFormatDate();
+    const { t } = useTranslation();
     const readTime = calculateReadTime(item.content, item.description);
     const articleHref = href || `/articles/${item.articlesId}`;
 
@@ -84,7 +87,7 @@ export default function ArticlesCard({
                     {/* Read Time */}
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <Clock className="w-4 h-4" />
-                        <span>{readTime} min read</span>
+                        <span suppressHydrationWarning>{readTime} {t("articles.minRead")}</span>
                     </div>
 
                     {/* Title */}

@@ -27,6 +27,8 @@ import { useAuth } from "@/utils/context/AuthContext";
 
 import Link from "next/link";
 
+import { useTranslation } from "@/hooks/useTranslation";
+
 export function SignupForm({
   className,
   ...props
@@ -35,6 +37,7 @@ export function SignupForm({
     handleSignupSubmit,
     signupIsLoading,
   } = useAuth();
+  const { t } = useTranslation();
 
   const {
     register,
@@ -62,18 +65,22 @@ export function SignupForm({
     >
       <FieldGroup>
         <div className="flex flex-col items-center gap-1 text-center">
-          <h1 className="text-2xl font-bold">Create your account</h1>
+          <h1 className="text-2xl font-bold">
+            {t("auth.createAccountTitle")}
+          </h1>
           <p className="text-muted-foreground text-sm text-balance">
-            Fill in the form below to create your account
+            {t("auth.createAccountSubtitle")}
           </p>
         </div>
         <Field>
-          <FieldLabel htmlFor="name">Full Name</FieldLabel>
+          <FieldLabel htmlFor="name">
+            {t("auth.fullName")}
+          </FieldLabel>
           <Input
             id="name"
             {...register("name")}
             type="text"
-            placeholder="John Doe"
+            placeholder={t("auth.fullNamePlaceholder")}
           />
           {errors.name && (
             <FieldDescription className="text-red-500">
@@ -82,12 +89,14 @@ export function SignupForm({
           )}
         </Field>
         <Field>
-          <FieldLabel htmlFor="email">Email</FieldLabel>
+          <FieldLabel htmlFor="email">
+            {t("auth.email")}
+          </FieldLabel>
           <Input
             id="email"
             {...register("email")}
             type="email"
-            placeholder="yourname@gmail.com"
+            placeholder={t("auth.emailPlaceholder")}
           />
           {errors.email && (
             <FieldDescription className="text-red-500">
@@ -95,16 +104,17 @@ export function SignupForm({
             </FieldDescription>
           )}
           <FieldDescription>
-            We&apos;ll use this to contact you. We will not share your email
-            with anyone else.
+            {t("auth.emailHelper")}
           </FieldDescription>
         </Field>
         <Field>
-          <FieldLabel htmlFor="password">Password</FieldLabel>
+          <FieldLabel htmlFor="password">
+            {t("auth.password")}
+          </FieldLabel>
           <PasswordInput
             id="password"
             {...register("password")}
-            placeholder="At least 8 characters"
+            placeholder={t("auth.passwordPlaceholderShort")}
           />
           {errors.password && (
             <FieldDescription className="text-red-500">
@@ -112,34 +122,39 @@ export function SignupForm({
             </FieldDescription>
           )}
           <FieldDescription>
-            Must be at least 8 characters long.
+            {t("auth.passwordHelper")}
           </FieldDescription>
         </Field>
         <Field>
-          <FieldLabel htmlFor="confirm-password">Confirm Password</FieldLabel>
+          <FieldLabel htmlFor="confirm-password">
+            {t("auth.confirmPasswordLabel")}
+          </FieldLabel>
           <PasswordInput
             id="confirm-password"
             {...register("confirmPassword")}
-            placeholder="Re-enter your password"
+            placeholder={t("auth.confirmPasswordPlaceholder")}
           />
           {errors.confirmPassword && (
             <FieldDescription className="text-red-500">
               {errors.confirmPassword.message}
             </FieldDescription>
           )}
-          <FieldDescription>Please confirm your password.</FieldDescription>
+          <FieldDescription>
+            {t("auth.confirmPasswordHelper")}
+          </FieldDescription>
         </Field>
         <Field>
           <Button type="submit" disabled={signupIsLoading}>
             {signupIsLoading && (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             )}
-            {signupIsLoading ? "Creating Account..." : "Create Account"}
+            {signupIsLoading ? t("auth.creatingAccount") : t("auth.createAccount")}
           </Button>
         </Field>
 
         <FieldDescription className="px-6 text-center">
-          Already have an account? <Link href="/signin">Sign in</Link>
+          {t("auth.alreadyHaveAccount")}{" "}
+          <Link href="/signin">{t("auth.signIn")}</Link>
         </FieldDescription>
       </FieldGroup>
     </form>

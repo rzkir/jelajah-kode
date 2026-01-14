@@ -8,6 +8,8 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 
 import { cn } from "@/lib/utils"
 
+import { useTranslation } from "@/hooks/useTranslation"
+
 export default function BottomSheetsFilter({
     selectedCategory,
     setSelectedCategory,
@@ -17,13 +19,14 @@ export default function BottomSheetsFilter({
     categories,
     types,
 }: BottomSheetsFilterProps) {
+    const { t } = useTranslation();
     return (
         <ScrollArea className="h-[calc(80vh-120px)] min-h-[400px]">
             <div className="flex flex-col gap-6 p-4">
                 {/* Category Filter */}
                 <div className="flex flex-col gap-3">
-                    <label className="text-sm font-medium text-gray-900 dark:text-white">
-                        Kategori
+                    <label className="text-sm font-medium text-gray-900 dark:text-white" suppressHydrationWarning>
+                        {t("filter.category")}
                     </label>
                     <div className="flex flex-col gap-2">
                         <button
@@ -36,7 +39,7 @@ export default function BottomSheetsFilter({
                                     : "bg-white dark:bg-[#1e1e1e] border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-[#2d2d2d]"
                             )}
                         >
-                            <span>Semua Kategori</span>
+                            <span suppressHydrationWarning>{t("filter.allCategories")}</span>
                             {selectedCategory === "" && (
                                 <Check className="h-4 w-4" />
                             )}
@@ -68,8 +71,8 @@ export default function BottomSheetsFilter({
 
                 {/* Type Filter */}
                 <div className="flex flex-col gap-3">
-                    <label className="text-sm font-medium text-gray-900 dark:text-white">
-                        Tipe
+                    <label className="text-sm font-medium text-gray-900 dark:text-white" suppressHydrationWarning>
+                        {t("filter.type")}
                     </label>
                     <div className="flex flex-col gap-2">
                         <button
@@ -82,7 +85,7 @@ export default function BottomSheetsFilter({
                                     : "bg-white dark:bg-[#1e1e1e] border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-[#2d2d2d]"
                             )}
                         >
-                            <span>Semua Tipe</span>
+                            <span suppressHydrationWarning>{t("filter.allTypes")}</span>
                             {selectedType === "" && (
                                 <Check className="h-4 w-4" />
                             )}
@@ -118,7 +121,7 @@ export default function BottomSheetsFilter({
                     onClick={handleApplyFilters}
                     className="w-full py-6 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-all shadow-sm"
                 >
-                    Terapkan
+                    <span suppressHydrationWarning>{t("filter.apply")}</span>
                 </Button>
             </div>
         </ScrollArea>

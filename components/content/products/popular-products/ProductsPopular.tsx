@@ -2,16 +2,19 @@
 
 import ProductsCard from "@/components/ui/products/ProductsCard"
 
+import { useTranslation } from "@/hooks/useTranslation"
+
 export default function ProductsPopular({ productsPopular }: { productsPopular: ProductsPopularResponse }) {
     const productsArray = Array.isArray(productsPopular.data) ? productsPopular.data : [];
+    const { t } = useTranslation();
 
     return (
         <section>
             <div className="container mx-auto space-y-6 px-2 md:px-4 py-4 md:py-6">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
                     <div className="flex flex-col gap-2">
-                        <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Popular Products</h2>
-                        <p className="text-muted-foreground text-lg">Top downloads from our catalog</p>
+                        <h2 className="text-3xl md:text-4xl font-bold tracking-tight" suppressHydrationWarning>{t("products.popular.title")}</h2>
+                        <p className="text-muted-foreground text-lg" suppressHydrationWarning>{t("products.popular.description")}</p>
                     </div>
                 </div>
 

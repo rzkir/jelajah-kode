@@ -18,8 +18,11 @@ import {
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
+import { useTranslation } from "@/hooks/useTranslation"
+
 export default function ProfileMenu() {
     const { user, loading, signOut, userRole } = useAuth()
+    const { t } = useTranslation()
 
     const handleSignOut = async () => {
         try {
@@ -43,7 +46,7 @@ export default function ProfileMenu() {
                 href="/signin"
                 className="px-4 py-2 rounded-lg bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-sm font-medium hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors"
             >
-                Sign In
+                {t("auth.signIn")}
             </Link>
         )
     }
@@ -91,7 +94,7 @@ export default function ProfileMenu() {
                                     className="w-full flex items-center gap-2"
                                 >
                                     <User className="size-4" />
-                                    Profile
+                                    {t("common.profile")}
                                 </Link>
                             </DropdownMenuItem>
                         )
@@ -103,7 +106,7 @@ export default function ProfileMenu() {
                                 className="w-full flex items-center gap-2"
                             >
                                 <LayoutDashboard className="size-4" />
-                                Dashboard
+                                {t("dashboard.main")}
                             </Link>
                         </DropdownMenuItem>
                     )}
@@ -114,7 +117,7 @@ export default function ProfileMenu() {
                     className="cursor-pointer text-red-600 dark:text-red-400 focus:text-red-600 dark:focus:text-red-400 focus:bg-red-50 dark:focus:bg-red-950/20"
                 >
                     <LogOut className="size-4" />
-                    Sign Out
+                    {t("auth.signOut")}
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>

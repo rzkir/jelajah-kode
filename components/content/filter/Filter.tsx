@@ -27,9 +27,12 @@ import BottomSheetsFilter from "@/components/content/filter/BottomSheetsFilter"
 
 import { useStateFilter } from "@/components/content/filter/lib/useStateFilter"
 
+import { useTranslation } from "@/hooks/useTranslation"
+
 const filterButtonClassName = "w-12 h-12 bg-white dark:bg-[#1e1e1e] border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-[#2d2d2d]"
 
 export default function Filter() {
+    const { t } = useTranslation();
     const {
         categoryOpen,
         setCategoryOpen,
@@ -74,7 +77,7 @@ export default function Filter() {
                     <input
                         ref={inputRef}
                         type="text"
-                        placeholder="Search..."
+                        placeholder={t("filter.searchPlaceholder")}
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         onKeyDown={handleKeyDown}
@@ -88,8 +91,8 @@ export default function Filter() {
                             className="absolute z-100 w-full mt-2 bg-white dark:bg-[#1e1e1e] border border-gray-300 dark:border-gray-700 rounded-lg shadow-lg max-h-64 overflow-y-auto"
                         >
                             {isLoadingSuggestions ? (
-                                <div className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">
-                                    Mencari...
+                                <div className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400" suppressHydrationWarning>
+                                    {t("filter.searching")}
                                 </div>
                             ) : (
                                 <ul className="py-1">
@@ -133,8 +136,8 @@ export default function Filter() {
                                 <FilterIcon className="h-5 w-5" />
                             </Button>
                         }
-                        title="Filter"
-                        description="Pilih kategori dan tipe"
+                        title={t("filter.filter")}
+                        description={t("filter.filterDescription")}
                         side="bottom"
                         responsive={false}
                         contentClassName="max-h-[80vh] rounded-t-2xl"
@@ -167,9 +170,9 @@ export default function Filter() {
                         </PopoverTrigger>
                         <PopoverContent className="w-[200px] p-0" align="start">
                             <Command>
-                                <CommandInput placeholder="Search category..." />
+                                <CommandInput placeholder={t("filter.searchCategory")} />
                                 <CommandList>
-                                    <CommandEmpty>No category found.</CommandEmpty>
+                                    <CommandEmpty suppressHydrationWarning>{t("filter.noCategoryFound")}</CommandEmpty>
                                     <CommandGroup>
                                         <CommandItem
                                             value=""
@@ -184,7 +187,7 @@ export default function Filter() {
                                                     selectedCategory === "" ? "opacity-100" : "opacity-0"
                                                 )}
                                             />
-                                            All Categories
+                                            <span suppressHydrationWarning>{t("filter.allCategories")}</span>
                                         </CommandItem>
                                         {categories.map((category) => (
                                             <CommandItem
@@ -224,9 +227,9 @@ export default function Filter() {
                         </PopoverTrigger>
                         <PopoverContent className="w-[200px] p-0" align="start">
                             <Command>
-                                <CommandInput placeholder="Search type..." />
+                                <CommandInput placeholder={t("filter.searchType")} />
                                 <CommandList>
-                                    <CommandEmpty>No type found.</CommandEmpty>
+                                    <CommandEmpty suppressHydrationWarning>{t("filter.noTypeFound")}</CommandEmpty>
                                     <CommandGroup>
                                         <CommandItem
                                             value=""
@@ -241,7 +244,7 @@ export default function Filter() {
                                                     selectedType === "" ? "opacity-100" : "opacity-0"
                                                 )}
                                             />
-                                            All Types
+                                            <span suppressHydrationWarning>{t("filter.allTypes")}</span>
                                         </CommandItem>
                                         {types.map((type) => (
                                             <CommandItem
@@ -273,7 +276,7 @@ export default function Filter() {
                         onClick={handleSearch}
                         className="w-auto px-6 py-5.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-all shadow-sm"
                     >
-                        Terapkan
+                        <span suppressHydrationWarning>{t("filter.apply")}</span>
                     </Button>
                 </div>
             </form>

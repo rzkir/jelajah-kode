@@ -30,9 +30,12 @@ import { Filter, PanelLeft } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
+import { useTranslation } from "@/hooks/useTranslation"
+
 export default function SearchProducts({ products, pagination, query, page, categories, types, initialFilters }: SearchProductsProps) {
     const productsArray = React.useMemo(() => Array.isArray(products) ? products : [], [products]);
     const [isSheetOpen, setIsSheetOpen] = React.useState(false)
+    const { t } = useTranslation()
 
     const {
         filters,
@@ -130,9 +133,9 @@ export default function SearchProducts({ products, pagination, query, page, cate
                         <div className="sticky top-14 z-50 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 lg:static lg:bg-transparent lg:backdrop-blur-0 mb-6 pb-4 lg:pb-0 border-b lg:border-b-0">
                             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pt-4 lg:pt-0">
                                 <div className="hidden sm:block">
-                                    <h1 className="text-2xl font-bold mb-2">Search Products</h1>
-                                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                                        Showing {productsArray.length} of {pagination.total} products
+                                    <h1 className="text-2xl font-bold mb-2" suppressHydrationWarning>{t("searchPage.title")}</h1>
+                                    <p className="text-sm text-gray-600 dark:text-gray-400" suppressHydrationWarning>
+                                        {t("searchPage.showing")} {productsArray.length} {t("searchPage.of")} {pagination.total} {t("searchPage.products")}
                                     </p>
                                 </div>
                                 <div className="flex gap-2 items-center w-full sm:w-auto">
@@ -144,13 +147,13 @@ export default function SearchProducts({ products, pagination, query, page, cate
                                                 className="lg:hidden flex-1 sm:flex-initial"
                                             >
                                                 <Filter className="w-4 h-4 mr-2" />
-                                                Filters
+                                                <span suppressHydrationWarning>{t("searchFilter.filters")}</span>
                                             </Button>
                                         </SheetTrigger>
 
                                         <SheetContent side="left" className="w-[85vw] sm:w-[400px] overflow-y-auto">
                                             <SheetHeader>
-                                                <SheetTitle>Filters</SheetTitle>
+                                                <SheetTitle suppressHydrationWarning>{t("searchFilter.filters")}</SheetTitle>
                                             </SheetHeader>
                                             <div className="p-4">
                                                 {filterContent}
@@ -164,28 +167,28 @@ export default function SearchProducts({ products, pagination, query, page, cate
                                         disabled={isFiltersDefault}
                                         className="hidden sm:inline-flex"
                                     >
-                                        Reset Filters
+                                        <span suppressHydrationWarning>{t("productsPage.resetFilters")}</span>
                                     </Button>
 
                                     <Select value={filters.sortBy} onValueChange={setSortBy}>
                                         <SelectTrigger className="w-full sm:w-[180px]">
-                                            <SelectValue placeholder="Sort by" />
+                                            <SelectValue placeholder={t("productsPage.sortBy")} />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="newest">Newest First</SelectItem>
-                                            <SelectItem value="oldest">Oldest First</SelectItem>
-                                            <SelectItem value="price-low">Price: Low to High</SelectItem>
-                                            <SelectItem value="price-high">Price: High to Low</SelectItem>
-                                            <SelectItem value="rating">Highest Rated</SelectItem>
+                                            <SelectItem value="newest" suppressHydrationWarning>{t("productsPage.newestFirst")}</SelectItem>
+                                            <SelectItem value="oldest" suppressHydrationWarning>{t("productsPage.oldestFirst")}</SelectItem>
+                                            <SelectItem value="price-low" suppressHydrationWarning>{t("productsPage.priceLowToHigh")}</SelectItem>
+                                            <SelectItem value="price-high" suppressHydrationWarning>{t("productsPage.priceHighToLow")}</SelectItem>
+                                            <SelectItem value="rating" suppressHydrationWarning>{t("productsPage.highestRated")}</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </div>
                             </div>
                             {/* Mobile Title & Count */}
                             <div className="sm:hidden mt-4">
-                                <h1 className="text-xl font-bold mb-1">Search Products</h1>
-                                <p className="text-xs text-gray-600 dark:text-gray-400">
-                                    Showing {productsArray.length} of {pagination.total} products
+                                <h1 className="text-xl font-bold mb-1" suppressHydrationWarning>{t("searchPage.title")}</h1>
+                                <p className="text-xs text-gray-600 dark:text-gray-400" suppressHydrationWarning>
+                                    {t("searchPage.showing")} {productsArray.length} {t("searchPage.of")} {pagination.total} {t("searchPage.products")}
                                 </p>
                             </div>
                         </div>
@@ -239,10 +242,10 @@ export default function SearchProducts({ products, pagination, query, page, cate
                             </>
                         ) : (
                             <div className="text-center py-12">
-                                <p className="text-muted-foreground text-lg">
+                                <p className="text-muted-foreground text-lg" suppressHydrationWarning>
                                     {query
-                                        ? `No products found for "${query}"`
-                                        : "No products available"}
+                                        ? `${t("searchPage.noProductsFoundFor")} "${query}"`
+                                        : t("searchPage.noProductsAvailable")}
                                 </p>
                             </div>
                         )}

@@ -19,6 +19,8 @@ import Link from "next/link";
 
 import { useAuth } from "@/utils/context/AuthContext";
 
+import { useTranslation } from "@/hooks/useTranslation";
+
 export function ForgetPasswordForm({
   className,
   ...props
@@ -29,6 +31,7 @@ export function ForgetPasswordForm({
     setForgetPasswordEmail,
     handleForgetPasswordSubmit,
   } = useAuth();
+  const { t } = useTranslation();
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -47,20 +50,23 @@ export function ForgetPasswordForm({
               <div className="flex size-8 items-center justify-center rounded-md">
                 <Code className="size-6" />
               </div>
-              <span className="sr-only">Jelajah Kode 👾.</span>
+              <span className="sr-only">{t("auth.forgetTitle")}</span>
             </a>
-            <h1 className="text-xl font-bold">Forget your password?</h1>
+            <h1 className="text-xl font-bold">
+              {t("auth.forgetTitle")}
+            </h1>
             <FieldDescription>
-              Enter your email and we&apos;ll send you a code to reset your
-              password
+              {t("auth.forgetSubtitle")}
             </FieldDescription>
           </div>
           <Field>
-            <FieldLabel htmlFor="email">Email</FieldLabel>
+            <FieldLabel htmlFor="email">
+              {t("auth.email")}
+            </FieldLabel>
             <Input
               id="email"
               type="email"
-              placeholder="m@example.com"
+              placeholder={t("auth.emailPlaceholder")}
               value={forgetPasswordEmail}
               onChange={(e) => setForgetPasswordEmail(e.target.value)}
               required
@@ -71,20 +77,26 @@ export function ForgetPasswordForm({
               {forgetPasswordIsLoading && (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               )}
-              {forgetPasswordIsLoading ? "Sending..." : "Send Reset Code"}
+              {forgetPasswordIsLoading ? t("auth.sending") : t("auth.sendResetCode")}
             </Button>
           </Field>
           <FieldDescription className="text-center">
-            Remember your password?{" "}
+            {t("auth.rememberPasswordQuestion")}{" "}
             <Link href="/signin" className="text-blue-600 hover:underline">
-              Sign in
+              {t("auth.signIn")}
             </Link>
           </FieldDescription>
         </FieldGroup>
       </form>
       <FieldDescription className="px-6 text-center">
-        By clicking continue, you agree to our <a href="#">Terms of Service</a>{" "}
-        and <a href="#">Privacy Policy</a>.
+        {t("auth.tosNotice")}{" "}
+        <a href="#" className="underline">
+          {t("auth.tos")}
+        </a>{" "}
+        {t("auth.and")}{" "}
+        <a href="#" className="underline">
+          {t("auth.privacyPolicy")}
+        </a>
       </FieldDescription>
     </div>
   );

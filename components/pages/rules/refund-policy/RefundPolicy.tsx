@@ -1,18 +1,24 @@
+"use client"
+
 import Link from "next/link"
 
 import { ChevronRight } from "lucide-react"
 
 const EMAIL_ADMIN = process.env.NEXT_PUBLIC_GMAIL as string
 
+import { useTranslation } from "@/hooks/useTranslation"
+
 export default function RefundPolicyPage() {
+    const { t } = useTranslation()
+
     const sections = [
-        { id: "eligibility", title: "Refund Eligibility" },
-        { id: "process", title: "Refund Process" },
-        { id: "timeframe", title: "Timeframe" },
-        { id: "conditions", title: "Refund Conditions" },
-        { id: "non-refundable", title: "Non-Refundable Items" },
-        { id: "disputes", title: "Dispute Resolution" },
-        { id: "contact", title: "Contact Support" },
+        { id: "eligibility", title: t("rules.refund.sections.eligibility") },
+        { id: "process", title: t("rules.refund.sections.process") },
+        { id: "timeframe", title: t("rules.refund.sections.timeframe") },
+        { id: "conditions", title: t("rules.refund.sections.conditions") },
+        { id: "non-refundable", title: t("rules.refund.sections.nonRefundable") },
+        { id: "disputes", title: t("rules.refund.sections.disputes") },
+        { id: "contact", title: t("rules.refund.sections.contact") },
     ]
 
     return (
@@ -20,8 +26,12 @@ export default function RefundPolicyPage() {
             <section className="border-b border-border bg-muted/30">
                 <div className="container mx-auto px-4 py-16 md:py-24">
                     <div className="max-w-2xl">
-                        <h1 className="text-4xl md:text-5xl font-bold mb-4">Refund Policy</h1>
-                        <p className="text-lg text-muted-foreground">Last updated: January 2026</p>
+                        <h1 className="text-4xl md:text-5xl font-bold mb-4">
+                            {t("rules.refund.title")}
+                        </h1>
+                        <p className="text-lg text-muted-foreground">
+                            {t("rules.refund.lastUpdated")}
+                        </p>
                     </div>
                 </div>
             </section>
@@ -29,7 +39,9 @@ export default function RefundPolicyPage() {
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 container mx-auto px-4 py-12">
                 <aside className="lg:col-span-1">
                     <div className="sticky top-24 bg-muted/50 rounded-lg p-6 border border-border">
-                        <h3 className="font-semibold text-foreground mb-4">Contents</h3>
+                        <h3 className="font-semibold text-foreground mb-4">
+                            {t("rules.refund.contents")}
+                        </h3>
                         <nav className="space-y-2">
                             {sections.map((section) => (
                                 <a
@@ -47,71 +59,90 @@ export default function RefundPolicyPage() {
 
                 <div className="lg:col-span-3 space-y-12">
                     <section id="eligibility">
-                        <h2 className="text-2xl font-bold mb-4">Refund Eligibility</h2>
+                        <h2 className="text-2xl font-bold mb-4">
+                            {t("rules.refund.sections.eligibility")}
+                        </h2>
                         <p className="text-muted-foreground">
-                            At Jelajah Kode, we want you to be satisfied with your purchase. If you are not completely satisfied with a
-                            product, you may be eligible for a refund within 14 days of your purchase date.
+                            {t("rules.refund.eligibilityText")}
                         </p>
                     </section>
 
                     <section id="process">
-                        <h2 className="text-2xl font-bold mb-4">Refund Process</h2>
-                        <p className="text-muted-foreground mb-4">To request a refund, please follow these steps:</p>
+                        <h2 className="text-2xl font-bold mb-4">
+                            {t("rules.refund.sections.process")}
+                        </h2>
+                        <p className="text-muted-foreground mb-4">
+                            {t("rules.refund.processIntro")}
+                        </p>
                         <ol className="list-decimal list-inside space-y-2 text-muted-foreground">
-                            <li>Contact our support team at {EMAIL_ADMIN}</li>
-                            <li>Include your order number and reason for the refund request</li>
-                            <li>Our team will review your request within 48 hours</li>
-                            <li>If approved, the refund will be processed within 5-7 business days</li>
+                            <li>
+                                {t("rules.refund.processList.item1")}{" "}
+                                {EMAIL_ADMIN}
+                            </li>
+                            <li>{t("rules.refund.processList.item2")}</li>
+                            <li>{t("rules.refund.processList.item3")}</li>
+                            <li>{t("rules.refund.processList.item4")}</li>
                         </ol>
                     </section>
 
                     <section id="timeframe">
-                        <h2 className="text-2xl font-bold mb-4">Timeframe</h2>
+                        <h2 className="text-2xl font-bold mb-4">
+                            {t("rules.refund.sections.timeframe")}
+                        </h2>
                         <p className="text-muted-foreground">
-                            Refund requests must be submitted within 14 days of the purchase date. Requests received after this period
-                            may not be eligible for a refund. We process refunds within 5-7 business days from the approval date.
+                            {t("rules.refund.timeframeText")}
                         </p>
                     </section>
 
                     <section id="conditions">
-                        <h2 className="text-2xl font-bold mb-4">Refund Conditions</h2>
-                        <p className="text-muted-foreground mb-4">Your refund request may be approved if:</p>
+                        <h2 className="text-2xl font-bold mb-4">
+                            {t("rules.refund.sections.conditions")}
+                        </h2>
+                        <p className="text-muted-foreground mb-4">
+                            {t("rules.refund.conditionsIntro")}
+                        </p>
                         <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-                            <li>The request is submitted within 14 days of purchase</li>
-                            <li>The source code has not been significantly modified</li>
-                            <li>You provide a valid reason for the refund request</li>
-                            <li>This is your first refund request for this product</li>
+                            <li>{t("rules.refund.conditionsList.item1")}</li>
+                            <li>{t("rules.refund.conditionsList.item2")}</li>
+                            <li>{t("rules.refund.conditionsList.item3")}</li>
+                            <li>{t("rules.refund.conditionsList.item4")}</li>
                         </ul>
                     </section>
 
                     <section id="non-refundable">
-                        <h2 className="text-2xl font-bold mb-4">Non-Refundable Items</h2>
-                        <p className="text-muted-foreground mb-4">The following items are not eligible for refunds:</p>
+                        <h2 className="text-2xl font-bold mb-4">
+                            {t("rules.refund.sections.nonRefundable")}
+                        </h2>
+                        <p className="text-muted-foreground mb-4">
+                            {t("rules.refund.nonRefundableIntro")}
+                        </p>
                         <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-                            <li>Digital products that have been downloaded and significantly used</li>
-                            <li>Products purchased during special promotions (sale final)</li>
-                            <li>Subscription services after the trial period ends</li>
-                            <li>Custom development or consultation services</li>
+                            <li>{t("rules.refund.nonRefundableList.item1")}</li>
+                            <li>{t("rules.refund.nonRefundableList.item2")}</li>
+                            <li>{t("rules.refund.nonRefundableList.item3")}</li>
+                            <li>{t("rules.refund.nonRefundableList.item4")}</li>
                         </ul>
                     </section>
 
                     <section id="disputes">
-                        <h2 className="text-2xl font-bold mb-4">Dispute Resolution</h2>
+                        <h2 className="text-2xl font-bold mb-4">
+                            {t("rules.refund.sections.disputes")}
+                        </h2>
                         <p className="text-muted-foreground">
-                            If you believe a refund was denied incorrectly, you can appeal the decision by contacting our dispute
-                            resolution team. Please provide additional documentation or context regarding your case. We will review
-                            your appeal within 10 business days.
+                            {t("rules.refund.disputesText")}
                         </p>
                     </section>
 
                     <section id="contact">
-                        <h2 className="text-2xl font-bold mb-4">Contact Support</h2>
+                        <h2 className="text-2xl font-bold mb-4">
+                            {t("rules.refund.sections.contact")}
+                        </h2>
                         <p className="text-muted-foreground">
-                            For questions about our refund policy, please contact us at{" "}
+                            {t("rules.refund.contactText")}{" "}
                             <Link href={`mailto:${EMAIL_ADMIN}`} className="text-primary hover:underline">
                                 {EMAIL_ADMIN}
                             </Link>
-                            . Our support team is available Monday to Friday, 9 AM to 5 PM EST.
+                            . {t("rules.refund.contactExtra")}
                         </p>
                     </section>
                 </div>

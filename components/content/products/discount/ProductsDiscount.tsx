@@ -8,8 +8,11 @@ import { useStateProductsDiscount } from "@/components/content/products/discount
 
 import { CountdownTimer } from "@/components/content/products/discount/CountdownTimer"
 
+import { useTranslation } from "@/hooks/useTranslation"
+
 export default function ProductsDiscount({ productsDiscount }: { productsDiscount: ProductsDiscountResponse }) {
     const { productsArray, earliestEndDate, mounted, timeLeft } = useStateProductsDiscount(productsDiscount);
+    const { t } = useTranslation();
 
     return (
         <section>
@@ -18,8 +21,8 @@ export default function ProductsDiscount({ productsDiscount }: { productsDiscoun
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
                     {/* Heading */}
                     <div className="flex flex-col gap-2">
-                        <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Limited Time Offers</h2>
-                        <p className="text-muted-foreground text-lg">Grab these deals before they expire</p>
+                        <h2 className="text-3xl md:text-4xl font-bold tracking-tight" suppressHydrationWarning>{t("products.discount.title")}</h2>
+                        <p className="text-muted-foreground text-lg" suppressHydrationWarning>{t("products.discount.description")}</p>
                     </div>
 
                     {/* Countdowns */}
@@ -27,7 +30,7 @@ export default function ProductsDiscount({ productsDiscount }: { productsDiscoun
                         <CountdownTimer mounted={mounted} timeLeft={timeLeft} />
                     ) : (
                         <div className="flex flex-row items-center gap-3 px-4 py-2 rounded-lg bg-muted border">
-                            <h3 className="text-sm font-medium text-muted-foreground">No active discounts</h3>
+                            <h3 className="text-sm font-medium text-muted-foreground" suppressHydrationWarning>{t("products.discount.noActiveDiscounts")}</h3>
                         </div>
                     )}
                 </div>

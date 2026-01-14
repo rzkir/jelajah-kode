@@ -26,7 +26,10 @@ import { fetchProductsRatings, fetchProductsById } from "@/utils/fetching/FetchP
 
 import useFormatDate from "@/hooks/FormatDate";
 
+import { useTranslation } from "@/hooks/useTranslation";
+
 export default function RatingsDetails() {
+    const { t } = useTranslation();
     const params = useParams();
     const router = useRouter();
     const productsId = params?.productsId as string;
@@ -131,7 +134,7 @@ export default function RatingsDetails() {
     if (!productsId) {
         return (
             <div className="container mx-auto px-4 py-8">
-                <p className="text-center text-muted-foreground">Product ID not found</p>
+                <p className="text-center text-muted-foreground" suppressHydrationWarning>{t("productsPage.productIdNotFound")}</p>
             </div>
         );
     }
@@ -147,7 +150,7 @@ export default function RatingsDetails() {
                         className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
                     >
                         <ArrowLeft className="w-4 h-4" />
-                        <span>Back to Product</span>
+                        <span suppressHydrationWarning>{t("productsPage.backToProduct")}</span>
                     </Button>
                 </div>
 
@@ -166,7 +169,7 @@ export default function RatingsDetails() {
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
                     <Card className="bg-card/50 backdrop-blur-sm border-border/50">
                         <CardContent className="p-6">
-                            <div className="text-sm text-muted-foreground mb-2">Average Rating</div>
+                            <div className="text-sm text-muted-foreground mb-2" suppressHydrationWarning>{t("productsPage.averageRating")}</div>
                             <div className="flex items-end gap-2 mb-2">
                                 <span className="text-4xl font-bold text-foreground">{averageRating}</span>
                                 <span className="text-muted-foreground text-sm mb-1">/ 5.0</span>
@@ -211,7 +214,7 @@ export default function RatingsDetails() {
                             <div className="relative">
                                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
                                 <Input
-                                    placeholder="Search by reviewer or comment..."
+                                    placeholder={t("productsPage.searchByReviewer")}
                                     className="pl-10 bg-card/50 border-border/50 text-foreground placeholder-muted-foreground"
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
@@ -227,13 +230,13 @@ export default function RatingsDetails() {
                                 }
                             >
                                 <SelectTrigger className="w-full sm:w-[180px] bg-card/50 border-border/50">
-                                    <SelectValue placeholder="Sort by" />
+                                    <SelectValue placeholder={t("productsPage.sortBy")} />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="newest">Newest First</SelectItem>
-                                    <SelectItem value="oldest">Oldest First</SelectItem>
-                                    <SelectItem value="highest">Highest Rating</SelectItem>
-                                    <SelectItem value="lowest">Lowest Rating</SelectItem>
+                                    <SelectItem value="newest" suppressHydrationWarning>{t("productsPage.newestFirst")}</SelectItem>
+                                    <SelectItem value="oldest" suppressHydrationWarning>{t("productsPage.oldestFirst")}</SelectItem>
+                                    <SelectItem value="highest" suppressHydrationWarning>{t("productsPage.highestRating")}</SelectItem>
+                                    <SelectItem value="lowest" suppressHydrationWarning>{t("productsPage.lowestRating")}</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
@@ -241,8 +244,8 @@ export default function RatingsDetails() {
 
                     {ratingFilter !== null && (
                         <div className="flex items-center gap-2">
-                            <Badge variant="secondary" className="bg-muted/50 border-border/50">
-                                Filtering by {ratingFilter} star{ratingFilter !== 1 ? "s" : ""}
+                            <Badge variant="secondary" className="bg-muted/50 border-border/50" suppressHydrationWarning>
+                                {t("productsPage.filteringBy")} {ratingFilter} {ratingFilter !== 1 ? t("productsPage.stars") : t("productsPage.star")}
                             </Badge>
                             <Button
                                 variant="ghost"
@@ -250,7 +253,7 @@ export default function RatingsDetails() {
                                 className="text-muted-foreground hover:text-foreground"
                                 onClick={() => setRatingFilter(null)}
                             >
-                                Clear filter
+                                <span suppressHydrationWarning>{t("productsPage.clearFilterLower")}</span>
                             </Button>
                         </div>
                     )}
@@ -277,7 +280,7 @@ export default function RatingsDetails() {
                 ) : filteredRatings.length === 0 ? (
                     <Card className="bg-card/50 backdrop-blur-sm border-border/50">
                         <CardContent className="p-8 text-center">
-                            <p className="text-muted-foreground">No reviews found matching your criteria.</p>
+                            <p className="text-muted-foreground" suppressHydrationWarning>{t("productsPage.noReviewsFound")}</p>
                         </CardContent>
                     </Card>
                 ) : (
@@ -326,8 +329,8 @@ export default function RatingsDetails() {
 
                 {filteredRatings.length > 0 && (
                     <div className="text-center mt-8">
-                        <p className="text-muted-foreground text-sm">
-                            Showing {filteredRatings.length} of {ratings.length} reviews
+                        <p className="text-muted-foreground text-sm" suppressHydrationWarning>
+                            {t("productsPage.showingReviews")} {filteredRatings.length} {t("productsPage.ofReviews")} {ratings.length} {t("productsPage.reviewsLower")}
                         </p>
                     </div>
                 )}

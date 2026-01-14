@@ -14,6 +14,8 @@ import { TypographyContent } from '@/components/ui/typography'
 
 import useFormatDate from '@/hooks/FormatDate'
 
+import { useTranslation } from '@/hooks/useTranslation'
+
 import { toast } from 'sonner'
 
 import Image from 'next/image'
@@ -28,6 +30,7 @@ function calculateReadTime(content?: string): number {
 export default function ArticlesDetails({ article }: { article: ArticlesDetails }) {
     const { formatDateArticle } = useFormatDate()
     const readTime = calculateReadTime(article.content)
+    const { t } = useTranslation()
 
     const handleShare = () => {
         if (navigator.share) {
@@ -52,7 +55,7 @@ export default function ArticlesDetails({ article }: { article: ArticlesDetails 
                     className="inline-flex items-center gap-2 text-sm sm:text-base mb-6"
                 >
                     <ArrowLeft className="w-4 h-4" />
-                    Back to Articles
+                    {t("articlesDetails.backToArticles")}
                 </Link>
 
                 <div className="relative w-full h-full aspect-video rounded-xl overflow-hidden">
@@ -87,7 +90,7 @@ export default function ArticlesDetails({ article }: { article: ArticlesDetails 
                             </span>
                         )}
                         <span className="text-sm sm:text-base">
-                            {readTime} min read
+                            {readTime} {t("articles.minRead")}
                         </span>
                     </div>
 
@@ -111,7 +114,9 @@ export default function ArticlesDetails({ article }: { article: ArticlesDetails 
                             className="flex items-center gap-2"
                         >
                             <Share2 className="w-4 h-4" />
-                            <span className="hidden sm:inline">Share</span>
+                            <span className="hidden sm:inline">
+                                {t("articlesDetails.share")}
+                            </span>
                         </Button>
                     </div>
 

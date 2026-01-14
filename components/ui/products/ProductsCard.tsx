@@ -12,6 +12,8 @@ import Image from "next/image"
 
 import { useDiscount } from "@/hooks/discountServices"
 
+import { useTranslation } from "@/hooks/useTranslation"
+
 interface ProductsCardProps {
     item: {
         productsId: string;
@@ -51,6 +53,7 @@ export default function ProductsCard({
     const ratingValue = item.ratingAverage ?? 0;
     const ratingCount = item.ratingCount ?? 0;
     const productHref = href || `/products/${item.productsId}`;
+    const { t } = useTranslation();
 
     return (
         <Link href={productHref} className={`group ${className}`}>
@@ -136,7 +139,7 @@ export default function ProductsCard({
                     {/* Price Section */}
                     <div className="flex flex-row items-end gap-2 mb-6 mt-5">
                         {item.paymentType === 'free' ? (
-                            <span className="text-2xl font-bold text-green-600">Free</span>
+                            <span className="text-2xl font-bold text-green-600" suppressHydrationWarning>{t("products.free")}</span>
                         ) : hasActiveDiscount ? (
                             <>
                                 <span className="text-2xl font-bold text-primary">

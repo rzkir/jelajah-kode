@@ -12,24 +12,26 @@ import { useIsMobile } from "@/hooks/use-mobile"
 
 import { useCart } from "@/utils/context/CartContext"
 
-const navigationItems = [
+import { useTranslation } from "@/hooks/useTranslation"
+
+const navigationItems = (t: (key: string) => string) => [
     {
-        label: "Home",
+        label: t("bottomNav.home"),
         href: "/",
         icon: Home,
     },
     {
-        label: "Products",
+        label: t("bottomNav.products"),
         href: "/products",
         icon: BriefcaseBusiness,
     },
     {
-        label: "Cart",
+        label: t("bottomNav.cart"),
         href: "/cart",
         icon: ShoppingCart,
     },
     {
-        label: "Contact",
+        label: t("bottomNav.contact"),
         href: "/contact",
         icon: Phone,
     },
@@ -40,6 +42,7 @@ export default function BottomNavigation() {
     const isMobile = useIsMobile()
     const { setCartSheetOpen, getTotalItems } = useCart()
     const cartItemCount = getTotalItems()
+    const { t } = useTranslation()
 
     if (!isMobile) {
         return null
@@ -48,7 +51,7 @@ export default function BottomNavigation() {
     return (
         <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t lg:hidden rounded-t-2xl py-2">
             <div className="flex items-center justify-around px-2 pb-safe">
-                {navigationItems.map((item) => {
+                {navigationItems(t).map((item) => {
                     const isActive =
                         pathname === item.href ||
                         (item.href !== "/" && pathname?.startsWith(item.href))

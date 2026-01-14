@@ -38,6 +38,8 @@ import Link from "next/link";
 
 import { useAuth } from "@/utils/context/AuthContext";
 
+import { useTranslation } from "@/hooks/useTranslation";
+
 export function ChangePasswordForm({
   className,
   ...props
@@ -54,6 +56,7 @@ export function ChangePasswordForm({
     handleVerifyOtpForPasswordReset,
     handleResetPasswordWithOtp,
   } = useAuth();
+  const { t } = useTranslation();
 
   const {
     handleSubmit,
@@ -77,10 +80,10 @@ export function ChangePasswordForm({
   useEffect(() => {
     // Check if email parameter exists
     if (!email) {
-      toast.error("Please request password reset from forget password page");
+      toast.error(t("auth.requestResetFromForgetPage"));
       router.push("/forget-password");
     }
-  }, [email, router]);
+  }, [email, router, t]);
 
   const handleVerifyOTP = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -98,7 +101,9 @@ export function ChangePasswordForm({
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       {!email ? (
         <div className="flex flex-col items-center gap-4 text-center">
-          <p className="text-muted-foreground">Redirecting...</p>
+          <p className="text-muted-foreground">
+            {t("auth.redirecting")}
+          </p>
         </div>
       ) : (
         <>
@@ -113,16 +118,18 @@ export function ChangePasswordForm({
                     <div className="flex size-8 items-center justify-center rounded-md">
                       <Code className="size-6" />
                     </div>
-                    <span className="sr-only">Jelajah Kode 👾.</span>
+                    <span className="sr-only">{t("auth.enterCodeTitle")}</span>
                   </a>
-                  <h1 className="text-xl font-bold">Enter verification code</h1>
+                  <h1 className="text-xl font-bold">
+                    {t("auth.enterCodeTitle")}
+                  </h1>
                   <FieldDescription>
-                    We sent a 6-digit code to your email
+                    {t("auth.enterCodeSubtitle")}
                   </FieldDescription>
                 </div>
                 <Field>
                   <FieldLabel htmlFor="otp" className="sr-only">
-                    Verification code
+                    {t("auth.enterCodeTitle")}
                   </FieldLabel>
                   <InputOTP
                     maxLength={6}
@@ -145,12 +152,12 @@ export function ChangePasswordForm({
                     </InputOTPGroup>
                   </InputOTP>
                   <FieldDescription className="text-center">
-                    Didn&apos;t receive the code?{" "}
+                    {t("auth.didntReceiveCode")}{" "}
                     <Link
                       href="/forget-password"
                       className="text-blue-600 hover:underline"
                     >
-                      Resend
+                      {t("auth.resend")}
                     </Link>
                   </FieldDescription>
                 </Field>
@@ -161,7 +168,7 @@ export function ChangePasswordForm({
                       passwordResetIsLoading || passwordResetOtp.length !== 6
                     }
                   >
-                    {passwordResetIsLoading ? "Verifying..." : "Verify"}
+                    {passwordResetIsLoading ? t("auth.verifying") : t("auth.verify")}
                   </Button>
                 </Field>
               </FieldGroup>
@@ -179,16 +186,24 @@ export function ChangePasswordForm({
                     <div className="flex size-8 items-center justify-center rounded-md">
                       <Code className="size-6" />
                     </div>
-                    <span className="sr-only">Jelajah Kode 👾.</span>
+                    <span className="sr-only">
+                      {t("auth.createNewPasswordTitle")}
+                    </span>
                   </a>
-                  <h1 className="text-xl font-bold">Create new password</h1>
-                  <FieldDescription>Enter your new password</FieldDescription>
+                  <h1 className="text-xl font-bold">
+                    {t("auth.createNewPasswordTitle")}
+                  </h1>
+                  <FieldDescription>
+                    {t("auth.createNewPasswordSubtitle")}
+                  </FieldDescription>
                 </div>
                 <Field>
-                  <FieldLabel htmlFor="newPassword">New Password</FieldLabel>
+                  <FieldLabel htmlFor="newPassword">
+                    {t("auth.newPasswordLabel")}
+                  </FieldLabel>
                   <PasswordInput
                     id="newPassword"
-                    placeholder="Enter new password"
+                    placeholder={t("auth.newPasswordPlaceholder")}
                     value={passwordResetNewPassword}
                     onChange={(e) => {
                       const value = e.target.value;
@@ -205,16 +220,16 @@ export function ChangePasswordForm({
                     </FieldDescription>
                   )}
                   <FieldDescription>
-                    Must be at least 8 characters
+                    {t("auth.newPasswordHelper")}
                   </FieldDescription>
                 </Field>
                 <Field>
                   <FieldLabel htmlFor="confirmPassword">
-                    Confirm Password
+                    {t("auth.confirmNewPasswordLabel")}
                   </FieldLabel>
                   <PasswordInput
                     id="confirmPassword"
-                    placeholder="Confirm new password"
+                    placeholder={t("auth.confirmNewPasswordPlaceholder")}
                     value={passwordResetConfirmPassword}
                     onChange={(e) => {
                       const value = e.target.value;
@@ -233,7 +248,7 @@ export function ChangePasswordForm({
                 </Field>
                 <Field>
                   <Button type="submit" disabled={passwordResetIsLoading}>
-                    {passwordResetIsLoading ? "Resetting..." : "Reset Password"}
+                    {passwordResetIsLoading ? t("auth.resetting") : t("auth.resetPassword")}
                   </Button>
                 </Field>
               </FieldGroup>
@@ -243,8 +258,14 @@ export function ChangePasswordForm({
       )}
 
       <FieldDescription className="px-6 text-center">
-        By clicking continue, you agree to our <a href="#">Terms of Service</a>{" "}
-        and <a href="#">Privacy Policy</a>.
+        {t("auth.tosNotice")}{" "}
+        <a href="#" className="underline">
+          {t("auth.tos")}
+        </a>{" "}
+        {t("auth.and")}{" "}
+        <a href="#" className="underline">
+          {t("auth.privacyPolicy")}
+        </a>
       </FieldDescription>
     </div>
   );

@@ -30,11 +30,14 @@ import useStateProductsDetails from '@/components/pages/products/products-detail
 
 import Link from 'next/link'
 
+import { useTranslation } from '@/hooks/useTranslation'
+
 interface ProductsDetailsProps {
     product: ProductsDetails
 }
 
 export default function ProductsDetails({ product }: ProductsDetailsProps) {
+    const { t } = useTranslation();
     const {
         activeTab,
         setActiveTab,
@@ -112,15 +115,15 @@ export default function ProductsDetails({ product }: ProductsDetailsProps) {
                                     }`}
                             />
                         </div>
-                        <span className="text-xs sm:text-sm font-semibold">
-                            {product.ratingAverage?.toFixed(1)} <span className="text-muted-foreground font-normal">({product.ratingCount || 0} reviews)</span>
+                        <span className="text-xs sm:text-sm font-semibold" suppressHydrationWarning>
+                            {product.ratingAverage?.toFixed(1)} <span className="text-muted-foreground font-normal">({product.ratingCount || 0} {product.ratingCount === 1 ? t("productsPage.review") : t("productsPage.reviews")})</span>
                         </span>
                     </div>
 
                     {product.downloadCount !== undefined && (
                         <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-muted-foreground bg-muted/50 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg">
                             <Download className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                            <span className="font-medium">{product.downloadCount.toLocaleString()} downloads</span>
+                            <span className="font-medium" suppressHydrationWarning>{product.downloadCount.toLocaleString()} {product.downloadCount === 1 ? t("productsPage.download") : t("productsPage.downloads")}</span>
                         </div>
                     )}
                 </div>
@@ -171,16 +174,16 @@ export default function ProductsDetails({ product }: ProductsDetailsProps) {
                         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                             <TabsList className="w-full justify-start bg-muted/50 rounded-lg sm:rounded-xl border border-border/50 shadow-sm p-0.5 sm:p-0 overflow-x-auto overflow-y-hidden">
                                 <TabsTrigger value="overview" className="data-[state=active]:bg-background data-[state=active]:shadow-md transition-all duration-200 rounded-md sm:rounded-lg px-3 sm:px-4 md:px-6 py-2 sm:py-2.5 text-xs sm:text-sm font-medium whitespace-nowrap shrink-0 w-[40%] md:w-[25%]">
-                                    Overview
+                                    <span suppressHydrationWarning>{t("productsPage.overview")}</span>
                                 </TabsTrigger>
                                 <TabsTrigger value="tech-stack" className="data-[state=active]:bg-background data-[state=active]:shadow-md transition-all duration-200 rounded-md sm:rounded-lg px-3 sm:px-4 md:px-6 py-2 sm:py-2.5 text-xs sm:text-sm font-medium whitespace-nowrap shrink-0 w-[40%] md:w-[25%]">
-                                    Tech Stack
+                                    <span suppressHydrationWarning>{t("productsPage.techStack")}</span>
                                 </TabsTrigger>
                                 <TabsTrigger value="faqs" className="data-[state=active]:bg-background data-[state=active]:shadow-md transition-all duration-200 rounded-md sm:rounded-lg px-3 sm:px-4 md:px-6 py-2 sm:py-2.5 text-xs sm:text-sm font-medium whitespace-nowrap shrink-0 w-[40%] md:w-[25%]">
-                                    FAQs
+                                    <span suppressHydrationWarning>{t("productsPage.faqs")}</span>
                                 </TabsTrigger>
                                 <TabsTrigger value="reviews" className="data-[state=active]:bg-background data-[state=active]:shadow-md transition-all duration-200 rounded-md sm:rounded-lg px-3 sm:px-4 md:px-6 py-2 sm:py-2.5 text-xs sm:text-sm font-medium whitespace-nowrap shrink-0 w-[40%] md:w-[25%]">
-                                    Reviews
+                                    <span suppressHydrationWarning>{t("productsPage.reviewsTab")}</span>
                                 </TabsTrigger>
                             </TabsList>
 
@@ -200,7 +203,7 @@ export default function ProductsDetails({ product }: ProductsDetailsProps) {
 
                                     {product.tags && product.tags.length > 0 && (
                                         <div className="bg-card/50 backdrop-blur-sm rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-border/50 shadow-lg">
-                                            <h4 className="font-semibold mb-3 sm:mb-4 text-base sm:text-lg">Tags</h4>
+                                            <h4 className="font-semibold mb-3 sm:mb-4 text-base sm:text-lg" suppressHydrationWarning>{t("productsPage.tags")}</h4>
                                             <div className="flex flex-wrap gap-2 sm:gap-2.5">
                                                 {product.tags.map((tag, idx) => (
                                                     <Link href={`/products/tags/${tag.tagsId}`} key={idx}>
@@ -261,8 +264,8 @@ export default function ProductsDetails({ product }: ProductsDetailsProps) {
                                             <div className="inline-flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 rounded-full bg-muted mb-3 sm:mb-4">
                                                 <span className="text-xl sm:text-2xl md:text-3xl">❓</span>
                                             </div>
-                                            <p className="text-muted-foreground text-sm sm:text-base md:text-lg font-medium w-full wrap-break-word px-4">
-                                                No FAQs available for this product.
+                                            <p className="text-muted-foreground text-sm sm:text-base md:text-lg font-medium w-full wrap-break-word px-4" suppressHydrationWarning>
+                                                {t("productsPage.noFaqsAvailable")}
                                             </p>
                                         </div>
                                     )}
@@ -273,8 +276,8 @@ export default function ProductsDetails({ product }: ProductsDetailsProps) {
                                 <div className="space-y-4 sm:space-y-6">
                                     {/* Rating Summary */}
                                     <div className="bg-linear-to-br from-card/80 to-card/50 backdrop-blur-sm rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-border/50 shadow-lg">
-                                        <h3 className="text-xl sm:text-2xl md:text-3xl font-bold bg-linear-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-                                            Customer Reviews
+                                        <h3 className="text-xl sm:text-2xl md:text-3xl font-bold bg-linear-to-r from-foreground to-foreground/70 bg-clip-text text-transparent" suppressHydrationWarning>
+                                            {t("productsPage.customerReviews")}
                                         </h3>
 
                                         {product.ratingAverage && product.ratingCount ? (
@@ -298,8 +301,8 @@ export default function ProductsDetails({ product }: ProductsDetailsProps) {
                                                 </div>
 
                                                 <div className="px-3 sm:px-4 py-1.5 sm:py-2 bg-muted/50 rounded-lg">
-                                                    <span className="text-xs sm:text-sm font-semibold text-muted-foreground">
-                                                        {product.ratingCount} {product.ratingCount === 1 ? 'review' : 'reviews'}
+                                                    <span className="text-xs sm:text-sm font-semibold text-muted-foreground" suppressHydrationWarning>
+                                                        {product.ratingCount} {product.ratingCount === 1 ? t("productsPage.review") : t("productsPage.reviews")}
                                                     </span>
                                                 </div>
                                             </div>
@@ -308,7 +311,7 @@ export default function ProductsDetails({ product }: ProductsDetailsProps) {
                                                 <div className="inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-full bg-muted mb-3 sm:mb-4">
                                                     <Star className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-muted-foreground" />
                                                 </div>
-                                                <p className="text-muted-foreground text-sm sm:text-base md:text-lg font-medium">No reviews yet</p>
+                                                <p className="text-muted-foreground text-sm sm:text-base md:text-lg font-medium" suppressHydrationWarning>{t("productsPage.noReviewsYet")}</p>
                                             </div>
                                         )}
                                     </div>
@@ -318,22 +321,22 @@ export default function ProductsDetails({ product }: ProductsDetailsProps) {
                                         <div className="flex flex-wrap items-center gap-3 sm:gap-4 bg-card/50 backdrop-blur-sm rounded-xl sm:rounded-2xl p-4 sm:p-5 border border-border/50 shadow-lg">
                                             <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
                                                 <Filter className="w-4 h-4" />
-                                                <span>Filter:</span>
+                                                <span suppressHydrationWarning>{t("productsPage.filter")}</span>
                                             </div>
                                             <Select
                                                 value={ratingFilter === null ? "all" : ratingFilter.toString()}
                                                 onValueChange={(value) => setRatingFilter(value === "all" ? null : parseInt(value))}
                                             >
                                                 <SelectTrigger className="w-full sm:w-[180px]">
-                                                    <SelectValue placeholder="All Ratings" />
+                                                    <SelectValue placeholder={t("productsPage.allRatings")} />
                                                 </SelectTrigger>
                                                 <SelectContent>
-                                                    <SelectItem value="all">All Ratings</SelectItem>
-                                                    <SelectItem value="5">5 Stars</SelectItem>
-                                                    <SelectItem value="4">4 Stars</SelectItem>
-                                                    <SelectItem value="3">3 Stars</SelectItem>
-                                                    <SelectItem value="2">2 Stars</SelectItem>
-                                                    <SelectItem value="1">1 Star</SelectItem>
+                                                    <SelectItem value="all" suppressHydrationWarning>{t("productsPage.allRatings")}</SelectItem>
+                                                    <SelectItem value="5" suppressHydrationWarning>5 {t("productsPage.stars")}</SelectItem>
+                                                    <SelectItem value="4" suppressHydrationWarning>4 {t("productsPage.stars")}</SelectItem>
+                                                    <SelectItem value="3" suppressHydrationWarning>3 {t("productsPage.stars")}</SelectItem>
+                                                    <SelectItem value="2" suppressHydrationWarning>2 {t("productsPage.stars")}</SelectItem>
+                                                    <SelectItem value="1" suppressHydrationWarning>1 {t("productsPage.star")}</SelectItem>
                                                 </SelectContent>
                                             </Select>
                                             <Select
@@ -341,13 +344,13 @@ export default function ProductsDetails({ product }: ProductsDetailsProps) {
                                                 onValueChange={(value) => setSortOrder(value as "newest" | "oldest" | "highest" | "lowest")}
                                             >
                                                 <SelectTrigger className="w-full sm:w-[180px]">
-                                                    <SelectValue placeholder="Sort by" />
+                                                    <SelectValue placeholder={t("productsPage.sortBy")} />
                                                 </SelectTrigger>
                                                 <SelectContent>
-                                                    <SelectItem value="newest">Newest First</SelectItem>
-                                                    <SelectItem value="oldest">Oldest First</SelectItem>
-                                                    <SelectItem value="highest">Highest Rating</SelectItem>
-                                                    <SelectItem value="lowest">Lowest Rating</SelectItem>
+                                                    <SelectItem value="newest" suppressHydrationWarning>{t("productsPage.newestFirst")}</SelectItem>
+                                                    <SelectItem value="oldest" suppressHydrationWarning>{t("productsPage.oldestFirst")}</SelectItem>
+                                                    <SelectItem value="highest" suppressHydrationWarning>{t("productsPage.highestRating")}</SelectItem>
+                                                    <SelectItem value="lowest" suppressHydrationWarning>{t("productsPage.lowestRating")}</SelectItem>
                                                 </SelectContent>
                                             </Select>
                                             {ratingFilter !== null && (
@@ -357,7 +360,7 @@ export default function ProductsDetails({ product }: ProductsDetailsProps) {
                                                     onClick={() => setRatingFilter(null)}
                                                     className="text-xs sm:text-sm"
                                                 >
-                                                    Clear Filter
+                                                    <span suppressHydrationWarning>{t("productsPage.clearFilter")}</span>
                                                 </Button>
                                             )}
                                         </div>
@@ -403,7 +406,7 @@ export default function ProductsDetails({ product }: ProductsDetailsProps) {
                                                 <div className="flex justify-center">
                                                     <Link href={`/products/${product.productsId}/ratings`}>
                                                         <Button variant="outline" className="w-full sm:w-auto">
-                                                            Lihat Semua ({ratings.length} reviews)
+                                                            <span suppressHydrationWarning>{t("productsPage.lihatSemua")} ({ratings.length} {t("productsPage.reviews")})</span>
                                                         </Button>
                                                     </Link>
                                                 </div>
@@ -414,8 +417,8 @@ export default function ProductsDetails({ product }: ProductsDetailsProps) {
                                             <div className="inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-full bg-muted mb-3 sm:mb-4">
                                                 <Filter className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-muted-foreground" />
                                             </div>
-                                            <p className="text-muted-foreground text-sm sm:text-base md:text-lg font-medium">
-                                                No reviews match your filter criteria
+                                            <p className="text-muted-foreground text-sm sm:text-base md:text-lg font-medium" suppressHydrationWarning>
+                                                {t("productsPage.noReviewsMatchFilter")}
                                             </p>
                                             <Button
                                                 variant="outline"
@@ -423,7 +426,7 @@ export default function ProductsDetails({ product }: ProductsDetailsProps) {
                                                 onClick={() => setRatingFilter(null)}
                                                 className="mt-4"
                                             >
-                                                Clear Filter
+                                                <span suppressHydrationWarning>{t("productsPage.clearFilter")}</span>
                                             </Button>
                                         </div>
                                     ) : (
@@ -431,11 +434,11 @@ export default function ProductsDetails({ product }: ProductsDetailsProps) {
                                             <div className="inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-full bg-muted mb-3 sm:mb-4">
                                                 <Star className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-muted-foreground" />
                                             </div>
-                                            <p className="text-muted-foreground text-sm sm:text-base md:text-lg font-medium">
-                                                Belum ada ulasan untuk produk ini
+                                            <p className="text-muted-foreground text-sm sm:text-base md:text-lg font-medium" suppressHydrationWarning>
+                                                {t("productsPage.noReviewsForProduct")}
                                             </p>
-                                            <p className="text-muted-foreground text-xs sm:text-sm mt-2">
-                                                Jadilah yang pertama memberikan ulasan!
+                                            <p className="text-muted-foreground text-xs sm:text-sm mt-2" suppressHydrationWarning>
+                                                {t("productsPage.beFirstToReview")}
                                             </p>
                                         </div>
                                     )}
@@ -456,7 +459,7 @@ export default function ProductsDetails({ product }: ProductsDetailsProps) {
                                                 <p className="text-2xl sm:text-3xl md:text-4xl font-extrabold bg-linear-to-r from-green-600 to-green-500 bg-clip-text text-transparent">
                                                     Free
                                                 </p>
-                                                <p className="text-xs sm:text-sm text-muted-foreground font-medium">Lifetime access included</p>
+                                                <p className="text-xs sm:text-sm text-muted-foreground font-medium" suppressHydrationWarning>{t("productsPage.lifetimeAccess")}</p>
                                             </div>
                                         ) : hasActiveDiscount ? (
                                             <div className="space-y-2 sm:space-y-3">
@@ -473,14 +476,14 @@ export default function ProductsDetails({ product }: ProductsDetailsProps) {
                                                         💰 Save Rp {formatIDR(originalPrice - discountedPrice)} ({discountPercentage}%)
                                                     </p>
                                                 </div>
-                                                <p className="text-xs sm:text-sm text-muted-foreground font-medium">One-time payment + Lifetime updates</p>
+                                                <p className="text-xs sm:text-sm text-muted-foreground font-medium" suppressHydrationWarning>{t("productsPage.oneTimePayment")}</p>
                                             </div>
                                         ) : (
                                             <div className="space-y-2">
                                                 <p className="text-2xl sm:text-3xl md:text-4xl font-extrabold bg-linear-to-r from-primary to-primary/80 bg-clip-text text-transparent wrap-break-word">
                                                     Rp {formatIDR(originalPrice)}
                                                 </p>
-                                                <p className="text-xs sm:text-sm text-muted-foreground font-medium">One-time payment + Lifetime updates</p>
+                                                <p className="text-xs sm:text-sm text-muted-foreground font-medium" suppressHydrationWarning>{t("productsPage.oneTimePayment")}</p>
                                             </div>
                                         )}
                                     </div>
@@ -488,12 +491,12 @@ export default function ProductsDetails({ product }: ProductsDetailsProps) {
                                     {/* Stock and Sold Info */}
                                     <div className="flex items-center justify-between gap-3 sm:gap-4 p-3 sm:p-4 bg-muted/30 rounded-lg sm:rounded-xl border border-border/30">
                                         <div className="flex flex-col gap-1 w-full">
-                                            <span className="text-xs text-muted-foreground font-medium">Stock</span>
+                                            <span className="text-xs text-muted-foreground font-medium" suppressHydrationWarning>{t("productsPage.stock")}</span>
                                             <span className="text-base sm:text-lg font-bold">{product.stock.toLocaleString()}</span>
                                         </div>
                                         {product.sold !== undefined && (
                                             <div className="flex flex-col gap-1 w-full">
-                                                <span className="text-xs text-muted-foreground font-medium">Sold</span>
+                                                <span className="text-xs text-muted-foreground font-medium" suppressHydrationWarning>{t("productsPage.sold")}</span>
                                                 <span className="text-base sm:text-lg font-bold">{product.sold.toLocaleString()}</span>
                                             </div>
                                         )}
@@ -507,12 +510,12 @@ export default function ProductsDetails({ product }: ProductsDetailsProps) {
                                                 onClick={handleBuyNow}
                                                 className="flex-1 h-11 sm:h-12 text-sm sm:text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]"
                                             >
-                                                Buy Now
+                                                <span suppressHydrationWarning>{t("productsPage.buyNow")}</span>
                                             </Button>
                                             <button
                                                 onClick={handleShare}
                                                 className="p-2.5 sm:p-3 h-11 sm:h-12 w-11 sm:w-12 rounded-lg text-muted-foreground hover:text-foreground hover:bg-primary/10 transition-all duration-300 transform hover:scale-110 border border-border/50 hover:border-primary/30 flex items-center justify-center shrink-0"
-                                                title="Share"
+                                                title={t("productsPage.share")}
                                             >
                                                 <Share2 className="w-4 h-4 sm:w-5 sm:h-5" />
                                             </button>
@@ -525,14 +528,14 @@ export default function ProductsDetails({ product }: ProductsDetailsProps) {
                                             disabled={product.stock < 1}
                                         >
                                             <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5" />
-                                            {isInCart ? "Already in Cart" : "Add to Cart"}
+                                            <span suppressHydrationWarning>{isInCart ? t("productsPage.alreadyInCart") : t("productsPage.addToCart")}</span>
                                         </Button>
                                     </div>
                                 </div>
 
                                 {/* License */}
                                 <div className="bg-linear-to-br from-muted/40 to-muted/10 rounded-lg sm:rounded-xl md:rounded-2xl p-4 sm:p-5 border border-border/40 shadow-md space-y-3 sm:space-y-4">
-                                    <h4 className="font-bold text-base sm:text-lg">License Details</h4>
+                                    <h4 className="font-bold text-base sm:text-lg" suppressHydrationWarning>{t("productsPage.licenseDetails")}</h4>
 
                                     <div className="space-y-2 sm:space-y-3">
                                         {
@@ -563,22 +566,22 @@ export default function ProductsDetails({ product }: ProductsDetailsProps) {
 
                                                 <div className="flex-1 space-y-1 sm:space-y-2 min-w-0">
                                                     <p className="font-bold text-sm sm:text-base wrap-break-word">{product.author.name}</p>
-                                                    <p className="text-xs sm:text-sm text-muted-foreground font-medium">
-                                                        {product.author.role === 'admins' ? '⭐ Elite Author' : 'Author'}
+                                                    <p className="text-xs sm:text-sm text-muted-foreground font-medium" suppressHydrationWarning>
+                                                        {product.author.role === 'admins' ? t("productsPage.eliteAuthor") : t("productsPage.author")}
                                                     </p>
                                                 </div>
                                             </div>
 
                                             <div className="flex justify-start gap-3 sm:gap-4 pt-2">
                                                 <div className="flex flex-col gap-1 px-2 sm:px-2.5 py-1 w-full">
-                                                    <h3 className="text-xs sm:text-sm font-semibold text-muted-foreground">Products</h3>
-                                                    <span className="text-xs font-semibold text-muted-foreground">
-                                                        {authorProductsCount} {authorProductsCount === 1 ? 'Product' : 'Products'}
+                                                    <h3 className="text-xs sm:text-sm font-semibold text-muted-foreground" suppressHydrationWarning>{t("productsPage.products")}</h3>
+                                                    <span className="text-xs font-semibold text-muted-foreground" suppressHydrationWarning>
+                                                        {authorProductsCount} {authorProductsCount === 1 ? t("productsPage.product") : t("productsPage.products")}
                                                     </span>
                                                 </div>
 
                                                 <div className="flex flex-col gap-1 px-2 sm:px-2.5 py-1 w-full">
-                                                    <h3 className="text-xs sm:text-sm font-semibold text-muted-foreground">Rating</h3>
+                                                    <h3 className="text-xs sm:text-sm font-semibold text-muted-foreground" suppressHydrationWarning>{t("productsPage.rating")}</h3>
                                                     <div className="flex items-center gap-0.5 sm:gap-1 flex-wrap">
                                                         {authorAverageRating && authorAverageRating > 0 ? (
                                                             [...Array(5)].map((_, i) => (
@@ -593,10 +596,10 @@ export default function ProductsDetails({ product }: ProductsDetailsProps) {
                                                         ) : (
                                                             <Star className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-gray-300 dark:text-gray-600" />
                                                         )}
-                                                        <span className="text-xs font-semibold text-muted-foreground">
+                                                        <span className="text-xs font-semibold text-muted-foreground" suppressHydrationWarning>
                                                             ( {authorAverageRating && authorAverageRating > 0
                                                                 ? authorAverageRating.toFixed(1)
-                                                                : 'No rating'} )
+                                                                : t("productsPage.noRating")} )
                                                         </span>
                                                     </div>
                                                 </div>
@@ -604,7 +607,7 @@ export default function ProductsDetails({ product }: ProductsDetailsProps) {
 
                                             <Link href={`/${product.author._id}`}>
                                                 <Button variant="outline" size="sm" className="mt-2 sm:mt-3 w-full border-2 hover:bg-primary/10 hover:border-primary/30 transition-all duration-300 text-xs sm:text-sm">
-                                                    View Profile
+                                                    <span suppressHydrationWarning>{t("productsPage.viewProfile")}</span>
                                                 </Button>
                                             </Link>
                                         </div>
@@ -619,10 +622,10 @@ export default function ProductsDetails({ product }: ProductsDetailsProps) {
                 {relatedProducts.length > 0 && (
                     <div className="mt-12 sm:mt-16 md:mt-20 pt-8 sm:pt-10 md:pt-12 border-t border-border/50">
                         <div className="mb-6 sm:mb-8 md:mb-10">
-                            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold mb-2 sm:mb-3 bg-linear-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-                                Related Products
+                            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold mb-2 sm:mb-3 bg-linear-to-r from-foreground to-foreground/70 bg-clip-text text-transparent" suppressHydrationWarning>
+                                {t("productsPage.relatedProducts")}
                             </h2>
-                            <p className="text-muted-foreground text-sm sm:text-base md:text-lg">Discover more products you might like</p>
+                            <p className="text-muted-foreground text-sm sm:text-base md:text-lg" suppressHydrationWarning>{t("productsPage.discoverMore")}</p>
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
                             {relatedProducts.map((item) => (

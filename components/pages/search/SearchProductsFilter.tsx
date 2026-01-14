@@ -18,6 +18,8 @@ import { useSearchProductsFilter } from "@/components/pages/search/lib/useStateS
 
 import { formatIDR } from "@/hooks/FormatPrice"
 
+import { useTranslation } from "@/hooks/useTranslation"
+
 export default function SearchProductsFilter({
     searchQuery,
     setSearchQuery,
@@ -60,6 +62,7 @@ export default function SearchProductsFilter({
     disabledCategories?: boolean;
     disabledTypes?: boolean;
 }) {
+    const { t } = useTranslation()
     const {
         categories,
         types,
@@ -81,7 +84,7 @@ export default function SearchProductsFilter({
     return (
         <div className="w-full lg:w-80 space-y-6">
             <div className="hidden lg:flex items-center justify-between mb-6">
-                <h2 className="text-xl font-semibold">Filters</h2>
+                <h2 className="text-xl font-semibold" suppressHydrationWarning>{t("searchFilter.filters")}</h2>
                 {setIsFilterOpen && isFilterOpen && (
                     <Button
                         variant="ghost"
@@ -90,17 +93,17 @@ export default function SearchProductsFilter({
                         className="size-7"
                     >
                         <PanelLeft className="h-4 w-4" />
-                        <span className="sr-only">Toggle Filters</span>
+                        <span className="sr-only">{t("searchFilter.toggleFilters")}</span>
                     </Button>
                 )}
             </div>
 
             {/* Search Input */}
             <div className="space-y-2">
-                <Label className="text-sm font-medium">Search</Label>
+                <Label className="text-sm font-medium" suppressHydrationWarning>{t("searchFilter.searchLabel")}</Label>
                 <Input
                     type="text"
-                    placeholder="Q Search code..."
+                    placeholder={t("searchFilter.searchPlaceholder")}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                 />
@@ -110,7 +113,7 @@ export default function SearchProductsFilter({
             <Collapsible open={isCategoriesOpen} onOpenChange={setIsCategoriesOpen}>
                 <div className="space-y-3">
                     <CollapsibleTrigger className="flex items-center justify-between w-full" disabled={disabledCategories}>
-                        <Label className={cn("text-sm font-medium", disabledCategories ? "cursor-not-allowed opacity-50" : "cursor-pointer")}>Categories</Label>
+                        <Label className={cn("text-sm font-medium", disabledCategories ? "cursor-not-allowed opacity-50" : "cursor-pointer")} suppressHydrationWarning>{t("searchFilter.categories")}</Label>
                         {isCategoriesOpen ? (
                             <ChevronUp className="w-4 h-4" />
                         ) : (
@@ -140,7 +143,7 @@ export default function SearchProductsFilter({
                                             htmlFor="category-all"
                                             className={cn("flex items-center gap-2", disabledCategories ? "cursor-not-allowed opacity-50" : "cursor-pointer hover:text-blue-600 dark:hover:text-blue-400")}
                                         >
-                                            <span className="text-sm">All Categories</span>
+                                            <span className="text-sm" suppressHydrationWarning>{t("searchFilter.allCategories")}</span>
                                         </Label>
                                     </div>
                                     {categories.map((category) => (
@@ -183,12 +186,12 @@ export default function SearchProductsFilter({
 
             {/* Price Range */}
             <div className="space-y-3">
-                <Label className="text-sm font-medium">Price Range</Label>
+                <Label className="text-sm font-medium" suppressHydrationWarning>{t("searchFilter.priceRange")}</Label>
                 <div className="grid grid-cols-2 gap-3">
                     {/* Min Price Input */}
                     <div className="space-y-2">
-                        <Label htmlFor="min-price" className="text-xs text-gray-500 dark:text-gray-400">
-                            Min Price
+                        <Label htmlFor="min-price" className="text-xs text-gray-500 dark:text-gray-400" suppressHydrationWarning>
+                            {t("searchFilter.minPrice")}
                         </Label>
                         <Input
                             id="min-price"
@@ -214,15 +217,15 @@ export default function SearchProductsFilter({
                                     setPriceRange([numericValue, priceRange[1]]);
                                 }
                             }}
-                            placeholder="Min price"
+                            placeholder={t("searchFilter.minPrice")}
                             inputMode="numeric"
                             className="w-full"
                         />
                     </div>
                     {/* Max Price Input */}
                     <div className="space-y-2">
-                        <Label htmlFor="max-price" className="text-xs text-gray-500 dark:text-gray-400">
-                            Max Price
+                        <Label htmlFor="max-price" className="text-xs text-gray-500 dark:text-gray-400" suppressHydrationWarning>
+                            {t("searchFilter.maxPrice")}
                         </Label>
                         <Input
                             id="max-price"
@@ -248,14 +251,14 @@ export default function SearchProductsFilter({
                                     setPriceRange([priceRange[0], numericValue]);
                                 }
                             }}
-                            placeholder="Max price"
+                            placeholder={t("searchFilter.maxPrice")}
                             inputMode="numeric"
                             className="w-full"
                         />
                     </div>
                 </div>
-                <div className="text-xs text-gray-500 dark:text-gray-400">
-                    Range: Rp {formatIDR(priceRange[0])} - Rp {formatIDR(priceRange[1])}
+                <div className="text-xs text-gray-500 dark:text-gray-400" suppressHydrationWarning>
+                    {t("searchFilter.rangeLabel")}: Rp {formatIDR(priceRange[0])} - Rp {formatIDR(priceRange[1])}
                 </div>
             </div>
 
@@ -263,7 +266,7 @@ export default function SearchProductsFilter({
             <Collapsible open={isTechStackOpen} onOpenChange={setIsTechStackOpen}>
                 <div className="space-y-3">
                     <CollapsibleTrigger className="flex items-center justify-between w-full">
-                        <Label className="text-sm font-medium cursor-pointer">Tech Stack</Label>
+                        <Label className="text-sm font-medium cursor-pointer" suppressHydrationWarning>{t("searchFilter.techStack")}</Label>
                         {isTechStackOpen ? (
                             <ChevronUp className="w-4 h-4" />
                         ) : (
@@ -290,7 +293,7 @@ export default function SearchProductsFilter({
                                         htmlFor="tech-all"
                                         className="flex items-center gap-2 cursor-pointer hover:text-blue-600 dark:hover:text-blue-400"
                                     >
-                                        <span className="text-sm">All Tech Stack</span>
+                                        <span className="text-sm" suppressHydrationWarning>{t("searchFilter.allTechStack")}</span>
                                     </Label>
                                 </div>
                                 {techStackOptions.map((tech) => (
@@ -314,7 +317,7 @@ export default function SearchProductsFilter({
             <Collapsible open={isTypeOpen} onOpenChange={setIsTypeOpen}>
                 <div className="space-y-3">
                     <CollapsibleTrigger className="flex items-center justify-between w-full" disabled={disabledTypes}>
-                        <Label className={cn("text-sm font-medium", disabledTypes ? "cursor-not-allowed opacity-50" : "cursor-pointer")}>Type</Label>
+                        <Label className={cn("text-sm font-medium", disabledTypes ? "cursor-not-allowed opacity-50" : "cursor-pointer")} suppressHydrationWarning>{t("searchFilter.type")}</Label>
                         {isTypeOpen ? (
                             <ChevronUp className="w-4 h-4" />
                         ) : (
@@ -344,7 +347,7 @@ export default function SearchProductsFilter({
                                             htmlFor="type-all"
                                             className={cn("flex items-center gap-2", disabledTypes ? "cursor-not-allowed opacity-50" : "cursor-pointer hover:text-blue-600 dark:hover:text-blue-400")}
                                         >
-                                            <span className="text-sm">All Types</span>
+                                            <span className="text-sm" suppressHydrationWarning>{t("searchFilter.allTypes")}</span>
                                         </Label>
                                     </div>
                                     {types.map((type) => (
@@ -389,7 +392,7 @@ export default function SearchProductsFilter({
             <Collapsible open={isRatingsOpen} onOpenChange={setIsRatingsOpen}>
                 <div className="space-y-3">
                     <CollapsibleTrigger className="flex items-center justify-between w-full">
-                        <Label className="text-sm font-medium cursor-pointer">Minimum Rating</Label>
+                        <Label className="text-sm font-medium cursor-pointer" suppressHydrationWarning>{t("searchFilter.minimumRating")}</Label>
                         {isRatingsOpen ? (
                             <ChevronUp className="w-4 h-4" />
                         ) : (
@@ -409,7 +412,9 @@ export default function SearchProductsFilter({
                                         className="flex items-center gap-1 cursor-pointer hover:text-blue-600 dark:hover:text-blue-400"
                                     >
                                         <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                                        <span className="text-sm">{rating} star{rating > 1 ? "s" : ""} & up</span>
+                                        <span className="text-sm">
+                                            {rating} {rating > 1 ? t("productsPage.stars") : t("productsPage.star")} &amp; up
+                                        </span>
                                     </Label>
                                 </div>
                             ))}
@@ -420,7 +425,7 @@ export default function SearchProductsFilter({
 
             {/* Additional Filters */}
             <div className="space-y-3">
-                <Label className="text-sm font-medium">Additional Filters</Label>
+                <Label className="text-sm font-medium" suppressHydrationWarning>{t("searchFilter.additionalFilters")}</Label>
                 <RadioGroup
                     value={
                         popularOnly ? "popular" :
@@ -447,7 +452,7 @@ export default function SearchProductsFilter({
                                 htmlFor="additional-all"
                                 className="flex items-center gap-2 cursor-pointer hover:text-blue-600 dark:hover:text-blue-400"
                             >
-                                <span className="text-sm">All</span>
+                                <span className="text-sm" suppressHydrationWarning>{t("searchFilter.all")}</span>
                             </Label>
                         </div>
                         <div className="flex items-center gap-2">
@@ -456,7 +461,7 @@ export default function SearchProductsFilter({
                                 htmlFor="popular-only"
                                 className="flex items-center gap-2 cursor-pointer hover:text-blue-600 dark:hover:text-blue-400"
                             >
-                                <span className="text-sm">Popular only</span>
+                                <span className="text-sm" suppressHydrationWarning>{t("searchFilter.popularOnly")}</span>
                             </Label>
                         </div>
                         <div className="flex items-center gap-2">
@@ -465,7 +470,7 @@ export default function SearchProductsFilter({
                                 htmlFor="new-arrivals"
                                 className="flex items-center gap-2 cursor-pointer hover:text-blue-600 dark:hover:text-blue-400"
                             >
-                                <span className="text-sm">New Arrivals</span>
+                                <span className="text-sm" suppressHydrationWarning>{t("searchFilter.newArrivals")}</span>
                             </Label>
                         </div>
                     </div>

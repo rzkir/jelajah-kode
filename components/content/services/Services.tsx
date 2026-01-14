@@ -4,30 +4,33 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 
 import SpotlightCard from '@/components/ui/SpotlightCard'
 
-const services = [
-    {
-        icon: "🔒",
-        title: "Secure & Reliable",
-        description: "Enterprise-grade security with reliable infrastructure to keep your codebase safe and accessible."
-    },
-    {
-        icon: "⚡",
-        title: "Performance Optimized",
-        description: "Optimize your code performance with AI-driven insights and automated best practices."
-    },
-    {
-        icon: "🎯",
-        title: "Smart Code Review",
-        description: "Get intelligent code reviews and suggestions to improve code quality and maintainability."
-    },
-    {
-        icon: "📚",
-        title: "Documentation",
-        description: "Generate comprehensive documentation automatically from your codebase and comments."
-    }
-]
+import { useTranslation } from "@/hooks/useTranslation"
 
 export default function Services() {
+    const { t } = useTranslation();
+
+    const services = [
+        {
+            icon: "🔒",
+            title: t("services.secureReliable.title"),
+            description: t("services.secureReliable.description")
+        },
+        {
+            icon: "⚡",
+            title: t("services.performanceOptimized.title"),
+            description: t("services.performanceOptimized.description")
+        },
+        {
+            icon: "🎯",
+            title: t("services.smartCodeReview.title"),
+            description: t("services.smartCodeReview.description")
+        },
+        {
+            icon: "📚",
+            title: t("services.documentation.title"),
+            description: t("services.documentation.description")
+        }
+    ]
     return (
         <section className="min-h-full overflow-visible bg-background relative py-10">
             {/* Background Pattern */}
@@ -72,10 +75,10 @@ export default function Services() {
                                 <Card>
                                     <CardHeader>
                                         <div className="text-4xl mb-2">{service.icon}</div>
-                                        <CardTitle className="text-xl">{service.title}</CardTitle>
+                                        <CardTitle className="text-xl" suppressHydrationWarning>{service.title}</CardTitle>
                                     </CardHeader>
                                     <CardContent>
-                                        <CardDescription className="text-base leading-relaxed">
+                                        <CardDescription className="text-base leading-relaxed" suppressHydrationWarning>
                                             {service.description}
                                         </CardDescription>
                                     </CardContent>
