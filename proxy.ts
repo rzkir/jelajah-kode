@@ -48,6 +48,11 @@ export default function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // Allow public access to sitemap.xml and robots.txt
+  if (pathname === "/sitemap.xml" || pathname === "/robots.txt") {
+    return NextResponse.next();
+  }
+
   if (method !== "GET") {
     return NextResponse.next();
   }

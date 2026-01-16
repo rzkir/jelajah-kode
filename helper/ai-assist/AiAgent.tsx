@@ -1,8 +1,10 @@
 "use client"
 
+import { useState, useEffect } from 'react'
+
 import { motion, AnimatePresence } from 'framer-motion'
 
-import { Bot, Send, Plus, Smile, X, Mic, MicOff } from 'lucide-react'
+import { Bot, Send, Smile, X, Mic, MicOff } from 'lucide-react'
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
@@ -34,6 +36,8 @@ export default function Cta({
         messages,
         isLoading,
         messagesEndRef,
+        messagesContainerRef,
+        handleScroll,
         textareaRef,
         handleSendMessage,
         showEmojiPicker,
@@ -52,6 +56,21 @@ export default function Cta({
     const conversationAvatar = "https://api.dicebear.com/7.x/avataaars/svg?seed=ai"
     const isOnline = true
 
+    const [emojiPickerWidth, setEmojiPickerWidth] = useState(350)
+
+    useEffect(() => {
+        const updateWidth = () => {
+            if (typeof window !== 'undefined') {
+                const width = window.innerWidth
+                setEmojiPickerWidth(width < 640 ? Math.min(width - 32, 320) : 350)
+            }
+        }
+
+        updateWidth()
+        window.addEventListener('resize', updateWidth)
+        return () => window.removeEventListener('resize', updateWidth)
+    }, [])
+
     return (
         <>
             <motion.button
@@ -60,13 +79,20 @@ export default function Cta({
                     setIsOpen(true);
                 }}
                 className={cn(
-                    "fixed bottom-24 md:bottom-6 right-6 px-5 py-3.5 rounded-full cursor-pointer bg-linear-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 transition-all shadow-xl hover:shadow-2xl z-40 flex items-center gap-2.5 font-semibold text-sm",
+                    "fixed bottom-24 md:bottom-6 right-6 z-40",
+                    "w-12 h-12 rounded-full",
+                    "bg-blue-600 hover:bg-blue-700",
+                    "dark:bg-blue-500 dark:hover:bg-blue-600",
+                    "shadow-md hover:shadow-lg",
+                    "dark:shadow-lg dark:hover:shadow-xl",
+                    "transition-all duration-200",
+                    "flex items-center justify-center",
                     className
                 )}
-                whileHover={{ scale: 1.05, y: -2 }}
+                whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                initial={{ opacity: 0, scale: 0, y: 20 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{ opacity: 1, scale: 1 }}
                 transition={{
                     type: "spring",
                     stiffness: 300,
@@ -74,7 +100,7 @@ export default function Cta({
                 }}
                 aria-label="Buka Chat Assistant"
             >
-                <Bot className="w-5 h-5" />
+                <Bot className="w-5 h-5 text-white" />
             </motion.button>
 
             <AnimatePresence>
@@ -102,12 +128,12 @@ export default function Cta({
                             animate={{ opacity: 1, y: 0, scale: 1 }}
                             exit={{ opacity: 0, y: 30, scale: 0.96 }}
                             transition={{ type: "spring", damping: 30, stiffness: 350 }}
-                            className="fixed bottom-28 right-6 w-full max-w-[480px] h-[640px] max-h-[calc(100vh-9rem)] flex flex-col z-50 overflow-hidden"
+                            className="fixed inset-4 md:inset-auto md:bottom-28 md:right-6 w-auto md:w-full md:max-w-[480px] h-[calc(100vh-2rem)] md:h-[640px] md:max-h-[calc(100vh-9rem)] flex flex-col z-50 overflow-hidden"
                         >
                             {/* Chat Interface */}
                             <div className="flex flex-col h-full bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden shadow-2xl">
                                 {/* Chat Header */}
-                                <div className="px-5 py-4 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
+                                <div className="px-4 md:px-5 py-3 md:py-4 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-3">
                                             <div className="relative">
@@ -150,17 +176,21 @@ export default function Cta({
                                 </div>
 
                                 {/* Messages Area */}
-                                <div className="flex-1 bg-gray-50/50 dark:bg-gray-950/50 overflow-y-auto overscroll-contain scrollbar-minimal">
-                                    <div className="p-5 space-y-4 min-h-full">
+                                <div
+                                    ref={messagesContainerRef}
+                                    onScroll={handleScroll}
+                                    className="flex-1 bg-gray-50/50 dark:bg-gray-950/50 overflow-y-auto overscroll-contain scrollbar-minimal"
+                                >
+                                    <div className="p-4 md:p-5 space-y-4 min-h-full">
                                         {messages.length === 0 && (
-                                            <div className="flex flex-col items-center justify-center h-full text-gray-400 dark:text-gray-500 min-h-[450px]">
-                                                <div className="w-20 h-20 rounded-full bg-linear-to-br from-blue-100 to-blue-50 dark:from-blue-900/20 dark:to-blue-800/10 flex items-center justify-center mb-5">
-                                                    <svg className="w-10 h-10 text-blue-500 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <div className="flex flex-col items-center justify-center h-full text-gray-400 dark:text-gray-500 min-h-[300px] md:min-h-[450px]">
+                                                <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-linear-to-br from-blue-100 to-blue-50 dark:from-blue-900/20 dark:to-blue-800/10 flex items-center justify-center mb-4 md:mb-5">
+                                                    <svg className="w-8 h-8 md:w-10 md:h-10 text-blue-500 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                                                     </svg>
                                                 </div>
-                                                <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">Mulai percakapan dengan AI Assistant</p>
-                                                <p className="text-xs mt-1.5 text-gray-500 dark:text-gray-400">Kirim pesan untuk memulai chat</p>
+                                                <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 text-center px-4">Mulai percakapan dengan AI Assistant</p>
+                                                <p className="text-xs mt-1.5 text-gray-500 dark:text-gray-400 text-center px-4">Kirim pesan untuk memulai chat</p>
                                             </div>
                                         )}
                                         {messages.map((msg) => (
@@ -191,8 +221,8 @@ export default function Cta({
 
                                                 {/* Products List */}
                                                 {msg.sender === "assistant" && msg.products && msg.products.length > 0 && (
-                                                    <div className="mt-1 w-full max-w-[85%]">
-                                                        <div className="bg-white dark:bg-gray-800 rounded-xl p-4 space-y-3 border border-gray-200 dark:border-gray-700 shadow-sm">
+                                                    <div className="mt-1 w-full max-w-[85%] md:max-w-[85%]">
+                                                        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 md:p-4 space-y-3 border border-gray-200 dark:border-gray-700 shadow-sm">
                                                             <div className="flex items-center gap-2 mb-1">
                                                                 <div className="w-1 h-4 bg-linear-to-b from-blue-500 to-blue-600 rounded-full" />
                                                                 <h4 className="font-semibold text-sm text-gray-900 dark:text-white">Daftar Produk</h4>
@@ -210,10 +240,10 @@ export default function Cta({
                                                                     return (
                                                                         <div
                                                                             key={product.productsId || product._id || idx}
-                                                                            className="flex gap-3 p-3 bg-gray-50 dark:bg-gray-900/50 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-700 hover:shadow-md transition-all duration-200 group cursor-pointer"
+                                                                            className="flex gap-2 md:gap-3 p-2.5 md:p-3 bg-gray-50 dark:bg-gray-900/50 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-700 hover:shadow-md transition-all duration-200 group cursor-pointer"
                                                                         >
                                                                             {/* Product Image */}
-                                                                            <div className="relative w-20 h-20 rounded-lg overflow-hidden shrink-0 border border-gray-200 dark:border-gray-700 group-hover:border-blue-400 dark:group-hover:border-blue-600 transition-colors">
+                                                                            <div className="relative w-16 h-16 md:w-20 md:h-20 rounded-lg overflow-hidden shrink-0 border border-gray-200 dark:border-gray-700 group-hover:border-blue-400 dark:group-hover:border-blue-600 transition-colors">
                                                                                 {product.thumbnail ? (
                                                                                     <Image
                                                                                         src={product.thumbnail}
@@ -300,11 +330,8 @@ export default function Cta({
                                 </div>
 
                                 {/* Input Area */}
-                                <div className="px-5 py-4 border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shrink-0">
-                                    <div className="flex items-end gap-2 bg-gray-100 dark:bg-gray-800 rounded-xl px-4 py-3 border border-gray-200 dark:border-gray-700 focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-500/50 transition-all w-full relative">
-                                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors shrink-0">
-                                            <Plus className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-                                        </Button>
+                                <div className="px-4 md:px-5 py-3 md:py-4 border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shrink-0">
+                                    <div className="flex items-end gap-2 bg-gray-100 dark:bg-gray-800 rounded-xl px-3 md:px-4 py-2.5 md:py-3 border border-gray-200 dark:border-gray-700 focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-500/50 transition-all w-full relative">
                                         <div className="flex-1 relative max-h-[120px] overflow-y-auto scrollbar-textarea">
                                             <textarea
                                                 ref={textareaRef}
@@ -326,7 +353,7 @@ export default function Cta({
                                                     }
                                                 }}
                                                 rows={1}
-                                                className="w-full bg-transparent outline-none text-sm placeholder-gray-400 dark:placeholder-gray-500 font-medium text-gray-900 dark:text-white resize-none overflow-hidden min-h-[24px] py-1 pr-28"
+                                                className="w-full bg-transparent outline-none text-sm placeholder-gray-400 dark:placeholder-gray-500 font-medium text-gray-900 dark:text-white resize-none overflow-hidden min-h-[24px] py-1 pr-24 md:pr-28"
                                                 style={{ minHeight: '24px' }}
                                             />
 
@@ -335,7 +362,7 @@ export default function Cta({
                                                     variant="ghost"
                                                     size="icon"
                                                     className={cn(
-                                                        "absolute bottom-1 right-20 h-8 w-8 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors shrink-0 z-10",
+                                                        "absolute bottom-1 right-16 md:right-20 h-8 w-8 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors shrink-0 z-10",
                                                         isListening && "bg-red-100 dark:bg-red-900/20 hover:bg-red-200 dark:hover:bg-red-900/30"
                                                     )}
                                                     onClick={toggleListening}
@@ -353,7 +380,7 @@ export default function Cta({
                                             <Button
                                                 variant="ghost"
                                                 size="icon"
-                                                className="absolute bottom-1 right-10 h-8 w-8 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors shrink-0 z-10"
+                                                className="absolute bottom-1 right-8 md:right-10 h-8 w-8 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors shrink-0 z-10"
                                                 onClick={toggleEmojiPicker}
                                                 aria-label="Toggle emoji picker"
                                             >
@@ -379,12 +406,13 @@ export default function Cta({
                                                     exit={{ opacity: 0, y: 10, scale: 0.95 }}
                                                     transition={{ duration: 0.2 }}
                                                     className="absolute bottom-full right-0 mb-2 z-50"
+                                                    style={{ width: `${emojiPickerWidth}px`, maxWidth: 'calc(100vw - 2rem)' }}
                                                 >
                                                     <div className="shadow-2xl rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700">
                                                         <EmojiPicker
                                                             onEmojiClick={handleEmojiClick}
                                                             theme={Theme.AUTO}
-                                                            width={350}
+                                                            width={emojiPickerWidth}
                                                             height={400}
                                                             previewConfig={{
                                                                 showPreview: false

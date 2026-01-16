@@ -17,12 +17,55 @@ declare global {
   }
 }
 
+const STORAGE_KEYS = {
+  MESSAGES: "ai-agent-messages",
+  LAST_RESET: "ai-agent-last-reset",
+};
+
+const ONE_DAY_MS = 24 * 60 * 60 * 1000; // 1 hari dalam milliseconds
+
+// Fungsi helper untuk memuat messages dari localStorage
+const loadMessagesFromStorage = (): MessageAi[] => {
+  if (typeof window === "undefined") return [];
+
+  try {
+    const storedMessages = localStorage.getItem(STORAGE_KEYS.MESSAGES);
+    const lastReset = localStorage.getItem(STORAGE_KEYS.LAST_RESET);
+
+    if (!storedMessages || !lastReset) {
+      // Jika tidak ada data, set timestamp sekarang
+      localStorage.setItem(STORAGE_KEYS.LAST_RESET, Date.now().toString());
+      return [];
+    }
+
+    const lastResetTime = parseInt(lastReset, 10);
+    const now = Date.now();
+    const timeDiff = now - lastResetTime;
+
+    // Jika sudah lebih dari 1 hari, reset messages
+    if (timeDiff >= ONE_DAY_MS) {
+      localStorage.removeItem(STORAGE_KEYS.MESSAGES);
+      localStorage.setItem(STORAGE_KEYS.LAST_RESET, now.toString());
+      return [];
+    }
+
+    // Load messages dari storage
+    const parsedMessages = JSON.parse(storedMessages);
+    return Array.isArray(parsedMessages) ? parsedMessages : [];
+  } catch (error) {
+    console.error("Error loading messages from storage:", error);
+    return [];
+  }
+};
+
 export default function useStateAiAgent() {
   const [isOpen, setIsOpen] = useState(false);
   const [messageInput, setMessageInput] = useState("");
-  const [isTyping, setIsTyping] = useState(false);
-  const [messages, setMessages] = useState<MessageAi[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  // Initialize messages dari localStorage dengan lazy initialization
+  const [messages, setMessages] = useState<MessageAi[]>(
+    loadMessagesFromStorage
+  );
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [isSpeechSupported] = useState(() => {
@@ -34,6 +77,7 @@ export default function useStateAiAgent() {
     return false;
   });
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const emojiPickerRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
@@ -41,8 +85,30 @@ export default function useStateAiAgent() {
   const isRestartingRef = useRef<boolean>(false);
   const lastCheckedMessageIdRef = useRef<string>("");
   const audioContextRef = useRef<AudioContext | null>(null);
-  const isListeningRef = useRef<boolean>(false); // Hanya untuk callback, sync dengan state
-  const messageInputRef = useRef<string>(""); // Hanya untuk callback, sync dengan state
+  const isUserScrollingRef = useRef<boolean>(false);
+  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Simpan messages ke localStorage setiap kali messages berubah
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      localStorage.setItem(STORAGE_KEYS.MESSAGES, JSON.stringify(messages));
+    } catch (error) {
+      console.error("Error saving messages to storage:", error);
+    }
+  }, [messages]);
+
+  // Store current values in refs for callbacks
+  const isListeningRef = useRef(isListening);
+  const messageInputRef = useRef(messageInput);
+
+  useEffect(() => {
+    isListeningRef.current = isListening;
+  }, [isListening]);
+
+  useEffect(() => {
+    messageInputRef.current = messageInput;
+  }, [messageInput]);
 
   useEffect(() => {
     if (typeof window !== "undefined" && isSpeechSupported) {
@@ -57,7 +123,6 @@ export default function useStateAiAgent() {
 
         recognition.onstart = () => {
           setIsListening(true);
-          isListeningRef.current = true;
           transcriptRef.current = messageInputRef.current || "";
         };
 
@@ -116,7 +181,6 @@ export default function useStateAiAgent() {
             event.error === "not-allowed"
           ) {
             setIsListening(false);
-            isListeningRef.current = false;
             alert(
               "Akses mikrofon ditolak. Silakan izinkan akses mikrofon untuk menggunakan fitur voice-to-text."
             );
@@ -169,7 +233,6 @@ export default function useStateAiAgent() {
                         retryError
                       );
                       setIsListening(false);
-                      isListeningRef.current = false;
                       isRestartingRef.current = false;
                     }
                   } else {
@@ -194,18 +257,61 @@ export default function useStateAiAgent() {
     };
   }, [isSpeechSupported]);
 
-  // Sync state dengan ref untuk callback
-  useEffect(() => {
-    isListeningRef.current = isListening;
-  }, [isListening]);
+  // Helper function to check if user is near bottom of scroll container
+  const isNearBottom = useCallback(
+    (container: HTMLElement, threshold = 100) => {
+      const { scrollTop, scrollHeight, clientHeight } = container;
+      return scrollHeight - scrollTop - clientHeight < threshold;
+    },
+    []
+  );
 
+  // Auto-scroll only if user is not manually scrolling and is near bottom
   useEffect(() => {
-    messageInputRef.current = messageInput;
-  }, [messageInput]);
+    if (!messagesContainerRef.current || isUserScrollingRef.current) {
+      return;
+    }
 
+    // Check if user is near bottom before auto-scrolling
+    if (isNearBottom(messagesContainerRef.current)) {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages, isLoading, isNearBottom]);
+
+  // Handle manual scroll detection
+  const handleScroll = useCallback(() => {
+    if (!messagesContainerRef.current) return;
+
+    // Mark that user is manually scrolling
+    isUserScrollingRef.current = true;
+
+    // Clear existing timeout
+    if (scrollTimeoutRef.current) {
+      clearTimeout(scrollTimeoutRef.current);
+    }
+
+    // Reset the flag after user stops scrolling for 1 second
+    scrollTimeoutRef.current = setTimeout(() => {
+      isUserScrollingRef.current = false;
+
+      // If user scrolled back to bottom, allow auto-scroll again
+      if (
+        messagesContainerRef.current &&
+        isNearBottom(messagesContainerRef.current)
+      ) {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      }
+    }, 1000);
+  }, [isNearBottom]);
+
+  // Cleanup timeout on unmount
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, isTyping]);
+    return () => {
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+    };
+  }, []);
 
   // Fungsi untuk mengaktifkan audio context (digunakan bersama)
   const enableAudio = useCallback(async () => {
@@ -329,9 +435,12 @@ export default function useStateAiAgent() {
     }
   }, [messages, playNotificationSound]);
 
+  // Handle keyboard and click outside events
   useEffect(() => {
+    if (!isOpen) return;
+
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && isOpen) {
+      if (e.key === "Escape") {
         if (showEmojiPicker) {
           setShowEmojiPicker(false);
         } else {
@@ -339,13 +448,10 @@ export default function useStateAiAgent() {
         }
       }
     };
-    document.addEventListener("keydown", handleEscape);
-    return () => document.removeEventListener("keydown", handleEscape);
-  }, [isOpen, setIsOpen, showEmojiPicker]);
 
-  useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (
+        showEmojiPicker &&
         emojiPickerRef.current &&
         !emojiPickerRef.current.contains(e.target as Node) &&
         !(e.target as HTMLElement).closest(
@@ -355,12 +461,17 @@ export default function useStateAiAgent() {
         setShowEmojiPicker(false);
       }
     };
+
+    document.addEventListener("keydown", handleEscape);
     if (showEmojiPicker) {
       document.addEventListener("mousedown", handleClickOutside);
-      return () =>
-        document.removeEventListener("mousedown", handleClickOutside);
     }
-  }, [showEmojiPicker]);
+
+    return () => {
+      document.removeEventListener("keydown", handleEscape);
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen, showEmojiPicker]);
 
   useEffect(() => {
     type MinimalLenis = { stop?: () => void; start?: () => void };
@@ -383,6 +494,7 @@ export default function useStateAiAgent() {
     };
   }, [isOpen]);
 
+  // Helper functions
   const getCurrentTime = () => {
     const now = new Date();
     return now.toLocaleTimeString("id-ID", {
@@ -394,6 +506,26 @@ export default function useStateAiAgent() {
   const generateMessageId = () => {
     return `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
   };
+
+  const resetTextarea = useCallback(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+    }
+  }, []);
+
+  const handleStopListening = useCallback(() => {
+    if (isListening) {
+      isRestartingRef.current = false;
+      setIsListening(false);
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.stop();
+        } catch (error) {
+          console.error("Error stopping speech recognition:", error);
+        }
+      }
+    }
+  }, [isListening]);
 
   const isProductRelated = (message: string): boolean => {
     const productKeywords = [
@@ -506,6 +638,103 @@ export default function useStateAiAgent() {
     return hasContactKeyword || asksForContactForDetails || asksForNumber;
   };
 
+  const isCodingRelated = (message: string): boolean => {
+    const codingKeywords = [
+      "code",
+      "coding",
+      "programming",
+      "program",
+      "kode",
+      "codingan",
+      "koding",
+      "program",
+      "syntax",
+      "function",
+      "variable",
+      "debug",
+      "error",
+      "bug",
+      "fix code",
+      "perbaiki code",
+      "perbaiki kode",
+      "bagaimana cara",
+      "cara membuat",
+      "tutorial",
+      "belajar",
+      "javascript",
+      "typescript",
+      "python",
+      "java",
+      "react",
+      "nextjs",
+      "node",
+      "html",
+      "css",
+      "sql",
+      "api",
+      "endpoint",
+      "database",
+      "query",
+      "algorithm",
+      "algoritma",
+      "loop",
+      "array",
+      "object",
+      "class",
+      "method",
+      "import",
+      "export",
+      "component",
+      "hook",
+      "state",
+      "props",
+      "async",
+      "await",
+      "promise",
+      "callback",
+      "console.log",
+      "console",
+      "log",
+      "return",
+      "if else",
+      "if statement",
+      "switch",
+      "for loop",
+      "while loop",
+      "try catch",
+      "error handling",
+      "git",
+      "commit",
+      "push",
+      "pull",
+      "branch",
+      "merge",
+      "repository",
+      "repo",
+    ];
+
+    const lowerMessage = message.toLowerCase();
+
+    // Check for coding-related keywords
+    const hasCodingKeyword = codingKeywords.some((keyword) =>
+      lowerMessage.includes(keyword)
+    );
+
+    // Check for patterns like "how to code", "cara coding", etc.
+    const codingPatterns = [
+      /(bagaimana|how to|how do|cara|tutorial|belajar).*(code|coding|program|kode|programming)/i,
+      /(fix|perbaiki|debug|solve).*(code|kode|error|bug|problem)/i,
+      /(buat|create|make).*(function|class|component|api|endpoint)/i,
+      /(apa|what is|jelaskan).*(function|variable|class|component|hook|state)/i,
+    ];
+
+    const matchesPattern = codingPatterns.some((pattern) =>
+      pattern.test(message)
+    );
+
+    return hasCodingKeyword || matchesPattern;
+  };
+
   const fetchProductsData = async (): Promise<{
     context: string;
     products: Product[];
@@ -607,6 +836,33 @@ export default function useStateAiAgent() {
     const userMessage = messageInput.trim();
     if (!userMessage || isLoading) return;
 
+    // Check if message is about coding - block it
+    if (isCodingRelated(userMessage)) {
+      const userMsg: MessageAi = {
+        id: generateMessageId(),
+        sender: "user",
+        content: userMessage,
+        timestamp: getCurrentTime(),
+        read: true,
+      };
+
+      const blockedMsg: MessageAi = {
+        id: generateMessageId(),
+        sender: "assistant",
+        content:
+          "Maaf, saya tidak dapat membantu dengan pertanyaan tentang coding atau programming. Saya hanya dapat membantu dengan informasi tentang produk, layanan, dan kontak Jelajah Kode. Terima kasih! 😊",
+        timestamp: getCurrentTime(),
+        read: false,
+      };
+
+      setMessages((prev) => [...prev, userMsg, blockedMsg]);
+      setMessageInput("");
+      setShowEmojiPicker(false);
+      handleStopListening();
+      resetTextarea();
+      return;
+    }
+
     const userMsg: MessageAi = {
       id: generateMessageId(),
       sender: "user",
@@ -618,15 +874,14 @@ export default function useStateAiAgent() {
     setMessages((prev) => [...prev, userMsg]);
     setMessageInput("");
     setShowEmojiPicker(false);
-    // Stop listening if active
-    if (isListening) {
-      stopListening();
+    handleStopListening();
+    resetTextarea();
+    // Reset manual scroll flag when user sends a new message
+    isUserScrollingRef.current = false;
+    if (scrollTimeoutRef.current) {
+      clearTimeout(scrollTimeoutRef.current);
+      scrollTimeoutRef.current = null;
     }
-    // Reset textarea height
-    if (textareaRef.current) {
-      textareaRef.current.style.height = "auto";
-    }
-    setIsTyping(true);
     setIsLoading(true);
 
     // Create AI message ID for later use
@@ -764,7 +1019,6 @@ Jangan tampilkan nomor WhatsApp atau informasi kontak kecuali user secara ekspli
               return [...prev, aiMsg];
             }
           });
-          setIsTyping(false);
           setIsLoading(false);
         },
       });
@@ -778,7 +1032,6 @@ Jangan tampilkan nomor WhatsApp atau informasi kontak kecuali user secara ekspli
         );
       }
 
-      setIsTyping(false);
       setIsLoading(false);
     } catch (error) {
       console.error("Error sending message:", error);
@@ -804,7 +1057,6 @@ Jangan tampilkan nomor WhatsApp atau informasi kontak kecuali user secara ekspli
           return [...prev, aiMsg];
         }
       });
-      setIsTyping(false);
       setIsLoading(false);
     }
   };
@@ -836,52 +1088,43 @@ Jangan tampilkan nomor WhatsApp atau informasi kontak kecuali user secara ekspli
     setShowEmojiPicker(!showEmojiPicker);
   };
 
-  const startListening = () => {
+  const startListening = useCallback(() => {
     if (recognitionRef.current && !isListening) {
       try {
         transcriptRef.current = messageInput;
         isRestartingRef.current = false;
-        isListeningRef.current = true;
+        setIsListening(true);
         recognitionRef.current.start();
       } catch (error) {
         console.error("Error starting speech recognition:", error);
         setIsListening(false);
-        isListeningRef.current = false;
       }
     }
-  };
+  }, [isListening, messageInput]);
 
-  const stopListening = () => {
-    isRestartingRef.current = false;
-    isListeningRef.current = false;
-    setIsListening(false);
+  const stopListening = useCallback(() => {
+    handleStopListening();
+  }, [handleStopListening]);
 
-    if (recognitionRef.current) {
-      try {
-        recognitionRef.current.stop();
-      } catch (error) {
-        console.error("Error stopping speech recognition:", error);
-      }
-    }
-  };
-
-  const toggleListening = () => {
+  const toggleListening = useCallback(() => {
     if (isListening) {
       stopListening();
     } else {
       startListening();
     }
-  };
+  }, [isListening, startListening, stopListening]);
 
   return {
     isOpen,
     setIsOpen,
     messageInput,
     setMessageInput,
-    isTyping,
+    isTyping: isLoading,
     messages,
     isLoading,
     messagesEndRef,
+    messagesContainerRef,
+    handleScroll,
     textareaRef,
     handleSendMessage,
     showEmojiPicker,
