@@ -30,6 +30,8 @@ import { useCart } from "@/utils/context/CartContext";
 
 import { useRouter } from "next/navigation";
 
+import { useTranslation } from "@/hooks/useTranslation";
+
 interface CartSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -37,6 +39,7 @@ interface CartSheetProps {
 
 export default function CartSheet({ open, onOpenChange }: CartSheetProps) {
   const router = useRouter();
+  const { t } = useTranslation();
   const {
     cartItems,
     getTotalPrice,
@@ -65,12 +68,12 @@ export default function CartSheet({ open, onOpenChange }: CartSheetProps) {
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent side="right" className="w-full sm:max-w-lg flex flex-col">
         <SheetHeader>
-          <SheetTitle className="flex items-center gap-2">
+          <SheetTitle className="flex items-center gap-2" suppressHydrationWarning>
             <ShoppingCart className="w-5 h-5" />
-            Shopping Cart
+            {t("cart.shoppingCart")}
             {totalItems > 0 && (
-              <Badge variant="secondary" className="ml-2">
-                {totalItems} {totalItems === 1 ? "item" : "items"}
+              <Badge variant="secondary" className="ml-2" suppressHydrationWarning>
+                {totalItems} {totalItems === 1 ? t("cart.item") : t("cart.items")}
               </Badge>
             )}
           </SheetTitle>
@@ -80,9 +83,9 @@ export default function CartSheet({ open, onOpenChange }: CartSheetProps) {
           {cartItems.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center py-12 px-4">
               <ShoppingCart className="w-16 h-16 text-muted-foreground mb-4 opacity-50" />
-              <h3 className="text-lg font-semibold mb-2">Your cart is empty</h3>
-              <p className="text-sm text-muted-foreground mb-6">
-                Start adding products to your cart
+              <h3 className="text-lg font-semibold mb-2" suppressHydrationWarning>{t("cart.yourCartIsEmpty")}</h3>
+              <p className="text-sm text-muted-foreground mb-6" suppressHydrationWarning>
+                {t("cart.startAddingProducts")}
               </p>
               <Button
                 onClick={() => {
@@ -91,7 +94,7 @@ export default function CartSheet({ open, onOpenChange }: CartSheetProps) {
                 }}
                 variant="default"
               >
-                Browse Products
+                <span suppressHydrationWarning>{t("cart.browseProducts")}</span>
               </Button>
             </div>
           ) : (
@@ -200,8 +203,8 @@ export default function CartSheet({ open, onOpenChange }: CartSheetProps) {
                       </div>
 
                       {/* Subtotal */}
-                      <div className="text-xs text-muted-foreground">
-                        Subtotal:{" "}
+                      <div className="text-xs text-muted-foreground" suppressHydrationWarning>
+                        {t("cart.subtotal")}{" "}
                         <span className="font-semibold text-foreground">
                           Rp {formatIDR(itemPrice * item.quantity)}
                         </span>
@@ -220,7 +223,7 @@ export default function CartSheet({ open, onOpenChange }: CartSheetProps) {
             <div className="w-full space-y-3">
               {/* Total */}
               <div className="flex items-center justify-between">
-                <span className="text-base font-semibold">Total:</span>
+                <span className="text-base font-semibold" suppressHydrationWarning>{t("cart.total")}</span>
                 <span className="text-xl font-bold text-primary">
                   Rp {formatIDR(totalPrice)}
                 </span>
@@ -233,7 +236,7 @@ export default function CartSheet({ open, onOpenChange }: CartSheetProps) {
                   className="w-full"
                   size="lg"
                 >
-                  Proceed to Checkout
+                  <span suppressHydrationWarning>{t("cart.proceedToCheckout")}</span>
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
                 <Button
@@ -242,7 +245,7 @@ export default function CartSheet({ open, onOpenChange }: CartSheetProps) {
                   className="w-full"
                   size="sm"
                 >
-                  Clear Cart
+                  <span suppressHydrationWarning>{t("cart.clearCart")}</span>
                 </Button>
               </div>
             </div>

@@ -9,28 +9,6 @@ import {
     getActiveDiscount,
 } from "@/hooks/discountServices";
 
-
-// Cart Item type with quantity
-export interface CartItem {
-    product: ProductsDetails;
-    quantity: number;
-}
-
-// Cart Context Type
-interface CartContextType {
-    cartItems: CartItem[];
-    addToCart: (product: ProductsDetails, quantity?: number) => void;
-    removeFromCart: (productId: string) => void;
-    updateQuantity: (productId: string, quantity: number) => void;
-    clearCart: () => void;
-    getTotalPrice: () => number;
-    getTotalItems: () => number;
-    isInCart: (productId: string) => boolean;
-    getCartItemQuantity: (productId: string) => number;
-    cartSheetOpen: boolean;
-    setCartSheetOpen: (open: boolean) => void;
-}
-
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 const CART_STORAGE_KEY = "jelajah-kode-cart";

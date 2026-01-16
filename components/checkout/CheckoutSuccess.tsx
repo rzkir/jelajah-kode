@@ -28,7 +28,10 @@ import LoadingOverlay from "@/helper/loading/LoadingOverlay";
 
 import ProductsRatingsModal from "@/components/checkout/modal/ProductsRatingsModal";
 
+import { useTranslation } from "@/hooks/useTranslation";
+
 export default function CheckoutSuccess({ status }: CheckoutSuccessProps) {
+    const { t } = useTranslation();
     const {
         router,
         authLoading,
@@ -66,9 +69,9 @@ export default function CheckoutSuccess({ status }: CheckoutSuccessProps) {
             <div className="container mx-auto px-4 py-8">
                 <Card>
                     <CardContent className="py-12 text-center">
-                        <p className="text-muted-foreground">Transaction not found</p>
+                        <p className="text-muted-foreground" suppressHydrationWarning>{t("order.transactionNotFound")}</p>
                         <Button asChild className="mt-4">
-                            <Link href="/products">Browse Products</Link>
+                            <Link href="/products" suppressHydrationWarning>{t("checkout.browseProducts")}</Link>
                         </Button>
                     </CardContent>
                 </Card>
@@ -88,7 +91,7 @@ export default function CheckoutSuccess({ status }: CheckoutSuccessProps) {
                         className="mb-4"
                     >
                         <ArrowLeft className="h-4 w-4 mr-2" />
-                        Back to Home
+                        <span suppressHydrationWarning>{t("checkout.backToHome")}</span>
                     </Button>
                 </div>
 
@@ -141,27 +144,27 @@ export default function CheckoutSuccess({ status }: CheckoutSuccessProps) {
                             </motion.div>
 
                             <div className="space-y-4">
-                                <h1 className="text-3xl font-bold">
+                                <h1 className="text-3xl font-bold" suppressHydrationWarning>
                                     {isSuccess
-                                        ? "Payment Successful!"
+                                        ? t("order.paymentSuccessful")
                                         : transaction.status === "pending"
-                                            ? "Payment Pending"
-                                            : "Transaction Status"}
+                                            ? t("order.paymentPending")
+                                            : t("order.transactionStatus")}
                                 </h1>
 
                                 <Badge
                                     variant={isSuccess ? "default" : "secondary"}
                                     className="text-lg px-4 py-2"
                                 >
-                                    Order ID: {transaction.order_id}
+                                    <span suppressHydrationWarning>{t("order.orderId")}</span>: {transaction.order_id}
                                 </Badge>
 
-                                <p className="text-muted-foreground">
+                                <p className="text-muted-foreground" suppressHydrationWarning>
                                     {isSuccess
-                                        ? "Thank you for your purchase. Your order has been confirmed."
+                                        ? t("order.thankYouPurchase")
                                         : transaction.status === "pending"
-                                            ? "Your payment is being processed. We'll notify you once it's confirmed."
-                                            : `Transaction status: ${transaction.status}`}
+                                            ? t("order.paymentBeingProcessed")
+                                            : `${t("order.transactionStatus")}: ${transaction.status}`}
                                 </p>
                             </div>
 
@@ -174,10 +177,10 @@ export default function CheckoutSuccess({ status }: CheckoutSuccessProps) {
                                     {isContinuingPayment ? (
                                         <>
                                             <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                                            Memproses...
+                                            <span suppressHydrationWarning>{t("checkout.processingPayment")}</span>
                                         </>
                                     ) : (
-                                        "Lanjutkan Payment"
+                                        <span suppressHydrationWarning>{t("checkout.continuePayment")}</span>
                                     )}
                                 </Button>
                             )}
@@ -194,9 +197,9 @@ export default function CheckoutSuccess({ status }: CheckoutSuccessProps) {
                     ) ? 'lg:col-span-2' : ''}`}>
                         <Card className="shadow-lg bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm">
                             <CardHeader className="pb-4 border-b">
-                                <CardTitle className="text-2xl font-bold">Order Details</CardTitle>
-                                <p className="text-sm text-muted-foreground mt-1">
-                                    {transaction.products.length} {transaction.products.length === 1 ? 'item' : 'items'} in your order
+                                <CardTitle className="text-2xl font-bold" suppressHydrationWarning>{t("order.orderDetails")}</CardTitle>
+                                <p className="text-sm text-muted-foreground mt-1" suppressHydrationWarning>
+                                    {transaction.products.length} {transaction.products.length === 1 ? t("order.item") : t("order.items")} {t("order.itemsInOrder")}
                                 </p>
                             </CardHeader>
 
@@ -228,8 +231,8 @@ export default function CheckoutSuccess({ status }: CheckoutSuccessProps) {
                                                             </h3>
                                                             <div className="flex items-center gap-3 flex-wrap">
                                                                 <div className="flex items-center gap-2 px-3 py-1 bg-muted rounded-full">
-                                                                    <span className="text-sm font-medium text-muted-foreground">
-                                                                        Qty:
+                                                                    <span className="text-sm font-medium text-muted-foreground" suppressHydrationWarning>
+                                                                        {t("order.qty")}:
                                                                     </span>
                                                                     <span className="text-sm font-semibold">
                                                                         {item.quantity}
@@ -243,9 +246,11 @@ export default function CheckoutSuccess({ status }: CheckoutSuccessProps) {
                                                                     }
                                                                     className="px-3 py-1"
                                                                 >
-                                                                    {item.paymentType === "free"
-                                                                        ? "Free"
-                                                                        : "Paid"}
+                                                                    <span suppressHydrationWarning>
+                                                                        {item.paymentType === "free"
+                                                                            ? t("order.free")
+                                                                            : t("order.paid")}
+                                                                    </span>
                                                                 </Badge>
                                                             </div>
                                                         </div>
@@ -267,15 +272,15 @@ export default function CheckoutSuccess({ status }: CheckoutSuccessProps) {
                                                                 className="gap-2"
                                                             >
                                                                 <Star className="h-4 w-4" />
-                                                                Rate Product
+                                                                <span suppressHydrationWarning>{t("order.rateProduct")}</span>
                                                             </Button>
                                                         )}
 
                                                         {productRatings[item.productsId]?.hasRated && (
                                                             <div className="flex items-center gap-2 px-3 py-1.5 bg-green-50 dark:bg-green-950/20 rounded-md border border-green-200 dark:border-green-800">
                                                                 <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                                                                <span className="text-xs font-medium text-green-700 dark:text-green-400">
-                                                                    Rated
+                                                                <span className="text-xs font-medium text-green-700 dark:text-green-400" suppressHydrationWarning>
+                                                                    {t("order.rated")}
                                                                 </span>
                                                             </div>
                                                         )}
@@ -293,7 +298,7 @@ export default function CheckoutSuccess({ status }: CheckoutSuccessProps) {
                                                                 className="gap-2"
                                                             >
                                                                 <Download className="h-4 w-4" />
-                                                                Download
+                                                                <span suppressHydrationWarning>{t("order.download")}</span>
                                                             </Button>
                                                         )}
                                                     </div>
@@ -381,7 +386,7 @@ export default function CheckoutSuccess({ status }: CheckoutSuccessProps) {
                                                                     className="gap-2 w-full mt-2"
                                                                 >
                                                                     <Edit className="h-4 w-4" />
-                                                                    Edit Rating
+                                                                    <span suppressHydrationWarning>{t("order.editRating")}</span>
                                                                 </Button>
                                                             </div>
                                                         </div>
@@ -409,8 +414,8 @@ export default function CheckoutSuccess({ status }: CheckoutSuccessProps) {
                             <div className="space-y-4">
                                 <div className="flex items-center gap-2 mb-3">
                                     <User className="h-4 w-4 text-muted-foreground" />
-                                    <h3 className="font-semibold text-sm uppercase tracking-wide text-muted-foreground">
-                                        Customer Information
+                                    <h3 className="font-semibold text-sm uppercase tracking-wide text-muted-foreground" suppressHydrationWarning>
+                                        {t("order.customerInformation")}
                                     </h3>
                                 </div>
 
@@ -448,15 +453,15 @@ export default function CheckoutSuccess({ status }: CheckoutSuccessProps) {
                             <div className="space-y-4">
                                 <div className="flex items-center gap-2 mb-3">
                                     <CreditCard className="h-4 w-4 text-muted-foreground" />
-                                    <h3 className="font-semibold text-sm uppercase tracking-wide text-muted-foreground">
-                                        Payment Information
+                                    <h3 className="font-semibold text-sm uppercase tracking-wide text-muted-foreground" suppressHydrationWarning>
+                                        {t("order.paymentInformation")}
                                     </h3>
                                 </div>
 
                                 <div className="space-y-3 pl-6">
                                     <div className="flex justify-between items-center py-2">
-                                        <span className="text-sm text-muted-foreground">
-                                            Payment Method
+                                        <span className="text-sm text-muted-foreground" suppressHydrationWarning>
+                                            {t("order.paymentMethod")}
                                         </span>
                                         <Badge variant="outline" className="font-medium capitalize">
                                             {transaction.paymentMethod}
@@ -464,8 +469,8 @@ export default function CheckoutSuccess({ status }: CheckoutSuccessProps) {
                                     </div>
                                     {transaction.payment_details?.payment_type && (
                                         <div className="flex justify-between items-center py-2">
-                                            <span className="text-sm text-muted-foreground">
-                                                Payment Type
+                                            <span className="text-sm text-muted-foreground" suppressHydrationWarning>
+                                                {t("order.paymentType")}
                                             </span>
                                             <span className="text-sm font-medium capitalize">
                                                 {transaction.payment_details.payment_type
@@ -476,7 +481,7 @@ export default function CheckoutSuccess({ status }: CheckoutSuccessProps) {
                                     )}
                                     {transaction.payment_details?.bank && (
                                         <div className="flex justify-between items-center py-2">
-                                            <span className="text-sm text-muted-foreground">Bank</span>
+                                            <span className="text-sm text-muted-foreground" suppressHydrationWarning>{t("order.bank")}</span>
                                             <span className="text-sm font-semibold">
                                                 {transaction.payment_details.bank}
                                             </span>
@@ -485,8 +490,8 @@ export default function CheckoutSuccess({ status }: CheckoutSuccessProps) {
                                     {transaction.payment_details?.va_number && (
                                         <div className="bg-primary/5 rounded-lg p-4 border-2 border-primary/20 mt-3">
                                             <div className="flex flex-col gap-2">
-                                                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                                                    Virtual Account
+                                                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide" suppressHydrationWarning>
+                                                    {t("order.virtualAccount")}
                                                 </span>
                                                 <span className="font-mono font-bold text-xl text-primary">
                                                     {transaction.payment_details.va_number}
@@ -496,8 +501,8 @@ export default function CheckoutSuccess({ status }: CheckoutSuccessProps) {
                                     )}
                                     {transaction.payment_details?.transaction_id && (
                                         <div className="flex flex-col gap-1 py-2">
-                                            <span className="text-xs text-muted-foreground">
-                                                Transaction ID
+                                            <span className="text-xs text-muted-foreground" suppressHydrationWarning>
+                                                {t("order.transactionId")}
                                             </span>
                                             <span className="font-mono text-xs break-all bg-slate-50 dark:bg-slate-800/50 p-2 rounded">
                                                 {transaction.payment_details.transaction_id}
@@ -513,13 +518,13 @@ export default function CheckoutSuccess({ status }: CheckoutSuccessProps) {
                             <div className="space-y-4">
                                 <div className="flex items-center gap-2 mb-3">
                                     <FileText className="h-4 w-4 text-muted-foreground" />
-                                    <h3 className="font-semibold text-sm uppercase tracking-wide text-muted-foreground">
-                                        Order Details
+                                    <h3 className="font-semibold text-sm uppercase tracking-wide text-muted-foreground" suppressHydrationWarning>
+                                        {t("order.orderDetailsTitle")}
                                     </h3>
                                 </div>
                                 <div className="space-y-3 pl-6">
                                     <div className="flex justify-between items-center py-2">
-                                        <span className="text-sm text-muted-foreground">Status</span>
+                                        <span className="text-sm text-muted-foreground" suppressHydrationWarning>{t("order.status")}</span>
                                         <Badge
                                             variant={
                                                 isSuccess
@@ -534,9 +539,9 @@ export default function CheckoutSuccess({ status }: CheckoutSuccessProps) {
                                         </Badge>
                                     </div>
                                     <div className="flex justify-between items-center py-2">
-                                        <span className="text-sm text-muted-foreground flex items-center gap-2">
+                                        <span className="text-sm text-muted-foreground flex items-center gap-2" suppressHydrationWarning>
                                             <Calendar className="h-3 w-3" />
-                                            Order Date
+                                            {t("order.orderDate")}
                                         </span>
                                         <span className="text-sm font-medium">
                                             {formatDate(transaction.created_at)}
@@ -544,9 +549,9 @@ export default function CheckoutSuccess({ status }: CheckoutSuccessProps) {
                                     </div>
                                     {transaction.payment_details?.settlement_time && (
                                         <div className="flex justify-between items-center py-2">
-                                            <span className="text-sm text-muted-foreground flex items-center gap-2">
+                                            <span className="text-sm text-muted-foreground flex items-center gap-2" suppressHydrationWarning>
                                                 <Calendar className="h-3 w-3" />
-                                                Settlement Time
+                                                {t("order.settlementTime")}
                                             </span>
                                             <span className="text-sm font-medium">
                                                 {formatDate(
@@ -562,8 +567,8 @@ export default function CheckoutSuccess({ status }: CheckoutSuccessProps) {
 
                             {/* Items List */}
                             <div className="space-y-3">
-                                <h3 className="font-semibold text-sm uppercase tracking-wide text-muted-foreground">
-                                    Items
+                                <h3 className="font-semibold text-sm uppercase tracking-wide text-muted-foreground" suppressHydrationWarning>
+                                    {t("order.items")}
                                 </h3>
                                 <div className="space-y-2">
                                     {transaction.products.map((item) => (
@@ -575,8 +580,8 @@ export default function CheckoutSuccess({ status }: CheckoutSuccessProps) {
                                                 <p className="text-sm font-medium leading-tight">
                                                     {item.title}
                                                 </p>
-                                                <p className="text-xs text-muted-foreground mt-1">
-                                                    Qty: {item.quantity}
+                                                <p className="text-xs text-muted-foreground mt-1" suppressHydrationWarning>
+                                                    {t("order.qty")}: {item.quantity}
                                                 </p>
                                             </div>
                                             <span className="text-sm font-semibold whitespace-nowrap">
@@ -592,14 +597,14 @@ export default function CheckoutSuccess({ status }: CheckoutSuccessProps) {
                             {/* Total */}
                             <div className="bg-primary/5 rounded-lg p-4 border-2 border-primary/20">
                                 <div className="flex justify-between items-center">
-                                    <span className="text-lg font-bold">Total</span>
+                                    <span className="text-lg font-bold" suppressHydrationWarning>{t("order.total")}</span>
                                     <span className="text-2xl font-bold text-primary">
                                         Rp {formatIDR(transaction.total_amount || 0)}
                                     </span>
                                 </div>
                                 {transaction.paymentMethod === "free" && (
-                                    <Badge variant="secondary" className="mt-2 w-full justify-center text-sm">
-                                        Free Products
+                                    <Badge variant="secondary" className="mt-2 w-full justify-center text-sm" suppressHydrationWarning>
+                                        {t("order.freeProducts")}
                                     </Badge>
                                 )}
                             </div>
@@ -612,7 +617,7 @@ export default function CheckoutSuccess({ status }: CheckoutSuccessProps) {
                                     onClick={() => downloadInvoice(transaction)}
                                 >
                                     <Download className="h-4 w-4" />
-                                    Download Invoice
+                                    <span suppressHydrationWarning>{t("order.downloadInvoice")}</span>
                                 </Button>
 
                                 {transaction.status === "pending" && transaction.paymentMethod === "paid" && (
@@ -624,21 +629,21 @@ export default function CheckoutSuccess({ status }: CheckoutSuccessProps) {
                                         {isContinuingPayment ? (
                                             <>
                                                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                                                Memproses...
+                                                <span suppressHydrationWarning>{t("checkout.processingPayment")}</span>
                                             </>
                                         ) : (
-                                            "Lanjutkan Payment"
+                                            <span suppressHydrationWarning>{t("checkout.continuePayment")}</span>
                                         )}
                                     </Button>
                                 )}
 
                                 <Button asChild className="w-full md:w-auto" variant="outline">
-                                    <Link href="/products">Continue Shopping</Link>
+                                    <Link href="/products" suppressHydrationWarning>{t("order.continueShopping")}</Link>
                                 </Button>
 
                                 {isSuccess && (
                                     <Button asChild className="w-full md:w-auto">
-                                        <Link href="/profile">Go to Profile</Link>
+                                        <Link href="/profile" suppressHydrationWarning>{t("order.goToProfile")}</Link>
                                     </Button>
                                 )}
                             </div>

@@ -10,6 +10,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
+import { Input } from "@/components/ui/input"
+
+import { Label } from "@/components/ui/label"
+
 import {
     Dialog,
     DialogContent,
@@ -42,9 +46,12 @@ import { UserReviews } from "@/components/ui/user-riview"
 
 import TransactionLoading from "@/components/pages/profile/profile/transaction/TransactionLoading"
 
+import { useTranslation } from "@/hooks/useTranslation"
+
 export default function ProfilePage() {
     const { signOut } = useAuth()
     const router = useRouter()
+    const { t } = useTranslation()
     const {
         activeTab,
         setActiveTab,
@@ -155,19 +162,19 @@ export default function ProfilePage() {
                         <Card>
                             <CardContent className="p-6">
                                 <p className="text-3xl font-bold">{productsPurchased}</p>
-                                <p className="text-sm text-muted-foreground">Products Purchased</p>
+                                <p className="text-sm text-muted-foreground" suppressHydrationWarning>{t("profile.productsPurchased")}</p>
                             </CardContent>
                         </Card>
                         <Card>
                             <CardContent className="p-6">
                                 <p className="text-3xl font-bold">{formatIDR(totalSpent)}</p>
-                                <p className="text-sm text-muted-foreground">Total Spent</p>
+                                <p className="text-sm text-muted-foreground" suppressHydrationWarning>{t("profile.totalSpent")}</p>
                             </CardContent>
                         </Card>
                         <Card>
                             <CardContent className="p-6">
                                 <p className="text-3xl font-bold">{transactions.length}</p>
-                                <p className="text-sm text-muted-foreground">Total Transactions</p>
+                                <p className="text-sm text-muted-foreground" suppressHydrationWarning>{t("profile.totalTransactions")}</p>
                             </CardContent>
                         </Card>
                     </div>
@@ -178,19 +185,19 @@ export default function ProfilePage() {
                     <TabsList className="grid w-full grid-cols-4 mb-5">
                         <TabsTrigger value="profile" className="flex items-center gap-2">
                             <User className="w-4 h-4" />
-                            <span className="hidden sm:inline">Profile</span>
+                            <span className="hidden sm:inline" suppressHydrationWarning>{t("profile.profile")}</span>
                         </TabsTrigger>
                         <TabsTrigger value="transactions" className="flex items-center gap-2">
                             <ShoppingBag className="w-4 h-4" />
-                            <span className="hidden sm:inline">Purchases</span>
+                            <span className="hidden sm:inline" suppressHydrationWarning>{t("profile.purchases")}</span>
                         </TabsTrigger>
                         <TabsTrigger value="chat" className="flex items-center gap-2">
                             <Star className="w-4 h-4" />
-                            <span className="hidden sm:inline">Ratings</span>
+                            <span className="hidden sm:inline" suppressHydrationWarning>{t("profile.ratings")}</span>
                         </TabsTrigger>
                         <TabsTrigger value="settings" className="flex items-center gap-2">
                             <Settings className="w-4 h-4" />
-                            <span className="hidden sm:inline">Settings</span>
+                            <span className="hidden sm:inline" suppressHydrationWarning>{t("profile.settings")}</span>
                         </TabsTrigger>
                     </TabsList>
 
@@ -198,47 +205,43 @@ export default function ProfilePage() {
                     <TabsContent value="profile" className="space-y-6">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Profile Information</CardTitle>
-                                <CardDescription>Update your personal details</CardDescription>
+                                <CardTitle suppressHydrationWarning>{t("profile.profileInformation")}</CardTitle>
+                                <CardDescription suppressHydrationWarning>{t("profile.updatePersonalDetails")}</CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
-                                        <label className="text-sm font-semibold block mb-2">Full Name</label>
-                                        <input
+                                        <Label className="block mb-2" suppressHydrationWarning>{t("profile.fullName")}</Label>
+                                        <Input
                                             type="text"
                                             value={formData.name}
                                             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                            className="w-full px-3 py-2 border border-border rounded-lg bg-background"
-                                            placeholder="Enter your name"
+                                            placeholder={t("profile.enterYourName")}
                                         />
                                     </div>
                                     <div>
-                                        <label className="text-sm font-semibold block mb-2">Email</label>
-                                        <input
+                                        <Label className="block mb-2" suppressHydrationWarning>{t("auth.email")}</Label>
+                                        <Input
                                             type="email"
                                             value={formData.email}
                                             disabled
-                                            className="w-full px-3 py-2 border border-border rounded-lg bg-muted cursor-not-allowed"
                                         />
-                                        <p className="text-xs text-muted-foreground mt-1">Email cannot be changed</p>
+                                        <p className="text-xs text-muted-foreground mt-1" suppressHydrationWarning>{t("profile.emailCannotBeChanged")}</p>
                                     </div>
                                     <div>
-                                        <label className="text-sm font-semibold block mb-2">Role</label>
-                                        <input
+                                        <Label className="block mb-2" suppressHydrationWarning>{t("profile.role")}</Label>
+                                        <Input
                                             type="text"
-                                            value={user.role === "admins" ? "Administrator" : "User"}
+                                            value={user.role === "admins" ? t("profile.administrator") : t("profile.user")}
                                             disabled
-                                            className="w-full px-3 py-2 border border-border rounded-lg bg-muted cursor-not-allowed"
                                         />
                                     </div>
                                     <div>
-                                        <label className="text-sm font-semibold block mb-2">Status</label>
-                                        <input
+                                        <Label className="block mb-2" suppressHydrationWarning>{t("profile.status")}</Label>
+                                        <Input
                                             type="text"
                                             value={user.status || "N/A"}
                                             disabled
-                                            className="w-full px-3 py-2 border border-border rounded-lg bg-muted cursor-not-allowed"
                                         />
                                     </div>
                                 </div>
@@ -246,7 +249,7 @@ export default function ProfilePage() {
                                     onClick={handleUpdateProfile}
                                     disabled={isUpdating}
                                 >
-                                    {isUpdating ? "Saving..." : "Save Changes"}
+                                    <span suppressHydrationWarning>{isUpdating ? t("profile.saving") : t("profile.saveChanges")}</span>
                                 </Button>
                             </CardContent>
                         </Card>
@@ -273,11 +276,11 @@ export default function ProfilePage() {
                                                 key={txn._id}
                                                 className="p-4 border border-border rounded-lg hover:bg-muted/50 transition-colors"
                                             >
-                                                <div className="flex items-start justify-between mb-3">
-                                                    <div className="flex-1">
-                                                        <div className="flex items-center gap-2 mb-2">
-                                                            <p className="font-semibold text-sm">
-                                                                Order ID: {txn.order_id || txn._id}
+                                                <div className="flex flex-wrap items-start justify-between gap-3 mb-3">
+                                                    <div className="flex-1 min-w-0">
+                                                        <div className="flex flex-wrap items-center gap-2 mb-2">
+                                                            <p className="font-semibold text-sm" suppressHydrationWarning>
+                                                                {t("profile.orderId")}: {txn.order_id || txn._id}
                                                             </p>
                                                             <Badge
                                                                 variant={getStatusVariant(txn.status)}
@@ -294,22 +297,22 @@ export default function ProfilePage() {
                                                         <p className="font-semibold text-lg">
                                                             {formatIDR(txn.total_amount || 0)}
                                                         </p>
-                                                        <p className="text-xs text-muted-foreground">
-                                                            {txn.paymentMethod === "paid" ? "Paid" : "Free"}
+                                                        <p className="text-xs text-muted-foreground" suppressHydrationWarning>
+                                                            {txn.paymentMethod === "paid" ? t("profile.paid") : t("profile.free")}
                                                         </p>
                                                     </div>
                                                 </div>
 
-                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                <div className="flex flex-wrap gap-2 border-t border-border pt-3 mt-3">
                                                     {txn.status === "pending" && (
-                                                        <div className="mt-3 pt-3 border-t border-border space-y-2">
+                                                        <>
                                                             {txn.paymentMethod === "paid" && txn.snap_token && (
                                                                 <Button
                                                                     variant="default"
                                                                     size="sm"
                                                                     onClick={() => handleContinuePayment(txn)}
                                                                     disabled={continuingPayment.has(txn.order_id || txn._id) || cancelingTransaction.has(txn.order_id || txn._id)}
-                                                                    className="w-full gap-2"
+                                                                    className="gap-2"
                                                                 >
                                                                     {continuingPayment.has(txn.order_id || txn._id) ? (
                                                                         <>
@@ -329,7 +332,7 @@ export default function ProfilePage() {
                                                                 size="sm"
                                                                 onClick={() => handleCancelTransaction(txn)}
                                                                 disabled={continuingPayment.has(txn.order_id || txn._id) || cancelingTransaction.has(txn.order_id || txn._id)}
-                                                                className="w-full gap-2 text-destructive hover:text-destructive hover:bg-destructive/10"
+                                                                className="gap-2 text-destructive hover:text-destructive hover:bg-destructive/10"
                                                             >
                                                                 {cancelingTransaction.has(txn.order_id || txn._id) ? (
                                                                     <>
@@ -343,21 +346,19 @@ export default function ProfilePage() {
                                                                     </>
                                                                 )}
                                                             </Button>
-                                                        </div>
+                                                        </>
                                                     )}
 
                                                     {txn.status === "success" && (
-                                                        <div className="mt-3 pt-3 border-t border-border">
-                                                            <Button
-                                                                variant="outline"
-                                                                size="sm"
-                                                                onClick={() => router.push(`/profile/${txn.order_id}`)}
-                                                                className="w-full gap-2"
-                                                            >
-                                                                <EyeIcon className="h-4 w-4" />
-                                                                Lihat Detail
-                                                            </Button>
-                                                        </div>
+                                                        <Button
+                                                            variant="outline"
+                                                            size="sm"
+                                                            onClick={() => router.push(`/profile/${txn.order_id}`)}
+                                                            className="gap-2"
+                                                        >
+                                                            <EyeIcon className="h-4 w-4" />
+                                                            <span suppressHydrationWarning>{t("profile.viewDetails")}</span>
+                                                        </Button>
                                                     )}
                                                 </div>
 
@@ -414,29 +415,29 @@ export default function ProfilePage() {
                     <TabsContent value="settings" className="space-y-6">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Preferences</CardTitle>
-                                <CardDescription>Manage your account settings</CardDescription>
+                                <CardTitle suppressHydrationWarning>{t("profile.preferences")}</CardTitle>
+                                <CardDescription suppressHydrationWarning>{t("profile.manageAccountSettings")}</CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-6">
                                 <div className="space-y-4">
                                     <div className="flex items-center justify-between p-4 border border-border rounded-lg">
                                         <div>
-                                            <p className="font-semibold">Email Notifications</p>
-                                            <p className="text-sm text-muted-foreground">Receive updates about new products</p>
+                                            <p className="font-semibold" suppressHydrationWarning>{t("profile.emailNotifications")}</p>
+                                            <p className="text-sm text-muted-foreground" suppressHydrationWarning>{t("profile.receiveUpdates")}</p>
                                         </div>
                                         <input type="checkbox" defaultChecked className="w-5 h-5" />
                                     </div>
                                     <div className="flex items-center justify-between p-4 border border-border rounded-lg">
                                         <div>
-                                            <p className="font-semibold">Marketing Emails</p>
-                                            <p className="text-sm text-muted-foreground">Get special offers and discounts</p>
+                                            <p className="font-semibold" suppressHydrationWarning>{t("profile.marketingEmails")}</p>
+                                            <p className="text-sm text-muted-foreground" suppressHydrationWarning>{t("profile.getSpecialOffers")}</p>
                                         </div>
                                         <input type="checkbox" className="w-5 h-5" />
                                     </div>
                                     <div className="flex items-center justify-between p-4 border border-border rounded-lg">
                                         <div>
-                                            <p className="font-semibold">Two-Factor Authentication</p>
-                                            <p className="text-sm text-muted-foreground">Enhanced security for your account</p>
+                                            <p className="font-semibold" suppressHydrationWarning>{t("profile.twoFactorAuth")}</p>
+                                            <p className="text-sm text-muted-foreground" suppressHydrationWarning>{t("profile.enhancedSecurity")}</p>
                                         </div>
                                         <input type="checkbox" defaultChecked className="w-5 h-5" />
                                     </div>
@@ -444,38 +445,38 @@ export default function ProfilePage() {
 
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                     <div className="pt-6 border-t border-border">
-                                        <p className="font-semibold mb-4">Security</p>
+                                        <p className="font-semibold mb-4" suppressHydrationWarning>{t("profile.security")}</p>
                                         <Button
                                             variant="outline"
                                             className="w-full mb-4"
                                             onClick={() => setIsChangePasswordOpen(true)}
                                         >
                                             <Lock className="w-4 h-4 mr-2" />
-                                            Change Password
+                                            <span suppressHydrationWarning>{t("profile.changePassword")}</span>
                                         </Button>
                                     </div>
 
                                     <div className="pt-6 border-t border-border">
-                                        <p className="font-semibold mb-4">Account Actions</p>
+                                        <p className="font-semibold mb-4" suppressHydrationWarning>{t("profile.accountActions")}</p>
                                         <Button
                                             variant="outline"
                                             className="w-full mb-4"
                                             onClick={handleSignOut}
                                         >
                                             <LogOut className="w-4 h-4 mr-2" />
-                                            Sign Out
+                                            <span suppressHydrationWarning>{t("profile.signOut")}</span>
                                         </Button>
                                     </div>
 
                                     <div className="pt-6 border-t border-border">
-                                        <p className="font-semibold mb-4 text-destructive">Danger Zone</p>
+                                        <p className="font-semibold mb-4 text-destructive" suppressHydrationWarning>{t("profile.dangerZone")}</p>
                                         <Button
                                             variant="destructive"
                                             className="w-full"
                                             onClick={() => setIsDeleteAccountOpen(true)}
                                         >
                                             <Trash2 className="w-4 h-4 mr-2" />
-                                            Delete Account
+                                            <span suppressHydrationWarning>{t("profile.deleteAccount")}</span>
                                         </Button>
                                     </div>
                                 </div>
@@ -495,12 +496,11 @@ export default function ProfilePage() {
             <Dialog open={isDeleteAccountOpen} onOpenChange={setIsDeleteAccountOpen}>
                 <DialogContent className="sm:max-w-[425px] p-4 sm:p-6">
                     <DialogHeader className="mb-2">
-                        <DialogTitle className="text-lg sm:text-xl font-bold text-destructive">
-                            Delete Account
+                        <DialogTitle className="text-lg sm:text-xl font-bold text-destructive" suppressHydrationWarning>
+                            {t("profile.deleteAccount")}
                         </DialogTitle>
-                        <DialogDescription className="text-sm text-muted-foreground">
-                            Are you sure you want to delete your account? This action cannot be undone.
-                            All your data, including transactions and personal information, will be permanently deleted.
+                        <DialogDescription className="text-sm text-muted-foreground" suppressHydrationWarning>
+                            {t("profile.deleteAccountConfirm")} {t("profile.deleteAccountWarning")}
                         </DialogDescription>
                     </DialogHeader>
                     <div className="flex justify-end gap-3 mt-4">
@@ -510,7 +510,7 @@ export default function ProfilePage() {
                             className="px-6"
                             disabled={isDeletingAccount}
                         >
-                            Cancel
+                            <span suppressHydrationWarning>{t("common.cancel")}</span>
                         </Button>
                         <Button
                             variant="destructive"
@@ -521,12 +521,12 @@ export default function ProfilePage() {
                             {isDeletingAccount ? (
                                 <>
                                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                    Deleting...
+                                    <span suppressHydrationWarning>{t("profile.deleting")}</span>
                                 </>
                             ) : (
                                 <>
                                     <Trash2 className="w-4 h-4 mr-2" />
-                                    Delete Account
+                                    <span suppressHydrationWarning>{t("profile.deleteAccount")}</span>
                                 </>
                             )}
                         </Button>

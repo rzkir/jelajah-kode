@@ -12,7 +12,6 @@ import { useStateArticles } from "./lib/useStateArticles"
 
 import { Badge } from "@/components/ui/badge"
 
-
 export default function Articles({ articles, categories, pagination, initialFilters, page = 1 }: ArticlesProps) {
     const { selectedCategory, filteredArticles, handleCategoryChange, buildPaginationUrl } = useStateArticles({
         articles,

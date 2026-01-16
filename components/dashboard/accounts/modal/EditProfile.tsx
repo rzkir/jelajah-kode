@@ -22,6 +22,7 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { API_CONFIG } from "@/lib/config";
 import { useAuth } from "@/utils/context/AuthContext";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface EditProfileProps {
     open: boolean;
@@ -30,6 +31,7 @@ interface EditProfileProps {
 
 export default function EditProfile({ open, onOpenChange }: EditProfileProps) {
     const { user, refreshUserData } = useAuth();
+    const { t } = useTranslation();
     const [name, setName] = useState("");
     const [isLoading, setIsLoading] = useState(false);
 
@@ -44,7 +46,7 @@ export default function EditProfile({ open, onOpenChange }: EditProfileProps) {
         e.preventDefault();
 
         if (!name.trim()) {
-            toast.error("Name cannot be empty");
+            toast.error(t("editProfile.nameCannotBeEmpty"));
             return;
         }
 
@@ -94,26 +96,26 @@ export default function EditProfile({ open, onOpenChange }: EditProfileProps) {
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Edit Profile</DialogTitle>
-                    <DialogDescription>
-                        Update your profile information. Click save when you&apos;re done.
+                    <DialogTitle suppressHydrationWarning>{t("editProfile.title")}</DialogTitle>
+                    <DialogDescription suppressHydrationWarning>
+                        {t("editProfile.description")}
                     </DialogDescription>
                 </DialogHeader>
                 <form onSubmit={handleSubmit}>
                     <FieldGroup>
                         <Field>
-                            <FieldLabel>Name</FieldLabel>
+                            <FieldLabel suppressHydrationWarning>{t("editProfile.name")}</FieldLabel>
                             <FieldContent>
                                 <Input
                                     type="text"
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
-                                    placeholder="Enter your name"
+                                    placeholder={t("editProfile.enterYourName")}
                                     disabled={isLoading}
                                     required
                                 />
-                                <FieldDescription>
-                                    Your display name will be visible to other users.
+                                <FieldDescription suppressHydrationWarning>
+                                    {t("editProfile.displayNameVisible")}
                                 </FieldDescription>
                             </FieldContent>
                         </Field>
@@ -125,13 +127,13 @@ export default function EditProfile({ open, onOpenChange }: EditProfileProps) {
                             onClick={() => onOpenChange(false)}
                             disabled={isLoading}
                         >
-                            Cancel
+                            <span suppressHydrationWarning>{t("common.cancel")}</span>
                         </Button>
                         <Button type="submit" disabled={isLoading}>
                             {isLoading && (
                                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                             )}
-                            Save Changes
+                            <span suppressHydrationWarning>{t("editProfile.saveChanges")}</span>
                         </Button>
                     </DialogFooter>
                 </form>

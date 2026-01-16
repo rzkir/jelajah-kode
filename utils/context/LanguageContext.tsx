@@ -6,22 +6,6 @@ import idTranslations from "@/locales/id.json";
 
 import enTranslations from "@/locales/en.json";
 
-type Language = "id" | "en";
-
-type TranslationValue = string | Record<string, unknown>;
-
-interface Translations {
-    [key: string]: TranslationValue;
-}
-
-interface LanguageContextType {
-    language: Language;
-    setLanguage: (lang: Language) => void;
-    t: (key: string) => string;
-    refreshTranslations: () => Promise<void>;
-    isLoading: boolean;
-}
-
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 // Cache for translations with timestamp
@@ -32,7 +16,7 @@ const translationCache: {
     };
 } = {};
 
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+const CACHE_DURATION = 5 * 60 * 1000;
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
     // Always start with "id" to match server-side render

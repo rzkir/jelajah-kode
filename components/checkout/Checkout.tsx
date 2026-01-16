@@ -23,12 +23,14 @@ import FollowStepsModal from "@/components/checkout/FollowStepsModal";
 import useStateCheckout from "@/components/checkout/lib/useStateCheckout";
 
 import LoadingOverlay from "@/helper/loading/LoadingOverlay";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface CheckoutProps {
     productsParam: string;
 }
 
 export default function Checkout({ productsParam }: CheckoutProps) {
+    const { t } = useTranslation();
     const {
         router,
         user,
@@ -65,9 +67,9 @@ export default function Checkout({ productsParam }: CheckoutProps) {
                 <Card>
                     <CardContent className="py-12 text-center">
                         <ShoppingCart className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                        <p className="text-muted-foreground">No products in checkout</p>
+                        <p className="text-muted-foreground" suppressHydrationWarning>{t("checkout.noProductsInCheckout")}</p>
                         <Button asChild className="mt-4">
-                            <Link href="/products">Browse Products</Link>
+                            <Link href="/products" suppressHydrationWarning>{t("checkout.browseProducts")}</Link>
                         </Button>
                     </CardContent>
                 </Card>
@@ -86,15 +88,15 @@ export default function Checkout({ productsParam }: CheckoutProps) {
                         className="mb-4 md:mb-6 hover:bg-white/50 dark:hover:bg-slate-800/50 transition-all duration-200"
                     >
                         <ArrowLeft className="h-4 w-4 mr-2" />
-                        Back
+                        <span suppressHydrationWarning>{t("checkout.back")}</span>
                     </Button>
                     <div className="flex items-center gap-3">
-                        <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold bg-linear-to-r from-slate-900 to-slate-700 dark:from-slate-100 dark:to-slate-300 bg-clip-text text-transparent">
-                            Checkout
+                        <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold bg-linear-to-r from-slate-900 to-slate-700 dark:from-slate-100 dark:to-slate-300 bg-clip-text text-transparent" suppressHydrationWarning>
+                            {t("checkout.title")}
                         </h1>
                     </div>
-                    <p className="text-sm md:text-base text-muted-foreground mt-2">
-                        Review your order and complete your purchase
+                    <p className="text-sm md:text-base text-muted-foreground mt-2" suppressHydrationWarning>
+                        {t("checkout.reviewOrder")}
                     </p>
                 </div>
 
@@ -104,12 +106,12 @@ export default function Checkout({ productsParam }: CheckoutProps) {
                         {/* Order Summary Card */}
                         <Card className="border-0 shadow-xl bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm">
                             <CardHeader className="pb-4 border-b rounded-t-lg">
-                                <CardTitle className="text-xl md:text-2xl font-bold flex items-center gap-2">
+                                <CardTitle className="text-xl md:text-2xl font-bold flex items-center gap-2" suppressHydrationWarning>
                                     <ShoppingCart className="h-4 w-4 md:h-5 md:w-5 text-primary" />
-                                    Order Summary
+                                    {t("checkout.orderSummary")}
                                 </CardTitle>
-                                <p className="text-xs md:text-sm text-muted-foreground mt-1">
-                                    {products.length} {products.length === 1 ? 'item' : 'items'} in your cart
+                                <p className="text-xs md:text-sm text-muted-foreground mt-1" suppressHydrationWarning>
+                                    {products.length} {products.length === 1 ? t("checkout.item") : t("checkout.items")} {t("checkout.itemsInCart")}
                                 </p>
                             </CardHeader>
                             <CardContent className="space-y-6">
@@ -166,8 +168,8 @@ export default function Checkout({ productsParam }: CheckoutProps) {
 
                                                 {/* Quantity Controls */}
                                                 <div className="flex items-center gap-2 md:gap-4 mb-3 md:mb-4 flex-wrap">
-                                                    <span className="text-xs md:text-sm font-medium text-muted-foreground">
-                                                        Quantity:
+                                                    <span className="text-xs md:text-sm font-medium text-muted-foreground" suppressHydrationWarning>
+                                                        {t("checkout.quantity")}
                                                     </span>
                                                     <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 rounded-lg p-1">
                                                         <Button
@@ -200,8 +202,8 @@ export default function Checkout({ productsParam }: CheckoutProps) {
                                                 {/* Subtotal */}
                                                 <div className="pt-2 md:pt-3 border-t border-border/50">
                                                     <div className="flex items-center justify-between">
-                                                        <span className="text-xs md:text-sm font-medium text-muted-foreground">
-                                                            Subtotal:
+                                                        <span className="text-xs md:text-sm font-medium text-muted-foreground" suppressHydrationWarning>
+                                                            {t("checkout.subtotal")}
                                                         </span>
                                                         <span className="text-base md:text-lg font-bold text-slate-900 dark:text-slate-100">
                                                             Rp {formatIDR(discountedPrice * product.quantity)}
@@ -218,19 +220,19 @@ export default function Checkout({ productsParam }: CheckoutProps) {
                         {/* User Data Card */}
                         <Card className="border-0 shadow-xl bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm">
                             <CardHeader className="pb-4 border-b rounded-t-lg">
-                                <CardTitle className="text-lg md:text-xl font-bold">Customer Information</CardTitle>
+                                <CardTitle className="text-lg md:text-xl font-bold" suppressHydrationWarning>{t("checkout.customerInformation")}</CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-3 md:space-y-4">
                                 <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0 p-3 md:p-4 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-border/50">
-                                    <span className="text-xs md:text-sm font-medium text-muted-foreground">Nama</span>
+                                    <span className="text-xs md:text-sm font-medium text-muted-foreground" suppressHydrationWarning>{t("checkout.name")}</span>
                                     <span className="text-sm md:text-base font-semibold text-slate-900 dark:text-slate-100 text-right sm:text-left">
-                                        {user?.name || "Tidak tersedia"}
+                                        {user?.name || t("checkout.notAvailable")}
                                     </span>
                                 </div>
                                 <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0 p-3 md:p-4 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-border/50">
-                                    <span className="text-xs md:text-sm font-medium text-muted-foreground">Email</span>
+                                    <span className="text-xs md:text-sm font-medium text-muted-foreground" suppressHydrationWarning>{t("checkout.email")}</span>
                                     <span className="text-xs md:text-sm font-semibold text-slate-900 dark:text-slate-100 break-all text-right sm:text-left">
-                                        {user?.email || "Tidak tersedia"}
+                                        {user?.email || t("checkout.notAvailable")}
                                     </span>
                                 </div>
                             </CardContent>
@@ -241,9 +243,9 @@ export default function Checkout({ productsParam }: CheckoutProps) {
                     <div className="lg:col-span-1">
                         <Card className="sticky top-4 md:top-6 border-0 shadow-2xl bg-linear-to-br from-white to-blue-50/30 dark:from-slate-900 dark:to-slate-800 backdrop-blur-sm">
                             <CardHeader className="pb-4 border-b rounded-t-lg">
-                                <CardTitle className="text-lg md:text-xl font-bold flex items-center gap-2">
+                                <CardTitle className="text-lg md:text-xl font-bold flex items-center gap-2" suppressHydrationWarning>
                                     <div className="h-2 w-2 rounded-full bg-primary animate-pulse"></div>
-                                    Order Total
+                                    {t("checkout.orderTotal")}
                                 </CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-6">
@@ -273,14 +275,14 @@ export default function Checkout({ productsParam }: CheckoutProps) {
                                 {/* Price Breakdown */}
                                 <div className="space-y-2 md:space-y-3 text-xs md:text-sm">
                                     <div className="flex justify-between items-center p-2">
-                                        <span className="text-muted-foreground">Subtotal</span>
+                                        <span className="text-muted-foreground" suppressHydrationWarning>{t("checkout.subtotal")}</span>
                                         <span className="font-semibold text-slate-900 dark:text-slate-100">
                                             Rp {formatIDR(originalTotal)}
                                         </span>
                                     </div>
                                     {discountTotal > 0 && (
                                         <div className="flex justify-between items-center p-2 rounded-lg bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800">
-                                            <span className="text-muted-foreground">Discount</span>
+                                            <span className="text-muted-foreground" suppressHydrationWarning>{t("checkout.discount")}</span>
                                             <span className="font-bold text-green-600 dark:text-green-400">
                                                 -Rp {formatIDR(discountTotal)}
                                             </span>
@@ -293,14 +295,14 @@ export default function Checkout({ productsParam }: CheckoutProps) {
                                 {/* Total */}
                                 <div className="bg-linear-to-br from-primary/10 via-indigo-500/10 to-primary/5 rounded-xl p-4 md:p-5 border-2 border-primary/20">
                                     <div className="flex justify-between items-center mb-2">
-                                        <span className="text-base md:text-lg font-bold text-slate-900 dark:text-slate-100">Total</span>
+                                        <span className="text-base md:text-lg font-bold text-slate-900 dark:text-slate-100" suppressHydrationWarning>{t("checkout.total")}</span>
                                         <span className="text-2xl md:text-3xl font-bold">
                                             Rp {formatIDR(totalAmount)}
                                         </span>
                                     </div>
                                     {!hasPaidProducts && (
-                                        <Badge variant="secondary" className="w-full justify-center mt-2 md:mt-3 py-1 md:py-1.5 text-xs md:text-sm">
-                                            Free Products
+                                        <Badge variant="secondary" className="w-full justify-center mt-2 md:mt-3 py-1 md:py-1.5 text-xs md:text-sm" suppressHydrationWarning>
+                                            {t("checkout.freeProducts")}
                                         </Badge>
                                     )}
                                 </div>
@@ -315,12 +317,12 @@ export default function Checkout({ productsParam }: CheckoutProps) {
                                     {isProcessing ? (
                                         <>
                                             <Loader2 className="h-4 w-4 md:h-5 md:w-5 mr-2 animate-spin" />
-                                            Processing...
+                                            <span suppressHydrationWarning>{t("checkout.processing")}</span>
                                         </>
                                     ) : hasPaidProducts ? (
-                                        "Proceed to Payment"
+                                        <span suppressHydrationWarning>{t("checkout.proceedToPayment")}</span>
                                     ) : (
-                                        "Complete Checkout"
+                                        <span suppressHydrationWarning>{t("checkout.completeCheckout")}</span>
                                     )}
                                 </Button>
                             </CardContent>

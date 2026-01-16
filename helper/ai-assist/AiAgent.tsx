@@ -1,13 +1,21 @@
 "use client"
 
 import { motion, AnimatePresence } from 'framer-motion'
+
 import { Bot, Send, Plus, Smile, X, Mic, MicOff } from 'lucide-react'
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+
 import { Button } from "@/components/ui/button"
+
 import { Badge } from "@/components/ui/badge"
+
 import Image from "next/image"
+
 import { cn } from '@/lib/utils'
+
 import useStateAiAgent from './lib/useStateAiAgent'
+
 import EmojiPicker, { Theme } from 'emoji-picker-react'
 
 interface CtaProps {
@@ -52,7 +60,7 @@ export default function Cta({
                     setIsOpen(true);
                 }}
                 className={cn(
-                    "fixed bottom-24 md:bottom-6 right-6 px-5 py-3.5 rounded-full cursor-pointer bg-linear-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 transition-all shadow-xl hover:shadow-2xl z-40 flex items-center gap-2.5 font-semibold text-sm",
+                    "fixed bottom-24 md:bottom-6 right-6 px-5 py-3.5 rounded-full cursor-pointer bg-linear-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 transition-all shadow-xl hover:shadow-2xl z-40 flex items-center gap-2.5 font-semibold text-sm",
                     className
                 )}
                 whileHover={{ scale: 1.05, y: -2 }}
@@ -67,7 +75,6 @@ export default function Cta({
                 aria-label="Buka Chat Assistant"
             >
                 <Bot className="w-5 h-5" />
-                <span>Assistant</span>
             </motion.button>
 
             <AnimatePresence>

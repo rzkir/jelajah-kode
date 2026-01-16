@@ -8,6 +8,8 @@ import { CartProvider } from "@/utils/context/CartContext";
 
 import { LanguageProvider } from "@/utils/context/LanguageContext";
 
+import { NotificationsProvider } from "@/utils/context/NotificationsContext";
+
 const queryClient = new QueryClient();
 
 export default function Providers({ children }: { children: React.ReactNode }) {
@@ -16,7 +18,9 @@ export default function Providers({ children }: { children: React.ReactNode }) {
       <LanguageProvider>
         <AuthProvider>
           <CartProvider>
-            {children}
+            <NotificationsProvider>
+              {children}
+            </NotificationsProvider>
           </CartProvider>
         </AuthProvider>
       </LanguageProvider>

@@ -22,8 +22,11 @@ import {
 
 import { useAuth } from "@/utils/context/AuthContext";
 
+import { useTranslation } from "@/hooks/useTranslation";
+
 export function OTPForm({ className, email, ...props }: React.ComponentProps<"div"> & { email?: string }) {
   const { otp, setOtp, otpIsLoading, otpIsResending, handleOtpSubmit, handleResendOTP } = useAuth();
+  const { t } = useTranslation();
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -44,14 +47,14 @@ export function OTPForm({ className, email, ...props }: React.ComponentProps<"di
               </div>
               <span className="sr-only">Jelajah Kode.</span>
             </a>
-            <h1 className="text-xl font-bold">Enter verification code</h1>
-            <FieldDescription>
-              We sent a 6-digit code to your email address {email || 'your email'}
+            <h1 className="text-xl font-bold" suppressHydrationWarning>{t("auth.enterCodeTitle")}</h1>
+            <FieldDescription suppressHydrationWarning>
+              {t("auth.enterCodeSubtitle")} {email || t("auth.email")}
             </FieldDescription>
           </div>
           <Field>
-            <FieldLabel htmlFor="otp" className="sr-only">
-              Verification code
+            <FieldLabel htmlFor="otp" className="sr-only" suppressHydrationWarning>
+              {t("auth.enterCodeTitle")}
             </FieldLabel>
             <InputOTP
               maxLength={6}
@@ -73,28 +76,28 @@ export function OTPForm({ className, email, ...props }: React.ComponentProps<"di
                 <InputOTPSlot index={5} />
               </InputOTPGroup>
             </InputOTP>
-            <FieldDescription className="text-center">
-              Didn&apos;t receive the code?{" "}
+            <FieldDescription className="text-center" suppressHydrationWarning>
+              {t("auth.didntReceiveCode")}{" "}
               <button
                 type="button"
                 onClick={() => email && handleResendOTP(email)}
                 disabled={otpIsResending}
                 className="text-blue-600 hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {otpIsResending ? "Resending..." : "Resend"}
+                {otpIsResending ? t("auth.resending") : t("auth.resend")}
               </button>
             </FieldDescription>
           </Field>
           <Field>
             <Button type="submit" disabled={otpIsLoading}>
-              {otpIsLoading ? "Verifying..." : "Verify"}
+              <span suppressHydrationWarning>{otpIsLoading ? t("auth.verifying") : t("auth.verify")}</span>
             </Button>
           </Field>
         </FieldGroup>
       </form>
-      <FieldDescription className="px-6 text-center">
-        By clicking continue, you agree to our <a href="#">Terms of Service</a>{" "}
-        and <a href="#">Privacy Policy</a>.
+      <FieldDescription className="px-6 text-center" suppressHydrationWarning>
+        {t("auth.tosNotice")} <a href="#">{t("auth.tos")}</a>{" "}
+        {t("auth.and")} <a href="#">{t("auth.privacyPolicy")}</a>.
       </FieldDescription>
     </div>
   );

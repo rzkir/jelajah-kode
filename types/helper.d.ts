@@ -94,3 +94,78 @@ interface AdminProfileProps {
   initialProducts?: Products[];
   initialPopularProducts?: Products[];
 }
+
+//=================== Language Context ===================//
+
+type Language = "id" | "en";
+
+type TranslationValue = string | Record<string, unknown>;
+
+interface Translations {
+  [key: string]: TranslationValue;
+}
+
+interface LanguageContextType {
+  language: Language;
+  setLanguage: (lang: Language) => void;
+  t: (key: string) => string;
+  refreshTranslations: () => Promise<void>;
+  isLoading: boolean;
+}
+
+//=================== Notifications Context ===================//
+interface CartContextType {
+  cartItems: CartItem[];
+  addToCart: (product: ProductsDetails, quantity?: number) => void;
+  removeFromCart: (productId: string) => void;
+  updateQuantity: (productId: string, quantity: number) => void;
+  clearCart: () => void;
+  getTotalPrice: () => number;
+  getTotalItems: () => number;
+  isInCart: (productId: string) => boolean;
+  getCartItemQuantity: (productId: string) => number;
+  cartSheetOpen: boolean;
+  setCartSheetOpen: (open: boolean) => void;
+}
+
+interface CartItem {
+  product: ProductsDetails;
+  quantity: number;
+}
+
+interface NotificationsModalProps {
+  isOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
+}
+
+//=================== Notifications Context ===================//
+interface NotificationProduct {
+  _id: string;
+  productsId: string;
+  title: string;
+  thumbnail: string;
+  price: number;
+  created_at: string;
+}
+
+interface NotificationsContextType {
+  isEnabled: boolean;
+  toggleNotifications: () => void;
+  checkForNewProducts: () => Promise<void>;
+  lastChecked: Date | null;
+  showModal: boolean;
+  setShowModal: (show: boolean) => void;
+  requestBrowserPermission: () => Promise<boolean>;
+  browserPermission: NotificationPermission;
+}
+
+interface ProductResponse {
+  _id: string;
+  productsId: string;
+  title: string;
+  thumbnail: string;
+  price: number;
+  created_at?: string;
+  createdAt?: string;
+  status?: string;
+}

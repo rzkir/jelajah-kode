@@ -18,13 +18,18 @@ import CartSheet from "@/components/cart/CartSheet";
 
 import { useCart } from "@/utils/context/CartContext";
 
+import { useNotifications } from "@/utils/context/NotificationsContext";
+
 import BreadcrumbScript from "@/helper/breadchumb/Script";
 
 import { generateBreadcrumbItems } from "@/helper/breadchumb/generateBreadcrumb";
 
+import NotificationsModal from "@/helper/notifications/NotificationsModal";
+
 const Pathname = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname();
   const { cartSheetOpen, setCartSheetOpen } = useCart();
+  const { showModal, setShowModal } = useNotifications();
 
   const isRoute =
     pathname?.includes("/signin") ||
@@ -62,6 +67,7 @@ const Pathname = ({ children }: { children: React.ReactNode }) => {
         <AiAgent />
       </div>}
       <CartSheet open={cartSheetOpen} onOpenChange={setCartSheetOpen} />
+      <NotificationsModal isOpen={showModal} onOpenChange={setShowModal} />
     </Fragment>
   );
 };

@@ -40,9 +40,11 @@ import LoadingOverlay from "@/helper/loading/LoadingOverlay";
 import ProductsRatingsModal from "@/components/checkout/modal/ProductsRatingsModal";
 
 import useStateOrderDetails from "./lib/useStateOrderDetails";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function OrderDetails() {
     const router = useRouter();
+    const { t } = useTranslation();
 
     const {
         transaction,
@@ -77,9 +79,9 @@ export default function OrderDetails() {
             <div className="container mx-auto px-4 py-8">
                 <Card>
                     <CardContent className="py-12 text-center">
-                        <p className="text-muted-foreground">Transaction not found</p>
+                        <p className="text-muted-foreground" suppressHydrationWarning>{t("order.transactionNotFound")}</p>
                         <Button asChild className="mt-4">
-                            <Link href="/profile">Back to Profile</Link>
+                            <Link href="/profile" suppressHydrationWarning>{t("order.backToProfile")}</Link>
                         </Button>
                     </CardContent>
                 </Card>
@@ -152,27 +154,27 @@ export default function OrderDetails() {
                             </motion.div>
 
                             <div className="space-y-4">
-                                <h1 className="text-3xl font-bold">
+                                <h1 className="text-3xl font-bold" suppressHydrationWarning>
                                     {isSuccess
-                                        ? "Payment Successful!"
+                                        ? t("order.paymentSuccessful")
                                         : transaction.status === "pending"
-                                            ? "Payment Pending"
-                                            : "Transaction Status"}
+                                            ? t("order.paymentPending")
+                                            : t("order.transactionStatus")}
                                 </h1>
 
                                 <Badge
                                     variant={isSuccess ? "default" : "secondary"}
                                     className="text-lg px-4 py-2"
                                 >
-                                    Order ID: {transaction.order_id}
+                                    <span suppressHydrationWarning>{t("order.orderId")}</span>: {transaction.order_id}
                                 </Badge>
 
-                                <p className="text-muted-foreground">
+                                <p className="text-muted-foreground" suppressHydrationWarning>
                                     {isSuccess
-                                        ? "Thank you for your purchase. Your order has been confirmed."
+                                        ? t("order.thankYouPurchase")
                                         : transaction.status === "pending"
-                                            ? "Your payment is being processed. We'll notify you once it's confirmed."
-                                            : `Transaction status: ${transaction.status}`}
+                                            ? t("order.paymentBeingProcessed")
+                                            : `${t("order.transactionStatus")}: ${transaction.status}`}
                                 </p>
                             </div>
                         </div>
@@ -188,9 +190,9 @@ export default function OrderDetails() {
                     ) ? 'lg:col-span-2' : ''}`}>
                         <Card className="shadow-lg bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm">
                             <CardHeader className="pb-4 border-b">
-                                <CardTitle className="text-2xl font-bold">Order Details</CardTitle>
-                                <p className="text-sm text-muted-foreground mt-1">
-                                    {transaction.products.length} {transaction.products.length === 1 ? 'item' : 'items'} in your order
+                                <CardTitle className="text-2xl font-bold" suppressHydrationWarning>{t("order.orderDetails")}</CardTitle>
+                                <p className="text-sm text-muted-foreground mt-1" suppressHydrationWarning>
+                                    {transaction.products.length} {transaction.products.length === 1 ? t("order.item") : t("order.items")} {t("order.itemsInOrder")}
                                 </p>
                             </CardHeader>
 
@@ -222,8 +224,8 @@ export default function OrderDetails() {
                                                             </h3>
                                                             <div className="flex items-center gap-3 flex-wrap">
                                                                 <div className="flex items-center gap-2 px-3 py-1 bg-muted rounded-full">
-                                                                    <span className="text-sm font-medium text-muted-foreground">
-                                                                        Qty:
+                                                                    <span className="text-sm font-medium text-muted-foreground" suppressHydrationWarning>
+                                                                        {t("order.qty")}:
                                                                     </span>
                                                                     <span className="text-sm font-semibold">
                                                                         {item.quantity}
@@ -237,9 +239,11 @@ export default function OrderDetails() {
                                                                     }
                                                                     className="px-3 py-1"
                                                                 >
-                                                                    {item.paymentType === "free"
-                                                                        ? "Free"
-                                                                        : "Paid"}
+                                                                    <span suppressHydrationWarning>
+                                                                        {item.paymentType === "free"
+                                                                            ? t("order.free")
+                                                                            : t("order.paid")}
+                                                                    </span>
                                                                 </Badge>
                                                             </div>
                                                         </div>
@@ -261,15 +265,15 @@ export default function OrderDetails() {
                                                                 className="gap-2"
                                                             >
                                                                 <Star className="h-4 w-4" />
-                                                                Rate Product
+                                                                <span suppressHydrationWarning>{t("order.rateProduct")}</span>
                                                             </Button>
                                                         )}
 
                                                         {productRatings[item.productsId]?.hasRated && (
                                                             <div className="flex items-center gap-2 px-3 py-1.5 bg-green-50 dark:bg-green-950/20 rounded-md border border-green-200 dark:border-green-800">
                                                                 <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                                                                <span className="text-xs font-medium text-green-700 dark:text-green-400">
-                                                                    Rated
+                                                                <span className="text-xs font-medium text-green-700 dark:text-green-400" suppressHydrationWarning>
+                                                                    {t("order.rated")}
                                                                 </span>
                                                             </div>
                                                         )}
@@ -287,7 +291,7 @@ export default function OrderDetails() {
                                                                 className="gap-2"
                                                             >
                                                                 <Download className="h-4 w-4" />
-                                                                Download
+                                                                <span suppressHydrationWarning>{t("order.download")}</span>
                                                             </Button>
                                                         )}
                                                     </div>
@@ -307,12 +311,12 @@ export default function OrderDetails() {
                         ) ? (
                             <Card className="shadow-lg bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm">
                                 <CardHeader className="border-b">
-                                    <CardTitle className="text-2xl font-bold flex items-center gap-2">
+                                    <CardTitle className="text-2xl font-bold flex items-center gap-2" suppressHydrationWarning>
                                         <Star className="h-6 w-6 text-yellow-500 fill-yellow-500" />
-                                        Your Ratings
+                                        {t("order.yourRatings")}
                                     </CardTitle>
-                                    <p className="text-sm text-muted-foreground mt-1">
-                                        Reviews you&apos;ve submitted for products in this order
+                                    <p className="text-sm text-muted-foreground mt-1" suppressHydrationWarning>
+                                        {t("order.reviewsSubmitted")}
                                     </p>
                                 </CardHeader>
 
@@ -375,7 +379,7 @@ export default function OrderDetails() {
                                                                     className="gap-2 w-full mt-2"
                                                                 >
                                                                     <Edit className="h-4 w-4" />
-                                                                    Edit Rating
+                                                                    <span suppressHydrationWarning>{t("order.editRating")}</span>
                                                                 </Button>
                                                             </div>
                                                         </div>
@@ -403,8 +407,8 @@ export default function OrderDetails() {
                             <div className="space-y-4">
                                 <div className="flex items-center gap-2 mb-3">
                                     <User className="h-4 w-4 text-muted-foreground" />
-                                    <h3 className="font-semibold text-sm uppercase tracking-wide text-muted-foreground">
-                                        Customer Information
+                                    <h3 className="font-semibold text-sm uppercase tracking-wide text-muted-foreground" suppressHydrationWarning>
+                                        {t("order.customerInformation")}
                                     </h3>
                                 </div>
 
@@ -507,13 +511,13 @@ export default function OrderDetails() {
                             <div className="space-y-4">
                                 <div className="flex items-center gap-2 mb-3">
                                     <FileText className="h-4 w-4 text-muted-foreground" />
-                                    <h3 className="font-semibold text-sm uppercase tracking-wide text-muted-foreground">
-                                        Order Details
+                                    <h3 className="font-semibold text-sm uppercase tracking-wide text-muted-foreground" suppressHydrationWarning>
+                                        {t("order.orderDetailsTitle")}
                                     </h3>
                                 </div>
                                 <div className="space-y-3 pl-6">
                                     <div className="flex justify-between items-center py-2">
-                                        <span className="text-sm text-muted-foreground">Status</span>
+                                        <span className="text-sm text-muted-foreground" suppressHydrationWarning>{t("order.status")}</span>
                                         <Badge
                                             variant={
                                                 isSuccess
@@ -528,9 +532,9 @@ export default function OrderDetails() {
                                         </Badge>
                                     </div>
                                     <div className="flex justify-between items-center py-2">
-                                        <span className="text-sm text-muted-foreground flex items-center gap-2">
+                                        <span className="text-sm text-muted-foreground flex items-center gap-2" suppressHydrationWarning>
                                             <Calendar className="h-3 w-3" />
-                                            Order Date
+                                            {t("order.orderDate")}
                                         </span>
                                         <span className="text-sm font-medium">
                                             {formatDate(transaction.created_at)}
@@ -538,9 +542,9 @@ export default function OrderDetails() {
                                     </div>
                                     {transaction.payment_details?.settlement_time && (
                                         <div className="flex justify-between items-center py-2">
-                                            <span className="text-sm text-muted-foreground flex items-center gap-2">
+                                            <span className="text-sm text-muted-foreground flex items-center gap-2" suppressHydrationWarning>
                                                 <Calendar className="h-3 w-3" />
-                                                Settlement Time
+                                                {t("order.settlementTime")}
                                             </span>
                                             <span className="text-sm font-medium">
                                                 {formatDate(

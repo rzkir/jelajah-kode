@@ -14,7 +14,6 @@ import {
   BookAlert,
   BarChart3,
   UserStar,
-  NotebookTabs
 } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
@@ -170,12 +169,7 @@ const data = {
       name: "Subscription",
       url: "/dashboard/subscription",
       icon: Podcast,
-    },
-    {
-      name: "Contact",
-      url: "/dashboard/contact",
-      icon: NotebookTabs,
-    },
+    }
   ],
 };
 

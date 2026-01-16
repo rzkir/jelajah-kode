@@ -31,6 +31,7 @@ import { useAuth } from "@/utils/context/AuthContext";
 import { passwordResetSchema } from "@/hooks/validation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface ChangePasswordProps {
     open: boolean;
@@ -41,6 +42,7 @@ type Step = "otp" | "password";
 
 export default function ChangePassword({ open, onOpenChange }: ChangePasswordProps) {
     const { user, changePassword } = useAuth();
+    const { t } = useTranslation();
     const [step, setStep] = useState<Step>("otp");
     const [otp, setOtp] = useState("");
     const [isLoading, setIsLoading] = useState(false);
@@ -79,22 +81,22 @@ export default function ChangePassword({ open, onOpenChange }: ChangePasswordPro
             const result = await response.json();
 
             if (!response.ok || result.error) {
-                throw new Error(result.error || "Failed to send OTP");
+                throw new Error(result.error || t("changePassword.failedToSendOtp"));
             }
 
-            toast.success("OTP has been sent to your email!");
+            toast.success(t("changePassword.otpSentSuccess"));
             setOtpSent(true);
         } catch (error) {
             console.error("Error requesting OTP:", error);
             toast.error(
                 error instanceof Error
                     ? error.message
-                    : "Failed to send OTP. Please try again."
+                    : t("changePassword.failedToSendOtp")
             );
         } finally {
             setIsRequestingOtp(false);
         }
-    }, [user?.email]);
+    }, [user?.email, t]);
 
     // Reset form state when dialog opens
     useEffect(() => {
@@ -138,17 +140,17 @@ export default function ChangePassword({ open, onOpenChange }: ChangePasswordPro
             const result = await response.json();
 
             if (!response.ok || result.error) {
-                throw new Error(result.error || "Invalid or expired OTP");
+                throw new Error(result.error || t("changePassword.invalidOrExpiredOtp"));
             }
 
-            toast.success("OTP verified successfully!");
+            toast.success(t("changePassword.otpVerifiedSuccess"));
             setStep("password");
         } catch (error) {
             console.error("Error verifying OTP:", error);
             toast.error(
                 error instanceof Error
                     ? error.message
-                    : "Failed to verify OTP. Please try again."
+                    : t("changePassword.failedToVerifyOtp")
             );
         } finally {
             setIsLoading(false);
@@ -188,16 +190,16 @@ export default function ChangePassword({ open, onOpenChange }: ChangePasswordPro
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle className="flex items-center gap-2">
+                    <DialogTitle className="flex items-center gap-2" suppressHydrationWarning>
                         <Lock className="h-5 w-5" />
-                        Change Password
+                        {t("changePassword.title")}
                     </DialogTitle>
-                    <DialogDescription>
+                    <DialogDescription suppressHydrationWarning>
                         {step === "otp"
                             ? otpSent
-                                ? "Please verify your identity with the OTP sent to your email."
-                                : "Click the button below to receive a verification code via email."
-                            : "Enter your new password below."}
+                                ? t("changePassword.verifyIdentityOtp")
+                                : t("changePassword.clickToReceiveCode")
+                            : t("changePassword.enterNewPassword")}
                     </DialogDescription>
                 </DialogHeader>
 
@@ -240,15 +242,15 @@ export default function ChangePassword({ open, onOpenChange }: ChangePasswordPro
                                                 </InputOTPGroup>
                                             </InputOTP>
                                         </div>
-                                        <FieldDescription className="text-center">
-                                            Didn&apos;t receive the code?{" "}
+                                        <FieldDescription className="text-center" suppressHydrationWarning>
+                                            {t("changePassword.didntReceiveCode")}{" "}
                                             <button
                                                 type="button"
                                                 onClick={handleResendOtp}
                                                 disabled={isRequestingOtp}
                                                 className="text-blue-600 hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
                                             >
-                                                {isRequestingOtp ? "Sending..." : "Resend"}
+                                                {isRequestingOtp ? t("changePassword.sending") : t("changePassword.resend")}
                                             </button>
                                         </FieldDescription>
                                     </FieldContent>
@@ -282,11 +284,11 @@ export default function ChangePassword({ open, onOpenChange }: ChangePasswordPro
                                         <Lock className="h-6 w-6 text-blue-600" />
                                     </div>
                                     <div>
-                                        <h3 className="text-lg font-semibold mb-2">
-                                            Verify Your Identity
+                                        <h3 className="text-lg font-semibold mb-2" suppressHydrationWarning>
+                                            {t("changePassword.verifyYourIdentity")}
                                         </h3>
-                                        <FieldDescription>
-                                            We&apos;ll send a verification code to {user?.email}
+                                        <FieldDescription suppressHydrationWarning>
+                                            {t("changePassword.sendCodeToEmail")} {user?.email}
                                         </FieldDescription>
                                     </div>
                                 </div>
@@ -317,13 +319,13 @@ export default function ChangePassword({ open, onOpenChange }: ChangePasswordPro
                     <form onSubmit={handleSubmit(handleChangePassword)}>
                         <FieldGroup>
                             <Field>
-                                <FieldLabel htmlFor="newPassword">
-                                    New Password
+                                <FieldLabel htmlFor="newPassword" suppressHydrationWarning>
+                                    {t("changePassword.newPassword")}
                                 </FieldLabel>
                                 <FieldContent>
                                     <PasswordInput
                                         id="newPassword"
-                                        placeholder="Enter new password"
+                                        placeholder={t("changePassword.enterNewPasswordPlaceholder")}
                                         {...register("newPassword")}
                                         disabled={isLoading}
                                         required
@@ -334,19 +336,19 @@ export default function ChangePassword({ open, onOpenChange }: ChangePasswordPro
                                             {errors.newPassword.message as string}
                                         </FieldDescription>
                                     )}
-                                    <FieldDescription>
-                                        Must be at least 8 characters with uppercase, lowercase, number, and special character
+                                    <FieldDescription suppressHydrationWarning>
+                                        {t("changePassword.passwordRequirements")}
                                     </FieldDescription>
                                 </FieldContent>
                             </Field>
                             <Field>
-                                <FieldLabel htmlFor="confirmPassword">
-                                    Confirm Password
+                                <FieldLabel htmlFor="confirmPassword" suppressHydrationWarning>
+                                    {t("changePassword.confirmPassword")}
                                 </FieldLabel>
                                 <FieldContent>
                                     <PasswordInput
                                         id="confirmPassword"
-                                        placeholder="Confirm new password"
+                                        placeholder={t("changePassword.confirmNewPasswordPlaceholder")}
                                         {...register("confirmPassword")}
                                         disabled={isLoading}
                                         required

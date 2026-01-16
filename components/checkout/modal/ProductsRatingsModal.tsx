@@ -16,6 +16,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function ProductsRatingsModal({
     open,
@@ -31,18 +32,19 @@ export default function ProductsRatingsModal({
     onSubmit,
     onCancel,
 }: ProductsRatingsModalProps) {
+    const { t } = useTranslation();
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-md">
                 <DialogHeader>
-                    <DialogTitle>Rate Product</DialogTitle>
-                    <DialogDescription>
-                        {selectedProduct ? `Share your experience with ${selectedProduct.title}` : "Rate this product"}
+                    <DialogTitle suppressHydrationWarning>{t("rating.rateProduct")}</DialogTitle>
+                    <DialogDescription suppressHydrationWarning>
+                        {selectedProduct ? `${t("rating.shareExperience")} ${selectedProduct.title}` : t("rating.rateThisProduct")}
                     </DialogDescription>
                 </DialogHeader>
                 <div className="space-y-4 py-4">
                     <div>
-                        <Label>Rating</Label>
+                        <Label suppressHydrationWarning>{t("rating.rating")}</Label>
                         <div className="flex items-center gap-1 mt-2">
                             {[1, 2, 3, 4, 5].map((star) => (
                                 <button
@@ -63,20 +65,20 @@ export default function ProductsRatingsModal({
                             ))}
                         </div>
                         {rating > 0 && (
-                            <p className="text-sm text-muted-foreground mt-1">
-                                {rating === 1 && "Poor"}
-                                {rating === 2 && "Fair"}
-                                {rating === 3 && "Good"}
-                                {rating === 4 && "Very Good"}
-                                {rating === 5 && "Excellent"}
+                            <p className="text-sm text-muted-foreground mt-1" suppressHydrationWarning>
+                                {rating === 1 && t("rating.poor")}
+                                {rating === 2 && t("rating.fair")}
+                                {rating === 3 && t("rating.good")}
+                                {rating === 4 && t("rating.veryGood")}
+                                {rating === 5 && t("rating.excellent")}
                             </p>
                         )}
                     </div>
                     <div>
-                        <Label htmlFor="comment">Comment</Label>
+                        <Label htmlFor="comment" suppressHydrationWarning>{t("rating.comment")}</Label>
                         <Textarea
                             id="comment"
-                            placeholder="Share your thoughts about this product..."
+                            placeholder={t("rating.shareThoughts")}
                             value={comment}
                             onChange={(e) => onCommentChange(e.target.value)}
                             className="mt-2 min-h-[100px]"
@@ -93,7 +95,7 @@ export default function ProductsRatingsModal({
                         onClick={onCancel}
                         disabled={isSubmittingRating}
                     >
-                        Cancel
+                        <span suppressHydrationWarning>{t("common.cancel")}</span>
                     </Button>
                     <Button
                         onClick={onSubmit}
@@ -102,10 +104,10 @@ export default function ProductsRatingsModal({
                         {isSubmittingRating ? (
                             <>
                                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                                Submitting...
+                                <span suppressHydrationWarning>{t("rating.submitting")}</span>
                             </>
                         ) : (
-                            "Submit Rating"
+                            <span suppressHydrationWarning>{t("rating.submitRating")}</span>
                         )}
                     </Button>
                 </DialogFooter>

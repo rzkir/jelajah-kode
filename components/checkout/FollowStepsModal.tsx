@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dialog";
 
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function FollowStepsModal({
     open,
@@ -21,15 +22,16 @@ export default function FollowStepsModal({
     onStepClick,
     onStepComplete,
 }: FollowStepsModalProps) {
+    const { t } = useTranslation();
     const allStepsCompleted = steps.every((step) => step.status === "completed");
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-md" showCloseButton={!allStepsCompleted}>
                 <DialogHeader>
-                    <DialogTitle>Ikuti Media Sosial Kami</DialogTitle>
-                    <DialogDescription>
-                        Silakan ikuti semua media sosial kami untuk melanjutkan checkout
+                    <DialogTitle suppressHydrationWarning>{t("followSteps.title")}</DialogTitle>
+                    <DialogDescription suppressHydrationWarning>
+                        {t("followSteps.description")}
                     </DialogDescription>
                 </DialogHeader>
 
@@ -62,13 +64,13 @@ export default function FollowStepsModal({
                                     )}
                                 </div>
                                 <div>
-                                    <p className="font-medium">Ikuti {step.name}</p>
-                                    <p className="text-sm text-muted-foreground">
+                                    <p className="font-medium" suppressHydrationWarning>{t("followSteps.follow")} {step.name}</p>
+                                    <p className="text-sm text-muted-foreground" suppressHydrationWarning>
                                         {step.status === "completed"
-                                            ? "Sudah diikuti"
+                                            ? t("followSteps.alreadyFollowed")
                                             : step.status === "in-progress"
-                                                ? "Klik tombol di bawah setelah mengikuti"
-                                                : "Klik tombol untuk membuka halaman"}
+                                                ? t("followSteps.clickAfterFollowing")
+                                                : t("followSteps.clickToOpen")}
                                     </p>
                                 </div>
                             </div>
@@ -91,11 +93,11 @@ export default function FollowStepsModal({
                                     }}
                                 >
                                     {step.status === "in-progress" ? (
-                                        "Saya Sudah Mengikuti"
+                                        <span suppressHydrationWarning>{t("followSteps.iHaveFollowed")}</span>
                                     ) : (
                                         <>
                                             <ExternalLink className="h-4 w-4 mr-2" />
-                                            Buka {step.name}
+                                            <span suppressHydrationWarning>{t("followSteps.open")} {step.name}</span>
                                         </>
                                     )}
                                 </Button>
@@ -110,7 +112,7 @@ export default function FollowStepsModal({
                         onClick={() => onOpenChange(false)}
                         disabled={allStepsCompleted}
                     >
-                        Batal
+                        <span suppressHydrationWarning>{t("followSteps.cancel")}</span>
                     </Button>
                     <Button
                         onClick={async () => {
@@ -124,14 +126,14 @@ export default function FollowStepsModal({
                         {isProcessing ? (
                             <>
                                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                                Memproses...
+                                <span suppressHydrationWarning>{t("followSteps.processing")}</span>
                             </>
                         ) : allStepsCompleted ? (
-                            "Lanjutkan Checkout"
+                            <span suppressHydrationWarning>{t("followSteps.continueCheckout")}</span>
                         ) : (
                             <>
                                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                                Menunggu...
+                                <span suppressHydrationWarning>{t("followSteps.waiting")}</span>
                             </>
                         )}
                     </Button>
