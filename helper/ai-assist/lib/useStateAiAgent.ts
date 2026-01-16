@@ -266,17 +266,115 @@ export default function useStateAiAgent() {
     []
   );
 
-  // Auto-scroll only if user is not manually scrolling and is near bottom
+  // Auto-scroll when messages change or when typing
   useEffect(() => {
-    if (!messagesContainerRef.current || isUserScrollingRef.current) {
+    if (!messagesContainerRef.current || !messagesEndRef.current) {
       return;
     }
 
+    // If user is manually scrolling, don't auto-scroll
+    if (isUserScrollingRef.current) {
+      return;
+    }
+
+    // Always scroll to bottom when new message is added (user or assistant)
     // Check if user is near bottom before auto-scrolling
-    if (isNearBottom(messagesContainerRef.current)) {
-      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    const container = messagesContainerRef.current;
+    const isNear = isNearBottom(container, 150); // Increase threshold slightly
+
+    if (isNear) {
+      // Use requestAnimationFrame for better performance
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          if (messagesEndRef.current && !isUserScrollingRef.current) {
+            messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+          }
+        }, 50);
+      });
     }
   }, [messages, isLoading, isNearBottom]);
+
+  // Force scroll to bottom when streaming (isLoading is true)
+  useEffect(() => {
+    if (
+      !isLoading ||
+      !messagesContainerRef.current ||
+      !messagesEndRef.current
+    ) {
+      return;
+    }
+
+    // When assistant is typing/streaming, always scroll to bottom
+    if (!isUserScrollingRef.current) {
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          if (messagesEndRef.current && !isUserScrollingRef.current) {
+            messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+          }
+        }, 100);
+      });
+    }
+  }, [isLoading]);
+
+  // Scroll to bottom when chat is opened with existing messages
+  useEffect(() => {
+    if (!isOpen || !messagesContainerRef.current || !messagesEndRef.current) {
+      return;
+    }
+
+    // Only scroll if there are messages
+    if (messages.length === 0) {
+      return;
+    }
+
+    // Reset user scrolling flag when opening chat
+    isUserScrollingRef.current = false;
+    if (scrollTimeoutRef.current) {
+      clearTimeout(scrollTimeoutRef.current);
+      scrollTimeoutRef.current = null;
+    }
+
+    // Wait for DOM to be ready, then scroll to bottom
+    const scrollToBottom = () => {
+      if (messagesContainerRef.current && messagesEndRef.current) {
+        // Scroll to bottom immediately (not smooth) for initial load
+        // Use multiple attempts to ensure it works
+        const attemptScroll = (attempts = 0) => {
+          if (attempts > 5) return; // Max 5 attempts
+
+          if (messagesEndRef.current) {
+            messagesEndRef.current.scrollIntoView({ behavior: "auto" });
+          }
+
+          // Check if scroll was successful, if not try again
+          setTimeout(() => {
+            if (messagesContainerRef.current && messagesEndRef.current) {
+              const container = messagesContainerRef.current;
+              const isAtBottom =
+                container.scrollHeight -
+                  container.scrollTop -
+                  container.clientHeight <
+                10;
+
+              if (!isAtBottom && attempts < 5) {
+                attemptScroll(attempts + 1);
+              }
+            }
+          }, 100);
+        };
+
+        // Start scrolling after a short delay to ensure DOM is ready
+        setTimeout(() => {
+          attemptScroll();
+        }, 100);
+      }
+    };
+
+    // Use requestAnimationFrame to ensure layout is complete
+    requestAnimationFrame(() => {
+      scrollToBottom();
+    });
+  }, [isOpen, messages.length]);
 
   // Handle manual scroll detection
   const handleScroll = useCallback(() => {
@@ -564,6 +662,90 @@ export default function useStateAiAgent() {
     return productKeywords.some((keyword) => lowerMessage.includes(keyword));
   };
 
+  const isDiscountRelated = (message: string): boolean => {
+    const discountKeywords = [
+      "discount",
+      "diskon",
+      "promo",
+      "promosi",
+      "sale",
+      "diskon",
+      "potongan",
+      "harga murah",
+      "murah",
+      "cheap",
+      "off",
+      "hemat",
+    ];
+    const allProductsKeywords = [
+      "semua produk",
+      "all products",
+      "semua product",
+      "semua barang",
+      "all items",
+      "tampilkan semua",
+      "show all",
+      "lihat semua",
+      "see all",
+    ];
+    const lowerMessage = message.toLowerCase();
+
+    // Check if user is asking for all products (explicitly)
+    const askingForAll = allProductsKeywords.some((keyword) =>
+      lowerMessage.includes(keyword)
+    );
+
+    // If asking for all products, return false (don't filter by discount)
+    if (askingForAll) {
+      return false;
+    }
+
+    // Check if user is asking about discount
+    return discountKeywords.some((keyword) => lowerMessage.includes(keyword));
+  };
+
+  const isPopularRelated = (message: string): boolean => {
+    const popularKeywords = [
+      "popular",
+      "populer",
+      "terpopuler",
+      "paling popular",
+      "paling populer",
+      "produk popular",
+      "produk populer",
+      "terlaris",
+      "paling laris",
+      "best seller",
+      "bestseller",
+      "terbanyak diunduh",
+      "paling banyak diunduh",
+      "download terbanyak",
+      "paling banyak download",
+    ];
+    const lowerMessage = message.toLowerCase();
+    return popularKeywords.some((keyword) => lowerMessage.includes(keyword));
+  };
+
+  const isNewestRelated = (message: string): boolean => {
+    const newestKeywords = [
+      "terbaru",
+      "paling baru",
+      "baru",
+      "newest",
+      "latest",
+      "produk terbaru",
+      "produk baru",
+      "produk latest",
+      "produk newest",
+      "yang baru",
+      "yang terbaru",
+      "recent",
+      "terkini",
+    ];
+    const lowerMessage = message.toLowerCase();
+    return newestKeywords.some((keyword) => lowerMessage.includes(keyword));
+  };
+
   const isContactRelated = (message: string): boolean => {
     const contactKeywords = [
       "kontak",
@@ -735,12 +917,105 @@ export default function useStateAiAgent() {
     return hasCodingKeyword || matchesPattern;
   };
 
-  const fetchProductsData = async (): Promise<{
+  // Fungsi untuk mengecek apakah pertanyaan terkait dengan website Jelajah Kode
+  const isWebsiteRelated = (message: string): boolean => {
+    const lowerMessage = message.toLowerCase().trim();
+
+    // Ucapan salam dan sapaan umum diperbolehkan
+    const greetingKeywords = [
+      "halo",
+      "hello",
+      "hi",
+      "hai",
+      "selamat pagi",
+      "selamat siang",
+      "selamat sore",
+      "selamat malam",
+      "good morning",
+      "good afternoon",
+      "good evening",
+      "terima kasih",
+      "thanks",
+      "thank you",
+      "makasih",
+      "sama-sama",
+      "you're welcome",
+      "kabar",
+      "apa kabar",
+      "how are you",
+      "baik",
+      "baik-baik",
+      "baik baik",
+    ];
+
+    // Kata kunci terkait website Jelajah Kode
+    const websiteKeywords = [
+      "jelajah kode",
+      "jelajahkode",
+      "jelajah",
+      "website",
+      "situs",
+      "web",
+      "layanan",
+      "service",
+      "jasa",
+      "tentang",
+      "about",
+      "info",
+      "informasi",
+      "bantuan",
+      "help",
+      "help me",
+      "tolong",
+      "please",
+      "bisa",
+      "bisa bantu",
+      "can you",
+      "bisa tolong",
+    ];
+
+    // Cek apakah hanya ucapan salam
+    const isOnlyGreeting = greetingKeywords.some((keyword) => {
+      const regex = new RegExp(
+        `^${keyword.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(\\s|\\?|!|\\.|,)*$`,
+        "i"
+      );
+      return regex.test(lowerMessage);
+    });
+
+    // Jika hanya salam, dianggap terkait website
+    if (isOnlyGreeting) {
+      return true;
+    }
+
+    // Cek apakah terkait produk, kontak, atau website
+    const isRelatedToWebsite =
+      isProductRelated(message) ||
+      isContactRelated(message) ||
+      websiteKeywords.some((keyword) => lowerMessage.includes(keyword));
+
+    return isRelatedToWebsite;
+  };
+
+  const fetchProductsData = async (
+    filterDiscountOnly: boolean = false,
+    productType: "popular" | "newest" | "default" = "default"
+  ): Promise<{
     context: string;
     products: Product[];
   }> => {
     try {
-      const response = await fetch(API_CONFIG.ENDPOINTS.products.base, {
+      let endpoint = API_CONFIG.ENDPOINTS.products.base;
+
+      // Determine endpoint based on product type
+      if (productType === "popular") {
+        endpoint = API_CONFIG.ENDPOINTS.products.popular(1, 20);
+      } else if (productType === "newest") {
+        // For newest, use base endpoint with sort by createdAt (default behavior)
+        endpoint = API_CONFIG.ENDPOINTS.products.base;
+      }
+
+      const response = await fetch(endpoint, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${API_CONFIG.SECRET}`,
@@ -752,10 +1027,21 @@ export default function useStateAiAgent() {
       }
 
       const data = await response.json();
-      const products = Array.isArray(data) ? data : data?.data || [];
+      let products = Array.isArray(data) ? data : data?.data || [];
 
       if (products.length === 0) {
         return { context: "", products: [] };
+      }
+
+      // Filter products by discount if filterDiscountOnly is true
+      if (filterDiscountOnly) {
+        products = products.filter((product: Product) => {
+          return (
+            product.discount &&
+            product.discount.value !== undefined &&
+            product.discount.value > 0
+          );
+        });
       }
 
       const limitedProducts = products.slice(0, 20);
@@ -822,8 +1108,24 @@ export default function useStateAiAgent() {
         })
       );
 
+      let contextMessage = "";
+
+      if (productType === "popular") {
+        contextMessage = filterDiscountOnly
+          ? `Berikut adalah data produk POPULAR yang memiliki diskon:\n\n${productsContext}\n\nGunakan informasi ini untuk menjawab pertanyaan user tentang produk popular yang memiliki diskon. Hanya tampilkan produk popular yang memiliki diskon.`
+          : `Berikut adalah data produk POPULAR (produk yang paling banyak diunduh):\n\n${productsContext}\n\nGunakan informasi ini untuk menjawab pertanyaan user tentang produk popular. Tampilkan produk-produk popular ini.`;
+      } else if (productType === "newest") {
+        contextMessage = filterDiscountOnly
+          ? `Berikut adalah data produk TERBARU yang memiliki diskon:\n\n${productsContext}\n\nGunakan informasi ini untuk menjawab pertanyaan user tentang produk terbaru yang memiliki diskon. Hanya tampilkan produk terbaru yang memiliki diskon.`
+          : `Berikut adalah data produk TERBARU:\n\n${productsContext}\n\nGunakan informasi ini untuk menjawab pertanyaan user tentang produk terbaru. Tampilkan produk-produk terbaru ini.`;
+      } else {
+        contextMessage = filterDiscountOnly
+          ? `Berikut adalah data produk yang memiliki diskon:\n\n${productsContext}\n\nGunakan informasi ini untuk menjawab pertanyaan user tentang produk diskon. Hanya tampilkan produk yang memiliki diskon.`
+          : `Berikut adalah data produk yang tersedia:\n\n${productsContext}\n\nGunakan informasi ini untuk menjawab pertanyaan user tentang produk.`;
+      }
+
       return {
-        context: `Berikut adalah data produk yang tersedia:\n\n${productsContext}\n\nGunakan informasi ini untuk menjawab pertanyaan user tentang produk.`,
+        context: contextMessage,
         products: formattedProducts,
       };
     } catch (error) {
@@ -850,7 +1152,7 @@ export default function useStateAiAgent() {
         id: generateMessageId(),
         sender: "assistant",
         content:
-          "Maaf, saya tidak dapat membantu dengan pertanyaan tentang coding atau programming. Saya hanya dapat membantu dengan informasi tentang produk, layanan, dan kontak Jelajah Kode. Terima kasih! 😊",
+          "Maaf, saya tidak dapat membantu dengan pertanyaan tentang coding atau programming. Saya hanya dapat membantu dengan informasi tentang produk, layanan, dan kontak. Terima kasih! 😊",
         timestamp: getCurrentTime(),
         read: false,
       };
@@ -860,6 +1162,55 @@ export default function useStateAiAgent() {
       setShowEmojiPicker(false);
       handleStopListening();
       resetTextarea();
+      // Reset manual scroll flag and scroll to bottom
+      isUserScrollingRef.current = false;
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+        scrollTimeoutRef.current = null;
+      }
+      setTimeout(() => {
+        if (messagesEndRef.current && !isUserScrollingRef.current) {
+          messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+        }
+      }, 50);
+      return;
+    }
+
+    // Check if message is related to website - block if not related
+    if (!isWebsiteRelated(userMessage)) {
+      const userMsg: MessageAi = {
+        id: generateMessageId(),
+        sender: "user",
+        content: userMessage,
+        timestamp: getCurrentTime(),
+        read: true,
+      };
+
+      const blockedMsg: MessageAi = {
+        id: generateMessageId(),
+        sender: "assistant",
+        content:
+          "Maaf, saya tidak bisa menjawab pertanyaan yang Anda berikan. Saya hanya dapat membantu dengan pertanyaan seputar website, seperti informasi produk, layanan, kontak, dan hal-hal terkait website ini. Terima kasih! 😊",
+        timestamp: getCurrentTime(),
+        read: false,
+      };
+
+      setMessages((prev) => [...prev, userMsg, blockedMsg]);
+      setMessageInput("");
+      setShowEmojiPicker(false);
+      handleStopListening();
+      resetTextarea();
+      // Reset manual scroll flag and scroll to bottom
+      isUserScrollingRef.current = false;
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+        scrollTimeoutRef.current = null;
+      }
+      setTimeout(() => {
+        if (messagesEndRef.current && !isUserScrollingRef.current) {
+          messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+        }
+      }, 50);
       return;
     }
 
@@ -882,6 +1233,14 @@ export default function useStateAiAgent() {
       clearTimeout(scrollTimeoutRef.current);
       scrollTimeoutRef.current = null;
     }
+
+    // Force scroll to bottom immediately when user sends a message
+    setTimeout(() => {
+      if (messagesEndRef.current && !isUserScrollingRef.current) {
+        messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+    }, 50);
+
     setIsLoading(true);
 
     // Create AI message ID for later use
@@ -893,7 +1252,18 @@ export default function useStateAiAgent() {
       let productsData: Product[] = [];
 
       if (isProductRelated(userMessage)) {
-        const result = await fetchProductsData();
+        // Check if user is asking specifically about discounted products
+        const filterDiscountOnly = isDiscountRelated(userMessage);
+
+        // Determine product type based on user's question
+        let productType: "popular" | "newest" | "default" = "default";
+        if (isPopularRelated(userMessage)) {
+          productType = "popular";
+        } else if (isNewestRelated(userMessage)) {
+          productType = "newest";
+        }
+
+        const result = await fetchProductsData(filterDiscountOnly, productType);
         productsContext = result.context;
         productsData = result.products;
       }
@@ -901,9 +1271,8 @@ export default function useStateAiAgent() {
       // Check if user is asking about contact/custom website
       let contactContext = "";
       if (isContactRelated(userMessage)) {
-        contactContext = `Informasi Kontak untuk Jelajah Kode:
+        contactContext = `Informasi Kontak:
 - Nomor WhatsApp: 085811668557
-- Nama: Jelajah Kode
 - Layanan: Custom Website Development dan berbagai layanan lainnya
 
 Jika user bertanya tentang kontak, nomor telepon, WhatsApp, atau meminta nomor untuk detail/informasi lebih lanjut, berikan informasi kontak di atas dengan format yang ramah dan jelas. 
@@ -930,8 +1299,8 @@ Berikan nomor WhatsApp (085811668557) dengan format yang jelas dan ramah.`;
       // Add system context for first message
       let systemContext = "";
       if (messages.length === 0) {
-        systemContext = `Anda adalah AI Assistant dari **Jelajah Kode**. Saat user pertama kali mengirim pesan, sambut mereka dengan ramah menggunakan pesan berikut:
-"Halo! 👋 Selamat datang di **Jelajah Kode**!
+        systemContext = `Anda adalah AI Assistant. Saat user pertama kali mengirim pesan, sambut mereka dengan ramah menggunakan pesan berikut:
+"Halo! 👋 Selamat datang!
 
 Apa kabar? Kami dengan senang hati siap membantu Anda. Apa yang ingin Anda tanyakan?"
 

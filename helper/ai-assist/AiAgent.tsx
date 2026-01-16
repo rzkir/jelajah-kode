@@ -357,43 +357,45 @@ export default function Cta({
                                                 style={{ minHeight: '24px' }}
                                             />
 
-                                            {isSpeechSupported && (
+                                            <div className="flex items-center gap-2 absolute bottom-1 right-0">
+                                                {isSpeechSupported && (
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        className={cn(
+                                                            "h-4 w-4 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors shrink-0 z-10",
+                                                            isListening && "bg-red-100 dark:bg-red-900/20 hover:bg-red-200 dark:hover:bg-red-900/30"
+                                                        )}
+                                                        onClick={toggleListening}
+                                                        aria-label={isListening ? "Stop listening" : "Start voice input"}
+                                                        title={isListening ? "Hentikan rekaman suara" : "Mulai rekaman suara"}
+                                                    >
+                                                        {isListening ? (
+                                                            <MicOff className="w-4 h-4 text-red-600 dark:text-red-400 animate-pulse" />
+                                                        ) : (
+                                                            <Mic className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                                                        )}
+                                                    </Button>
+                                                )}
+
                                                 <Button
                                                     variant="ghost"
                                                     size="icon"
-                                                    className={cn(
-                                                        "absolute bottom-1 right-16 md:right-20 h-8 w-8 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors shrink-0 z-10",
-                                                        isListening && "bg-red-100 dark:bg-red-900/20 hover:bg-red-200 dark:hover:bg-red-900/30"
-                                                    )}
-                                                    onClick={toggleListening}
-                                                    aria-label={isListening ? "Stop listening" : "Start voice input"}
-                                                    title={isListening ? "Hentikan rekaman suara" : "Mulai rekaman suara"}
+                                                    className="h-8 w-8 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors shrink-0 z-10"
+                                                    onClick={toggleEmojiPicker}
+                                                    aria-label="Toggle emoji picker"
                                                 >
-                                                    {isListening ? (
-                                                        <MicOff className="w-4 h-4 text-red-600 dark:text-red-400 animate-pulse" />
-                                                    ) : (
-                                                        <Mic className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-                                                    )}
+                                                    <Smile className={cn("w-4 h-4 text-gray-600 dark:text-gray-400", showEmojiPicker && "text-blue-600 dark:text-blue-400")} />
                                                 </Button>
-                                            )}
-
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                className="absolute bottom-1 right-8 md:right-10 h-8 w-8 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors shrink-0 z-10"
-                                                onClick={toggleEmojiPicker}
-                                                aria-label="Toggle emoji picker"
-                                            >
-                                                <Smile className={cn("w-4 h-4 text-gray-600 dark:text-gray-400", showEmojiPicker && "text-blue-600 dark:text-blue-400")} />
-                                            </Button>
-                                            <Button
-                                                size="icon"
-                                                className="absolute bottom-1 right-1 h-8 w-8 rounded-lg bg-linear-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-md hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed shrink-0 z-10"
-                                                onClick={handleSendMessage}
-                                                disabled={!messageInput.trim() || isLoading}
-                                            >
-                                                <Send className="w-4 h-4" />
-                                            </Button>
+                                                <Button
+                                                    size="icon"
+                                                    className="h-8 w-8 rounded-lg bg-linear-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-md hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed shrink-0 z-10"
+                                                    onClick={handleSendMessage}
+                                                    disabled={!messageInput.trim() || isLoading}
+                                                >
+                                                    <Send className="w-4 h-4" />
+                                                </Button>
+                                            </div>
                                         </div>
 
                                         {/* Emoji Picker */}
