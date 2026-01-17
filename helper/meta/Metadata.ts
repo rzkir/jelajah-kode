@@ -17,7 +17,7 @@ export const HomePageMetadata: Metadata = {
     siteName: "Jelajah Kode - Temukan Template yang Sesuai untuk Proyek Anda",
     images: [
       {
-        url: "/images/home-og-image.jpg",
+        url: "/desktop.png",
         width: 1200,
         height: 630,
         alt: "Jelajah Kode - Temukan Template yang Sesuai",
@@ -31,7 +31,7 @@ export const HomePageMetadata: Metadata = {
     title: "Jelajah Kode - Temukan Template yang Sesuai",
     description:
       "Mulai langkah awal pengembangan dengan kode sumber siap pakai, template, dan komponen dari pengembang terbaik. Jelajahi 1000+ kode sumber premium di platform Jelajah Kode.",
-    images: ["/images/home-og-image.jpg"],
+    images: ["/desktop.png"],
   },
 };
 
@@ -48,7 +48,7 @@ export const ProductsPageMetadata: Metadata = {
     siteName: "Jelajah Kode - Temukan Template yang Sesuai untuk Proyek Anda",
     images: [
       {
-        url: "/images/products-og-image.jpg",
+        url: "/products.png",
         width: 1200,
         height: 630,
         alt: "Jelajah Kode - Temukan Template yang Sesuai untuk Proyek Anda",
@@ -62,7 +62,7 @@ export const ProductsPageMetadata: Metadata = {
     title: "Products - jelajah Code",
     description:
       "Jelajahi 1000+ kode sumber premium di platform Jelajah Kode untuk proyek Anda.",
-    images: ["/images/products-og-image.jpg"],
+    images: ["/products.png"],
   },
 };
 
@@ -116,9 +116,8 @@ export async function generateProductsPageMetadata(
   if (isNew) urlParams.set("new", isNew);
   if (sort) urlParams.set("sort", sort);
 
-  const productsUrl = `${API_CONFIG.ENDPOINTS.base}/products${
-    urlParams.toString() ? `?${urlParams.toString()}` : ""
-  }`;
+  const productsUrl = `${API_CONFIG.ENDPOINTS.base}/products${urlParams.toString() ? `?${urlParams.toString()}` : ""
+    }`;
 
   // Build filter description
   const filters: string[] = [];
@@ -169,23 +168,20 @@ export async function generateProductsPageMetadata(
 
       if (query && filters.length > 0) {
         title = `Products "${query}" (${filters.join(", ")}) - jelajah Code`;
-        description = `Found ${resultCount} product${
-          resultCount !== 1 ? "s" : ""
-        } for "${query}" with filters: ${filters.join(
-          ", "
-        )}. Browse and discover products that match your search.`;
+        description = `Found ${resultCount} product${resultCount !== 1 ? "s" : ""
+          } for "${query}" with filters: ${filters.join(
+            ", "
+          )}. Browse and discover products that match your search.`;
       } else if (query) {
         title = `Products "${query}" - jelajah Code`;
-        description = `Found ${resultCount} product${
-          resultCount !== 1 ? "s" : ""
-        } for "${query}" on jelajah Code. Browse and discover products that match your search.`;
+        description = `Found ${resultCount} product${resultCount !== 1 ? "s" : ""
+          } for "${query}" on jelajah Code. Browse and discover products that match your search.`;
       } else {
         title = `Products (${filters.join(", ")}) - jelajah Code`;
-        description = `Found ${resultCount} product${
-          resultCount !== 1 ? "s" : ""
-        } matching your filters: ${filters.join(
-          ", "
-        )}. Browse and discover products on jelajah Code.`;
+        description = `Found ${resultCount} product${resultCount !== 1 ? "s" : ""
+          } matching your filters: ${filters.join(
+            ", "
+          )}. Browse and discover products on jelajah Code.`;
       }
 
       return {
@@ -198,7 +194,7 @@ export async function generateProductsPageMetadata(
           siteName: "jelajah Code",
           images: [
             {
-              url: "/images/products-og-image.jpg",
+              url: "/products.png",
               width: 1200,
               height: 630,
               alt: query ? `Products "${query}"` : "Products",
@@ -211,7 +207,7 @@ export async function generateProductsPageMetadata(
           card: "summary_large_image",
           title,
           description,
-          images: ["/images/products-og-image.jpg"],
+          images: ["/products.png"],
         },
       };
     } catch {
@@ -242,7 +238,7 @@ export async function generateProductsPageMetadata(
           siteName: "jelajah Code",
           images: [
             {
-              url: "/images/products-og-image.jpg",
+              url: "/products.png",
               width: 1200,
               height: 630,
               alt: query ? `Products "${query}"` : "Products",
@@ -255,7 +251,7 @@ export async function generateProductsPageMetadata(
           card: "summary_large_image",
           title: fallbackTitle,
           description: fallbackDescription,
-          images: ["/images/products-og-image.jpg"],
+          images: ["/products.png"],
         },
       };
     }
@@ -275,7 +271,7 @@ export const ProductsCreateMetadata: Metadata = {
     siteName: "jelajah Code",
     images: [
       {
-        url: "/images/new-product-og-image.jpg",
+        url: "/new-product.png",
         width: 1200,
         height: 630,
         alt: "Add New Product - jelajah Code",
@@ -288,7 +284,7 @@ export const ProductsCreateMetadata: Metadata = {
     card: "summary_large_image",
     title: "Add New Product - jelajah Code",
     description: "Create and add new products to your jelajah Code platform",
-    images: ["/images/new-product-og-image.jpg"],
+    images: ["/new-product.png"],
   },
 };
 
@@ -304,7 +300,7 @@ export const ProductsEditMetadata: Metadata = {
     siteName: "jelajah Code",
     images: [
       {
-        url: "/images/edit-product-og-image.jpg",
+        url: "/edit-product.png",
         width: 1200,
         height: 630,
         alt: "Edit Product - jelajah Code",
@@ -318,7 +314,7 @@ export const ProductsEditMetadata: Metadata = {
     title: "Edit Product - jelajah Code",
     description:
       "Edit and update product details in your jelajah Code platform",
-    images: ["/images/edit-product-og-image.jpg"],
+    images: ["/edit-product.png"],
   },
 };
 
@@ -373,7 +369,7 @@ export async function generateProductsDetailsMetadata(
         siteName: "jelajah Code",
         images: [
           {
-            url: "/images/product-default-og-image.jpg",
+            url: "/desktop.png",
             width: 1200,
             height: 630,
             alt: `Product ${productsId}`,
@@ -386,7 +382,7 @@ export async function generateProductsDetailsMetadata(
         card: "summary_large_image",
         title: `Product ${productsId} - jelajah Code`,
         description: `View product details for ${productsId} on jelajah Code platform`,
-        images: ["/images/product-default-og-image.jpg"],
+        images: ["/desktop.png"],
       },
     };
   }
@@ -406,11 +402,9 @@ export async function generateProductsRatingsMetadata(
     const ratingCount = product.ratingCount || 0;
     const url = `${API_CONFIG.ENDPOINTS.base}/products/${productsId}/ratings`;
 
-    const ratingsDescription = `View ratings and reviews for ${title} on jelajah Code. ${ratingCount} review${
-      ratingCount !== 1 ? "s" : ""
-    } with an average rating of ${
-      ratingAverage > 0 ? ratingAverage.toFixed(1) : "0"
-    }★.`;
+    const ratingsDescription = `View ratings and reviews for ${title} on jelajah Code. ${ratingCount} review${ratingCount !== 1 ? "s" : ""
+      } with an average rating of ${ratingAverage > 0 ? ratingAverage.toFixed(1) : "0"
+      }★.`;
 
     return {
       title: `Ratings & Reviews - ${title} - jelajah Code`,
@@ -450,7 +444,7 @@ export async function generateProductsRatingsMetadata(
         siteName: "jelajah Code",
         images: [
           {
-            url: "/images/product-default-og-image.jpg",
+            url: "/desktop.png",
             width: 1200,
             height: 630,
             alt: `Ratings & Reviews - Product ${productsId}`,
@@ -463,7 +457,7 @@ export async function generateProductsRatingsMetadata(
         card: "summary_large_image",
         title: `Ratings & Reviews - Product ${productsId} - jelajah Code`,
         description: `View ratings and reviews for product ${productsId} on jelajah Code platform`,
-        images: ["/images/product-default-og-image.jpg"],
+        images: ["/desktop.png"],
       },
     };
   }
@@ -480,7 +474,7 @@ export const CheckoutMetadata: Metadata = {
     siteName: "jelajah Code",
     images: [
       {
-        url: "/images/checkout-og-image.jpg",
+        url: "/desktop.png",
         width: 1200,
         height: 630,
         alt: "Checkout on jelajah Code",
@@ -493,7 +487,7 @@ export const CheckoutMetadata: Metadata = {
     card: "summary_large_image",
     title: "Checkout - jelajah Code",
     description: "Review your cart and complete your purchase on jelajah Code",
-    images: ["/images/checkout-og-image.jpg"],
+    images: ["/desktop.png"],
   },
 };
 
@@ -508,7 +502,7 @@ export async function generateCheckoutMetadata(
     const description =
       product?.description ??
       `Review your cart and complete your purchase on jelajah Code`;
-    const thumbnail = product?.thumbnail ?? "/images/checkout-og-image.jpg";
+    const thumbnail = product?.thumbnail ?? "/desktop.png";
     const url = productId
       ? `${API_CONFIG.ENDPOINTS.base}/checkout?productId=${productId}`
       : `${API_CONFIG.ENDPOINTS.base}/checkout`;
@@ -565,7 +559,7 @@ export async function generateCheckoutStatusMetadata(
       siteName: "jelajah Code",
       images: [
         {
-          url: "/images/checkout-status-og-image.jpg",
+          url: "/desktop.png",
           width: 1200,
           height: 630,
           alt: pageTitle,
@@ -578,7 +572,7 @@ export async function generateCheckoutStatusMetadata(
       card: "summary_large_image",
       title: `${pageTitle} - jelajah Code`,
       description,
-      images: ["/images/checkout-status-og-image.jpg"],
+      images: ["/desktop.png"],
     },
   };
 }
@@ -594,7 +588,7 @@ export const SearchPageMetadata: Metadata = {
     siteName: "jelajah Code",
     images: [
       {
-        url: "/images/search-og-image.jpg",
+        url: "/desktop.png",
         width: 1200,
         height: 630,
         alt: "Search Products - jelajah Code",
@@ -607,7 +601,7 @@ export const SearchPageMetadata: Metadata = {
     card: "summary_large_image",
     title: "Search Products - jelajah Code",
     description: "Search and discover products on jelajah Code platform",
-    images: ["/images/search-og-image.jpg"],
+    images: ["/desktop.png"],
   },
 };
 
@@ -661,9 +655,8 @@ export async function generateSearchPageMetadata(
   if (isNew) urlParams.set("new", isNew);
   if (sort) urlParams.set("sort", sort);
 
-  const searchUrl = `${API_CONFIG.ENDPOINTS.base}/search${
-    urlParams.toString() ? `?${urlParams.toString()}` : ""
-  }`;
+  const searchUrl = `${API_CONFIG.ENDPOINTS.base}/search${urlParams.toString() ? `?${urlParams.toString()}` : ""
+    }`;
 
   // Build filter description
   const filters: string[] = [];
@@ -714,23 +707,20 @@ export async function generateSearchPageMetadata(
 
       if (query && filters.length > 0) {
         title = `Search "${query}" (${filters.join(", ")}) - jelajah Code`;
-        description = `Found ${resultCount} result${
-          resultCount !== 1 ? "s" : ""
-        } for "${query}" with filters: ${filters.join(
-          ", "
-        )}. Browse and discover products that match your search.`;
+        description = `Found ${resultCount} result${resultCount !== 1 ? "s" : ""
+          } for "${query}" with filters: ${filters.join(
+            ", "
+          )}. Browse and discover products that match your search.`;
       } else if (query) {
         title = `Search Results for "${query}" - jelajah Code`;
-        description = `Found ${resultCount} result${
-          resultCount !== 1 ? "s" : ""
-        } for "${query}" on jelajah Code. Browse and discover products that match your search.`;
+        description = `Found ${resultCount} result${resultCount !== 1 ? "s" : ""
+          } for "${query}" on jelajah Code. Browse and discover products that match your search.`;
       } else {
         title = `Search Products (${filters.join(", ")}) - jelajah Code`;
-        description = `Found ${resultCount} product${
-          resultCount !== 1 ? "s" : ""
-        } matching your filters: ${filters.join(
-          ", "
-        )}. Browse and discover products on jelajah Code.`;
+        description = `Found ${resultCount} product${resultCount !== 1 ? "s" : ""
+          } matching your filters: ${filters.join(
+            ", "
+          )}. Browse and discover products on jelajah Code.`;
       }
 
       return {
@@ -743,7 +733,7 @@ export async function generateSearchPageMetadata(
           siteName: "jelajah Code",
           images: [
             {
-              url: "/images/search-og-image.jpg",
+              url: "/desktop.png",
               width: 1200,
               height: 630,
               alt: query ? `Search Results for "${query}"` : "Search Products",
@@ -756,7 +746,7 @@ export async function generateSearchPageMetadata(
           card: "summary_large_image",
           title,
           description,
-          images: ["/images/search-og-image.jpg"],
+          images: ["/desktop.png"],
         },
       };
     } catch {
@@ -789,7 +779,7 @@ export async function generateSearchPageMetadata(
           siteName: "jelajah Code",
           images: [
             {
-              url: "/images/search-og-image.jpg",
+              url: "/desktop.png",
               width: 1200,
               height: 630,
               alt: query ? `Search Results for "${query}"` : "Search Products",
@@ -842,16 +832,13 @@ export async function generateProductsCategoryMetadata(
     if (page !== "1") urlParams.set("page", page);
     if (sort !== "newest") urlParams.set("sort", sort);
 
-    const categoryUrl = `${
-      API_CONFIG.ENDPOINTS.base
-    }/products/category/${categoryId}${
-      urlParams.toString() ? `?${urlParams.toString()}` : ""
-    }`;
+    const categoryUrl = `${API_CONFIG.ENDPOINTS.base
+      }/products/category/${categoryId}${urlParams.toString() ? `?${urlParams.toString()}` : ""
+      }`;
 
     const title = `Products - ${categoryTitle} - jelajah Code`;
-    const description = `Browse ${resultCount} product${
-      resultCount !== 1 ? "s" : ""
-    } in ${categoryTitle} category on jelajah Code. Discover and explore products that match your interests.`;
+    const description = `Browse ${resultCount} product${resultCount !== 1 ? "s" : ""
+      } in ${categoryTitle} category on jelajah Code. Discover and explore products that match your interests.`;
 
     return {
       title,
@@ -945,14 +932,12 @@ export async function generateProductsTypeMetadata(
     if (page !== "1") urlParams.set("page", page);
     if (sort !== "newest") urlParams.set("sort", sort);
 
-    const typeUrl = `${API_CONFIG.ENDPOINTS.base}/products/type/${typeId}${
-      urlParams.toString() ? `?${urlParams.toString()}` : ""
-    }`;
+    const typeUrl = `${API_CONFIG.ENDPOINTS.base}/products/type/${typeId}${urlParams.toString() ? `?${urlParams.toString()}` : ""
+      }`;
 
     const title = `Products - ${typeTitle} - jelajah Code`;
-    const description = `Browse ${resultCount} product${
-      resultCount !== 1 ? "s" : ""
-    } in ${typeTitle} type on jelajah Code. Discover and explore products that match your interests.`;
+    const description = `Browse ${resultCount} product${resultCount !== 1 ? "s" : ""
+      } in ${typeTitle} type on jelajah Code. Discover and explore products that match your interests.`;
 
     return {
       title,
@@ -1043,14 +1028,12 @@ export async function generateProductsTagsMetadata(
     if (page !== "1") urlParams.set("page", page);
     if (sort !== "newest") urlParams.set("sort", sort);
 
-    const tagsUrl = `${API_CONFIG.ENDPOINTS.base}/products/tags/${tagsId}${
-      urlParams.toString() ? `?${urlParams.toString()}` : ""
-    }`;
+    const tagsUrl = `${API_CONFIG.ENDPOINTS.base}/products/tags/${tagsId}${urlParams.toString() ? `?${urlParams.toString()}` : ""
+      }`;
 
     const title = `Products - ${tagsId} - jelajah Code`;
-    const description = `Browse ${resultCount} product${
-      resultCount !== 1 ? "s" : ""
-    } tagged with ${tagsId} on jelajah Code. Discover and explore products that match your interests.`;
+    const description = `Browse ${resultCount} product${resultCount !== 1 ? "s" : ""
+      } tagged with ${tagsId} on jelajah Code. Discover and explore products that match your interests.`;
 
     return {
       title,
@@ -1126,7 +1109,7 @@ export const ArticlesPageMetadata: Metadata = {
     siteName: "jelajah Code",
     images: [
       {
-        url: "/images/articles-og-image.jpg",
+        url: "/articles.png",
         width: 1200,
         height: 630,
         alt: "jelajah Code Developer Resources",
@@ -1140,7 +1123,7 @@ export const ArticlesPageMetadata: Metadata = {
     title: "Developer Resources - jelajah Code",
     description:
       "Learn from detailed guides, tutorials, and best practices for modern web development on jelajah Code",
-    images: ["/images/articles-og-image.jpg"],
+    images: ["/articles.png"],
   },
 };
 
@@ -1166,9 +1149,8 @@ export async function generateArticlesPageMetadata(
   if (pageNumber !== "1") urlParams.set("page", pageNumber);
   if (sort) urlParams.set("sort", sort);
 
-  const articlesUrl = `${API_CONFIG.ENDPOINTS.base}/articles${
-    urlParams.toString() ? `?${urlParams.toString()}` : ""
-  }`;
+  const articlesUrl = `${API_CONFIG.ENDPOINTS.base}/articles${urlParams.toString() ? `?${urlParams.toString()}` : ""
+    }`;
 
   // Build filter description
   const filters: string[] = [];
@@ -1199,9 +1181,8 @@ export async function generateArticlesPageMetadata(
       }).length;
 
       const title = `Developer Resources - ${categoryTitle} - jelajah Code`;
-      const description = `Browse ${filteredCount} article${
-        filteredCount !== 1 ? "s" : ""
-      } in ${categoryTitle} category. Learn from detailed guides, tutorials, and best practices for modern web development.`;
+      const description = `Browse ${filteredCount} article${filteredCount !== 1 ? "s" : ""
+        } in ${categoryTitle} category. Learn from detailed guides, tutorials, and best practices for modern web development.`;
 
       return {
         title,
@@ -1213,7 +1194,7 @@ export async function generateArticlesPageMetadata(
           siteName: "jelajah Code",
           images: [
             {
-              url: "/images/articles-og-image.jpg",
+              url: "/articles.png",
               width: 1200,
               height: 630,
               alt: `Developer Resources - ${categoryTitle}`,
@@ -1226,17 +1207,15 @@ export async function generateArticlesPageMetadata(
           card: "summary_large_image",
           title,
           description,
-          images: ["/images/articles-og-image.jpg"],
+          images: ["/articles.png"],
         },
       };
     } catch {
       // Fallback to default articles metadata if fetch fails
-      const fallbackTitle = `Developer Resources - ${
-        category || ""
-      } - jelajah Code`;
-      const fallbackDescription = `Browse articles${
-        category ? ` in ${category} category` : ""
-      } on jelajah Code platform`;
+      const fallbackTitle = `Developer Resources - ${category || ""
+        } - jelajah Code`;
+      const fallbackDescription = `Browse articles${category ? ` in ${category} category` : ""
+        } on jelajah Code platform`;
 
       return {
         title: fallbackTitle,
@@ -1248,7 +1227,7 @@ export async function generateArticlesPageMetadata(
           siteName: "jelajah Code",
           images: [
             {
-              url: "/images/articles-og-image.jpg",
+              url: "/articles.png",
               width: 1200,
               height: 630,
               alt: `Developer Resources${category ? ` - ${category}` : ""}`,
@@ -1261,7 +1240,7 @@ export async function generateArticlesPageMetadata(
           card: "summary_large_image",
           title: fallbackTitle,
           description: fallbackDescription,
-          images: ["/images/articles-og-image.jpg"],
+          images: ["/articles.png"],
         },
       };
     }
@@ -1301,16 +1280,13 @@ export async function generateArticlesCategoryMetadata(
     if (page !== "1") urlParams.set("page", page);
     if (sort !== "newest") urlParams.set("sort", sort);
 
-    const categoryUrl = `${
-      API_CONFIG.ENDPOINTS.base
-    }/articles/categories/${categoryId}${
-      urlParams.toString() ? `?${urlParams.toString()}` : ""
-    }`;
+    const categoryUrl = `${API_CONFIG.ENDPOINTS.base
+      }/articles/categories/${categoryId}${urlParams.toString() ? `?${urlParams.toString()}` : ""
+      }`;
 
     const title = `Developer Resources - ${categoryTitle} - jelajah Code`;
-    const description = `Browse ${resultCount} article${
-      resultCount !== 1 ? "s" : ""
-    } in ${categoryTitle} category on jelajah Code. Learn from detailed guides, tutorials, and best practices for modern web development.`;
+    const description = `Browse ${resultCount} article${resultCount !== 1 ? "s" : ""
+      } in ${categoryTitle} category on jelajah Code. Learn from detailed guides, tutorials, and best practices for modern web development.`;
 
     return {
       title,
@@ -1322,7 +1298,7 @@ export async function generateArticlesCategoryMetadata(
         siteName: "jelajah Code",
         images: [
           {
-            url: "/images/articles-og-image.jpg",
+            url: "/articles.png",
             width: 1200,
             height: 630,
             alt: `Developer Resources - ${categoryTitle}`,
@@ -1335,7 +1311,7 @@ export async function generateArticlesCategoryMetadata(
         card: "summary_large_image",
         title,
         description,
-        images: ["/images/articles-og-image.jpg"],
+        images: ["/articles.png"],
       },
     };
   } catch {
@@ -1354,7 +1330,7 @@ export async function generateArticlesCategoryMetadata(
         siteName: "jelajah Code",
         images: [
           {
-            url: "/images/articles-og-image.jpg",
+            url: "/articles.png",
             width: 1200,
             height: 630,
             alt: `Developer Resources - ${categoryId}`,
@@ -1367,7 +1343,7 @@ export async function generateArticlesCategoryMetadata(
         card: "summary_large_image",
         title: fallbackTitle,
         description: fallbackDescription,
-        images: ["/images/articles-og-image.jpg"],
+        images: ["/articles.png"],
       },
     };
   }
@@ -1432,7 +1408,7 @@ export async function generateArticlesDetailsMetadata(
         siteName: "jelajah Code",
         images: [
           {
-            url: "/images/articles-default-og-image.jpg",
+            url: "/articles.png",
             width: 1200,
             height: 630,
             alt: `Article ${articlesId}`,
@@ -1445,7 +1421,7 @@ export async function generateArticlesDetailsMetadata(
         card: "summary_large_image",
         title: `Article ${articlesId} - jelajah Code`,
         description: `View article details for ${articlesId} on jelajah Code platform`,
-        images: ["/images/articles-default-og-image.jpg"],
+        images: ["/articles.png"],
       },
     };
   }
@@ -1464,7 +1440,7 @@ export const ProfilePageMetadata: Metadata = {
     siteName: "jelajah Code",
     images: [
       {
-        url: "/images/profile-og-image.jpg",
+        url: "/desktop.png",
         width: 1200,
         height: 630,
         alt: "Profile - jelajah Code",
@@ -1478,7 +1454,7 @@ export const ProfilePageMetadata: Metadata = {
     title: "Profile - jelajah Code",
     description:
       "Manage your profile, view transactions, and update your account settings on jelajah Code",
-    images: ["/images/profile-og-image.jpg"],
+    images: ["/desktop.png"],
   },
 };
 
@@ -1504,7 +1480,7 @@ export async function generateProfileMetadata(): Promise<Metadata> {
           const userData = await userResponse.json();
           const userName = userData.name || "User";
           const userPicture =
-            userData.picture || "/images/profile-og-image.jpg";
+            userData.picture || "/desktop.png";
           const title = `${userName}'s Profile - jelajah Code`;
           const description = `Manage ${userName}'s profile, view transactions, and update account settings on jelajah Code`;
 
@@ -1559,7 +1535,7 @@ export const OrderDetailsPageMetadata: Metadata = {
     siteName: "jelajah Code",
     images: [
       {
-        url: "/images/profile-og-image.jpg",
+        url: "/desktop.png",
         width: 1200,
         height: 630,
         alt: "Order Details - jelajah Code",
@@ -1573,7 +1549,7 @@ export const OrderDetailsPageMetadata: Metadata = {
     title: "Order Details - jelajah Code",
     description:
       "View your order details, transaction status, and download purchased products on jelajah Code",
-    images: ["/images/profile-og-image.jpg"],
+    images: ["/desktop.png"],
   },
 };
 
@@ -1617,16 +1593,13 @@ export async function generateOrderDetailsMetadata(
               status.charAt(0).toUpperCase() + status.slice(1);
             const thumbnail =
               transactionData.products[0]?.thumbnail ||
-              "/images/profile-og-image.jpg";
+              "/desktop.png";
 
             const title = `Order ${order_id} - ${statusCapitalized} - jelajah Code`;
-            const description = `View order details for ${productCount} product${
-              productCount !== 1 ? "s" : ""
-            }: ${productTitles}${
-              productCount > 3 ? "..." : ""
-            }. Status: ${statusCapitalized}. Total: Rp ${
-              transactionData.total_amount?.toLocaleString("id-ID") || "0"
-            }`;
+            const description = `View order details for ${productCount} product${productCount !== 1 ? "s" : ""
+              }: ${productTitles}${productCount > 3 ? "..." : ""
+              }. Status: ${statusCapitalized}. Total: Rp ${transactionData.total_amount?.toLocaleString("id-ID") || "0"
+              }`;
 
             return {
               title,
@@ -1675,7 +1648,7 @@ export async function generateOrderDetailsMetadata(
       siteName: "jelajah Code",
       images: [
         {
-          url: "/images/profile-og-image.jpg",
+          url: "/desktop.png",
           width: 1200,
           height: 630,
           alt: `Order ${order_id}`,
@@ -1688,7 +1661,7 @@ export async function generateOrderDetailsMetadata(
       card: "summary_large_image",
       title: `Order ${order_id} - jelajah Code`,
       description: `View order details for order ${order_id} on jelajah Code platform`,
-      images: ["/images/profile-og-image.jpg"],
+      images: ["/desktop.png"],
     },
   };
 }
@@ -1706,7 +1679,7 @@ export const PrivacyPolicyMetadata: Metadata = {
     siteName: "jelajah Code",
     images: [
       {
-        url: "/images/privacy-policy-og-image.jpg",
+        url: "/desktop.png",
         width: 1200,
         height: 630,
         alt: "Privacy Policy - jelajah Code",
@@ -1720,7 +1693,7 @@ export const PrivacyPolicyMetadata: Metadata = {
     title: "Privacy Policy - jelajah Code",
     description:
       "Learn about how jelajah Code collects, uses, and protects your personal data. Read our comprehensive privacy policy to understand your rights and our data protection practices.",
-    images: ["/images/privacy-policy-og-image.jpg"],
+    images: ["/desktop.png"],
   },
 };
 
@@ -1737,7 +1710,7 @@ export const RefundPolicyMetadata: Metadata = {
     siteName: "jelajah Code",
     images: [
       {
-        url: "/images/refund-policy-og-image.jpg",
+        url: "/desktop.png",
         width: 1200,
         height: 630,
         alt: "Refund Policy - jelajah Code",
@@ -1751,7 +1724,7 @@ export const RefundPolicyMetadata: Metadata = {
     title: "Refund Policy - jelajah Code",
     description:
       "Learn about jelajah Code's refund policy, eligibility requirements, and refund process. Understand your rights when requesting a refund for purchased products.",
-    images: ["/images/refund-policy-og-image.jpg"],
+    images: ["/desktop.png"],
   },
 };
 
@@ -1768,7 +1741,7 @@ export const TermsOfServiceMetadata: Metadata = {
     siteName: "jelajah Code",
     images: [
       {
-        url: "/images/terms-of-service-og-image.jpg",
+        url: "/desktop.png",
         width: 1200,
         height: 630,
         alt: "Terms of Service - jelajah Code",
@@ -1782,7 +1755,7 @@ export const TermsOfServiceMetadata: Metadata = {
     title: "Terms of Service - jelajah Code",
     description:
       "Read jelajah Code's terms of service to understand the rules and regulations for using our platform. Learn about your rights and responsibilities as a user.",
-    images: ["/images/terms-of-service-og-image.jpg"],
+    images: ["/desktop.png"],
   },
 };
 
@@ -1799,7 +1772,7 @@ export const LicenseAgreementMetadata: Metadata = {
     siteName: "jelajah Code",
     images: [
       {
-        url: "/images/license-agreement-og-image.jpg",
+        url: "/desktop.png",
         width: 1200,
         height: 630,
         alt: "License Agreement - jelajah Code",
@@ -1813,7 +1786,7 @@ export const LicenseAgreementMetadata: Metadata = {
     title: "License Agreement - jelajah Code",
     description:
       "Understand the license agreement for using jelajah Code's source code products. Learn about permitted usage, restrictions, and intellectual property rights.",
-    images: ["/images/license-agreement-og-image.jpg"],
+    images: ["/desktop.png"],
   },
 };
 
@@ -1830,7 +1803,7 @@ export const AdminsPageMetadata: Metadata = {
     siteName: "jelajah Code",
     images: [
       {
-        url: "/images/admin-og-image.jpg",
+        url: "/desktop.png",
         width: 1200,
         height: 630,
         alt: "Admin Profile - jelajah Code",
@@ -1844,7 +1817,7 @@ export const AdminsPageMetadata: Metadata = {
     title: "Admin Profile - jelajah Code",
     description:
       "View admin profile, products, and articles on jelajah Code platform",
-    images: ["/images/admin-og-image.jpg"],
+    images: ["/desktop.png"],
   },
 };
 
@@ -1860,17 +1833,15 @@ export async function generateAdminsPageMetadata(
 
     if (admin) {
       const adminName = admin.name || "Admin";
-      const adminPicture = admin.picture || "/images/admin-og-image.jpg";
+      const adminPicture = admin.picture || "/desktop.png";
       const productsCount = admin.stats?.products || 0;
       const articlesCount = admin.stats?.articles || 0;
       const rating = admin.stats?.rating || 0;
 
       const title = `${adminName} - Admin Profile - jelajah Code`;
-      const description = `View ${adminName}'s profile on jelajah Code. ${productsCount} product${
-        productsCount !== 1 ? "s" : ""
-      }, ${articlesCount} article${articlesCount !== 1 ? "s" : ""}, and ${
-        rating > 0 ? `${rating.toFixed(1)}★ rating` : "no rating yet"
-      }.`;
+      const description = `View ${adminName}'s profile on jelajah Code. ${productsCount} product${productsCount !== 1 ? "s" : ""
+        }, ${articlesCount} article${articlesCount !== 1 ? "s" : ""}, and ${rating > 0 ? `${rating.toFixed(1)}★ rating` : "no rating yet"
+        }.`;
 
       const adminUrl = `${API_CONFIG.ENDPOINTS.base}/admins/${adminId}`;
 
@@ -1920,7 +1891,7 @@ export async function generateAdminsPageMetadata(
       siteName: "jelajah Code",
       images: [
         {
-          url: "/images/admin-og-image.jpg",
+          url: "/desktop.png",
           width: 1200,
           height: 630,
           alt: "Admin Profile",
@@ -1933,7 +1904,7 @@ export async function generateAdminsPageMetadata(
       card: "summary_large_image",
       title: fallbackTitle,
       description: fallbackDescription,
-      images: ["/images/admin-og-image.jpg"],
+      images: ["/desktop.png"],
     },
   };
 }
@@ -1951,7 +1922,7 @@ export const ContactPageMetadata: Metadata = {
     siteName: "jelajah Code",
     images: [
       {
-        url: "/images/contact-og-image.jpg",
+        url: "/contact.png",
         width: 1200,
         height: 630,
         alt: "Contact Us - jelajah Code",
@@ -1965,6 +1936,6 @@ export const ContactPageMetadata: Metadata = {
     title: "Contact Us - jelajah Code",
     description:
       "Get in touch with jelajah Code. Have questions or feedback? We'd love to hear from you. Contact us via email, phone, or visit our office.",
-    images: ["/images/contact-og-image.jpg"],
+    images: ["/contact.png"],
   },
 };

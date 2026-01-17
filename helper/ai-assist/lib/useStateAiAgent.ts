@@ -9,10 +9,10 @@ import { API_CONFIG } from "@/lib/config";
 declare global {
   interface Window {
     SpeechRecognition: {
-      new (): SpeechRecognition;
+      new(): SpeechRecognition;
     };
     webkitSpeechRecognition: {
-      new (): SpeechRecognition;
+      new(): SpeechRecognition;
     };
   }
 }
@@ -82,6 +82,7 @@ export default function useStateAiAgent() {
   const emojiPickerRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const transcriptRef = useRef<string>("");
+  const lastProcessedIndexRef = useRef<number>(-1);
   const isRestartingRef = useRef<boolean>(false);
   const lastCheckedMessageIdRef = useRef<string>("");
   const audioContextRef = useRef<AudioContext | null>(null);
@@ -124,14 +125,18 @@ export default function useStateAiAgent() {
         recognition.onstart = () => {
           setIsListening(true);
           transcriptRef.current = messageInputRef.current || "";
+          lastProcessedIndexRef.current = -1;
         };
 
         recognition.onresult = (event: SpeechRecognitionEvent) => {
           if (!isListeningRef.current) return;
 
+          // Di mobile, onresult bisa dipanggil berulang dengan hasil yang sama
+          // Gunakan resultIndex untuk memproses hanya hasil baru
           let interimTranscript = "";
           let finalTranscript = "";
 
+          // Proses hanya hasil baru mulai dari resultIndex
           for (let i = event.resultIndex; i < event.results.length; i++) {
             const result = event.results[i];
             const transcript = result[0]?.transcript || "";
@@ -146,14 +151,29 @@ export default function useStateAiAgent() {
             return;
           }
 
-          let baseText = transcriptRef.current;
+          // Gunakan messageInputRef.current sebagai base (teks yang sudah ada di input)
+          // Ini mencegah duplikasi karena kita selalu mulai dari teks yang sudah ada
+          let baseText = messageInputRef.current || transcriptRef.current || "";
 
+          // Jika ada finalTranscript, tambahkan ke baseText
           if (finalTranscript) {
-            baseText = transcriptRef.current + finalTranscript;
-            transcriptRef.current = baseText;
+            const trimmedFinal = finalTranscript.trim();
+            // Untuk mencegah duplikasi di mobile, cek apakah teks sudah ada
+            // Tapi gunakan pendekatan yang lebih sederhana: selalu tambahkan jika berbeda
+            if (trimmedFinal) {
+              baseText = baseText.trim() + (baseText.trim() ? " " : "") + trimmedFinal;
+              transcriptRef.current = baseText;
+            }
           }
 
-          const displayText = baseText + interimTranscript;
+          // Gabungkan dengan interim transcript
+          const displayText = baseText + (interimTranscript ? (baseText ? " " : "") + interimTranscript : "");
+
+          // Cek duplikasi: jika displayText sama dengan messageInput yang sudah ada, skip
+          // Ini mencegah update yang tidak perlu di mobile
+          if (displayText === messageInputRef.current && !interimTranscript) {
+            return;
+          }
 
           setMessageInput(displayText);
 
@@ -191,6 +211,7 @@ export default function useStateAiAgent() {
           if (!isListeningRef.current) {
             setIsListening(false);
             isRestartingRef.current = false;
+            lastProcessedIndexRef.current = -1;
             return;
           }
 
@@ -198,6 +219,8 @@ export default function useStateAiAgent() {
             return;
           }
 
+          // Reset lastProcessedIndex saat restart
+          lastProcessedIndexRef.current = -1;
           isRestartingRef.current = true;
 
           requestAnimationFrame(() => {
@@ -252,7 +275,7 @@ export default function useStateAiAgent() {
       if (recognitionRef.current && isListeningRef.current) {
         try {
           recognitionRef.current.stop();
-        } catch {}
+        } catch { }
       }
     };
   }, [isSpeechSupported]);
@@ -352,8 +375,8 @@ export default function useStateAiAgent() {
               const container = messagesContainerRef.current;
               const isAtBottom =
                 container.scrollHeight -
-                  container.scrollTop -
-                  container.clientHeight <
+                container.scrollTop -
+                container.clientHeight <
                 10;
 
               if (!isAtBottom && attempts < 5) {
@@ -614,6 +637,7 @@ export default function useStateAiAgent() {
   const handleStopListening = useCallback(() => {
     if (isListening) {
       isRestartingRef.current = false;
+      lastProcessedIndexRef.current = -1;
       setIsListening(false);
       if (recognitionRef.current) {
         try {
@@ -822,27 +846,36 @@ export default function useStateAiAgent() {
 
   const isCodingRelated = (message: string): boolean => {
     const codingKeywords = [
+      "kode",
       "code",
       "coding",
       "programming",
-      "program",
-      "kode",
-      "codingan",
-      "koding",
-      "program",
-      "syntax",
+      "pemrograman",
+      "script",
+      "snippet",
       "function",
-      "variable",
+      "fungsi",
+      "class",
+      "komponen",
+      "component",
+      "buat kode",
+      "tulis kode",
+      "write code",
+      "generate code",
+      "bagaimana cara",
+      "how to",
+      "tutorial",
+      "contoh kode",
+      "code example",
+      "implementasi",
+      "implementation",
+      "syntax",
+      "sintaks",
       "debug",
       "error",
       "bug",
-      "fix code",
-      "perbaiki code",
-      "perbaiki kode",
-      "bagaimana cara",
-      "cara membuat",
-      "tutorial",
-      "belajar",
+      "fix",
+      "perbaiki",
       "javascript",
       "typescript",
       "python",
@@ -850,151 +883,19 @@ export default function useStateAiAgent() {
       "react",
       "nextjs",
       "node",
-      "html",
-      "css",
-      "sql",
       "api",
       "endpoint",
       "database",
       "query",
-      "algorithm",
-      "algoritma",
-      "loop",
-      "array",
-      "object",
-      "class",
-      "method",
-      "import",
-      "export",
-      "component",
-      "hook",
-      "state",
-      "props",
-      "async",
-      "await",
-      "promise",
-      "callback",
-      "console.log",
-      "console",
-      "log",
-      "return",
-      "if else",
-      "if statement",
-      "switch",
-      "for loop",
-      "while loop",
-      "try catch",
-      "error handling",
-      "git",
-      "commit",
-      "push",
-      "pull",
-      "branch",
-      "merge",
-      "repository",
-      "repo",
+      "sql",
+      "mongodb",
+      "html",
+      "css",
+      "jsx",
+      "tsx",
     ];
-
     const lowerMessage = message.toLowerCase();
-
-    // Check for coding-related keywords
-    const hasCodingKeyword = codingKeywords.some((keyword) =>
-      lowerMessage.includes(keyword)
-    );
-
-    // Check for patterns like "how to code", "cara coding", etc.
-    const codingPatterns = [
-      /(bagaimana|how to|how do|cara|tutorial|belajar).*(code|coding|program|kode|programming)/i,
-      /(fix|perbaiki|debug|solve).*(code|kode|error|bug|problem)/i,
-      /(buat|create|make).*(function|class|component|api|endpoint)/i,
-      /(apa|what is|jelaskan).*(function|variable|class|component|hook|state)/i,
-    ];
-
-    const matchesPattern = codingPatterns.some((pattern) =>
-      pattern.test(message)
-    );
-
-    return hasCodingKeyword || matchesPattern;
-  };
-
-  // Fungsi untuk mengecek apakah pertanyaan terkait dengan website Jelajah Kode
-  const isWebsiteRelated = (message: string): boolean => {
-    const lowerMessage = message.toLowerCase().trim();
-
-    // Ucapan salam dan sapaan umum diperbolehkan
-    const greetingKeywords = [
-      "halo",
-      "hello",
-      "hi",
-      "hai",
-      "selamat pagi",
-      "selamat siang",
-      "selamat sore",
-      "selamat malam",
-      "good morning",
-      "good afternoon",
-      "good evening",
-      "terima kasih",
-      "thanks",
-      "thank you",
-      "makasih",
-      "sama-sama",
-      "you're welcome",
-      "kabar",
-      "apa kabar",
-      "how are you",
-      "baik",
-      "baik-baik",
-      "baik baik",
-    ];
-
-    // Kata kunci terkait website Jelajah Kode
-    const websiteKeywords = [
-      "jelajah kode",
-      "jelajahkode",
-      "jelajah",
-      "website",
-      "situs",
-      "web",
-      "layanan",
-      "service",
-      "jasa",
-      "tentang",
-      "about",
-      "info",
-      "informasi",
-      "bantuan",
-      "help",
-      "help me",
-      "tolong",
-      "please",
-      "bisa",
-      "bisa bantu",
-      "can you",
-      "bisa tolong",
-    ];
-
-    // Cek apakah hanya ucapan salam
-    const isOnlyGreeting = greetingKeywords.some((keyword) => {
-      const regex = new RegExp(
-        `^${keyword.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(\\s|\\?|!|\\.|,)*$`,
-        "i"
-      );
-      return regex.test(lowerMessage);
-    });
-
-    // Jika hanya salam, dianggap terkait website
-    if (isOnlyGreeting) {
-      return true;
-    }
-
-    // Cek apakah terkait produk, kontak, atau website
-    const isRelatedToWebsite =
-      isProductRelated(message) ||
-      isContactRelated(message) ||
-      websiteKeywords.some((keyword) => lowerMessage.includes(keyword));
-
-    return isRelatedToWebsite;
+    return codingKeywords.some((keyword) => lowerMessage.includes(keyword));
   };
 
   const fetchProductsData = async (
@@ -1047,9 +948,8 @@ export default function useStateAiAgent() {
       const limitedProducts = products.slice(0, 20);
       const productsContext = limitedProducts
         .map((product: Product) => {
-          return `- ${product.title || "N/A"} (ID: ${
-            product.productsId || product._id || "N/A"
-          })
+          return `- ${product.title || "N/A"} (ID: ${product.productsId || product._id || "N/A"
+            })
   Harga: ${product.price || 0}
   Kategori: ${product.category?.title || "N/A"}
   Tipe: ${product.type?.title || "N/A"}
@@ -1057,20 +957,17 @@ export default function useStateAiAgent() {
   Stock: ${product.stock || 0}
   Terjual: ${product.sold || 0}
   Rating: ${product.ratingAverage || 0} (${product.ratingCount || 0} ulasan)
-  ${
-    product.discount && product.discount.value !== undefined
-      ? `Diskon: ${
-          product.discount.type === "percentage"
-            ? product.discount.value + "%"
-            : product.discount.value
-        }`
-      : ""
-  }
-  ${
-    product.description
-      ? `Deskripsi: ${product.description.substring(0, 100)}...`
-      : ""
-  }`;
+  ${product.discount && product.discount.value !== undefined
+              ? `Diskon: ${product.discount.type === "percentage"
+                ? product.discount.value + "%"
+                : product.discount.value
+              }`
+              : ""
+            }
+  ${product.description
+              ? `Deskripsi: ${product.description.substring(0, 100)}...`
+              : ""
+            }`;
         })
         .join("\n\n");
 
@@ -1137,82 +1034,6 @@ export default function useStateAiAgent() {
   const handleSendMessage = async () => {
     const userMessage = messageInput.trim();
     if (!userMessage || isLoading) return;
-
-    // Check if message is about coding - block it
-    if (isCodingRelated(userMessage)) {
-      const userMsg: MessageAi = {
-        id: generateMessageId(),
-        sender: "user",
-        content: userMessage,
-        timestamp: getCurrentTime(),
-        read: true,
-      };
-
-      const blockedMsg: MessageAi = {
-        id: generateMessageId(),
-        sender: "assistant",
-        content:
-          "Maaf, saya tidak dapat membantu dengan pertanyaan tentang coding atau programming. Saya hanya dapat membantu dengan informasi tentang produk, layanan, dan kontak. Terima kasih! 😊",
-        timestamp: getCurrentTime(),
-        read: false,
-      };
-
-      setMessages((prev) => [...prev, userMsg, blockedMsg]);
-      setMessageInput("");
-      setShowEmojiPicker(false);
-      handleStopListening();
-      resetTextarea();
-      // Reset manual scroll flag and scroll to bottom
-      isUserScrollingRef.current = false;
-      if (scrollTimeoutRef.current) {
-        clearTimeout(scrollTimeoutRef.current);
-        scrollTimeoutRef.current = null;
-      }
-      setTimeout(() => {
-        if (messagesEndRef.current && !isUserScrollingRef.current) {
-          messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
-        }
-      }, 50);
-      return;
-    }
-
-    // Check if message is related to website - block if not related
-    if (!isWebsiteRelated(userMessage)) {
-      const userMsg: MessageAi = {
-        id: generateMessageId(),
-        sender: "user",
-        content: userMessage,
-        timestamp: getCurrentTime(),
-        read: true,
-      };
-
-      const blockedMsg: MessageAi = {
-        id: generateMessageId(),
-        sender: "assistant",
-        content:
-          "Maaf, saya tidak bisa menjawab pertanyaan yang Anda berikan. Saya hanya dapat membantu dengan pertanyaan seputar website, seperti informasi produk, layanan, kontak, dan hal-hal terkait website ini. Terima kasih! 😊",
-        timestamp: getCurrentTime(),
-        read: false,
-      };
-
-      setMessages((prev) => [...prev, userMsg, blockedMsg]);
-      setMessageInput("");
-      setShowEmojiPicker(false);
-      handleStopListening();
-      resetTextarea();
-      // Reset manual scroll flag and scroll to bottom
-      isUserScrollingRef.current = false;
-      if (scrollTimeoutRef.current) {
-        clearTimeout(scrollTimeoutRef.current);
-        scrollTimeoutRef.current = null;
-      }
-      setTimeout(() => {
-        if (messagesEndRef.current && !isUserScrollingRef.current) {
-          messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
-        }
-      }, 50);
-      return;
-    }
 
     const userMsg: MessageAi = {
       id: generateMessageId(),
@@ -1287,6 +1108,12 @@ Contoh pertanyaan yang harus diberikan nomor:
 Berikan nomor WhatsApp (085811668557) dengan format yang jelas dan ramah.`;
       }
 
+      // Check if user is asking for coding-related help
+      let codingRestrictionContext = "";
+      if (isCodingRelated(userMessage)) {
+        codingRestrictionContext = `PENTING: User sedang meminta kode pemrograman, script, atau bantuan coding. JANGAN berikan kode apapun. Tolak dengan sopan dan arahkan mereka untuk menggunakan layanan custom website development atau hubungi tim teknis melalui WhatsApp: 085811668557. Katakan bahwa Anda tidak dapat memberikan kode pemrograman, tetapi dapat membantu dengan informasi tentang produk atau layanan yang tersedia.`;
+      }
+
       // Prepare conversation history for AI
       const conversationHistory: Array<{
         sender: "user" | "assistant" | "admin";
@@ -1307,12 +1134,17 @@ Apa kabar? Kami dengan senang hati siap membantu Anda. Apa yang ingin Anda tanya
 Jangan tampilkan nomor WhatsApp atau informasi kontak kecuali user secara eksplisit bertanya tentang kontak, nomor telepon, WhatsApp, atau meminta nomor untuk detail/informasi lebih lanjut.`;
       }
 
+      // Add instruction to prevent coding-related responses (always included)
+      const codingRestriction = `PENTING: JANGAN PERNAH memberikan kode pemrograman, script, code snippet, atau contoh implementasi kode apapun kepada user. Jika user meminta kode, script, atau bantuan pemrograman, tolak dengan sopan dan arahkan mereka untuk menggunakan layanan custom website development atau hubungi tim teknis melalui WhatsApp: 085811668557.`;
+
       // Combine contexts and user message
       let finalUserMessage = userMessage;
       const allContexts = [
         systemContext,
+        codingRestriction,
         productsContext,
         contactContext,
+        codingRestrictionContext,
       ].filter(Boolean);
       if (allContexts.length > 0) {
         finalUserMessage = `${allContexts.join(
@@ -1345,11 +1177,11 @@ Jangan tampilkan nomor WhatsApp atau informasi kontak kecuali user secara ekspli
               return prev.map((msg) =>
                 msg.id === aiMsgId
                   ? {
-                      ...msg,
-                      content,
-                      products:
-                        productsData.length > 0 ? productsData : msg.products,
-                    }
+                    ...msg,
+                    content,
+                    products:
+                      productsData.length > 0 ? productsData : msg.products,
+                  }
                   : msg
               );
             } else {
@@ -1410,9 +1242,9 @@ Jangan tampilkan nomor WhatsApp atau informasi kontak kecuali user secara ekspli
           return prev.map((msg) =>
             msg.id === aiMsgId
               ? {
-                  ...msg,
-                  content: "Maaf, terjadi kesalahan. Silakan coba lagi.",
-                }
+                ...msg,
+                content: "Maaf, terjadi kesalahan. Silakan coba lagi.",
+              }
               : msg
           );
         } else {
@@ -1461,6 +1293,7 @@ Jangan tampilkan nomor WhatsApp atau informasi kontak kecuali user secara ekspli
     if (recognitionRef.current && !isListening) {
       try {
         transcriptRef.current = messageInput;
+        lastProcessedIndexRef.current = -1;
         isRestartingRef.current = false;
         setIsListening(true);
         recognitionRef.current.start();
