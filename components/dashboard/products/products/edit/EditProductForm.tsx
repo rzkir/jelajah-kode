@@ -67,11 +67,20 @@ export default function EditProductForm() {
     uploadProgress,
     thumbnailUploadProgress,
     user,
+    draggedIndex,
+    isDraggingOver,
+    dropZoneRef,
     handleFileUpload,
     handleThumbnailUpload,
     handleChange,
     handlePriceChange,
     handleSubmit,
+    handleDragStart,
+    handleDragOver,
+    handleDragEnd,
+    handleDragOverUpload,
+    handleDragLeaveUpload,
+    handleDropUpload,
   } = useStateEditProducts();
 
   const [categoryOpen, setCategoryOpen] = React.useState(false);
@@ -83,7 +92,7 @@ export default function EditProductForm() {
   }
 
   return (
-    <div className="container">
+    <section>
       <Card>
         <CardHeader>
           <CardTitle>Edit Product</CardTitle>
@@ -115,6 +124,91 @@ export default function EditProductForm() {
                     placeholder="Unique product identifier"
                     readOnly
                   />
+                </div>
+
+                <div className="flex flex-col gap-2">
+                  <Label htmlFor="status">Status *</Label>
+                  <Select
+                    name="status"
+                    value={formData.status}
+                    onValueChange={(value: "publish" | "draft") =>
+                      setFormData((prev) => ({ ...prev, status: value }))
+                    }
+                  >
+                    <SelectTrigger id="status" className="w-full">
+                      <SelectValue placeholder="Select status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="draft">Draft</SelectItem>
+                      <SelectItem value="publish">Publish</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="flex flex-col gap-2">
+                  <Label htmlFor="type">Type</Label>
+                  <Popover open={typeOpen} onOpenChange={setTypeOpen}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        aria-expanded={typeOpen}
+                        className="w-full justify-between"
+                      >
+                        {formData.type
+                          ? types.find(
+                            (type) => type._id === formData.type
+                          )?.title
+                          : "Select type..."}
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </PopoverTrigger>
+
+                    <PopoverContent className="p-0" align="start">
+                      <Command>
+                        <CommandInput
+                          placeholder="Search type..."
+                          className="h-9"
+                        />
+                        <CommandList>
+                          <CommandEmpty>No type found.</CommandEmpty>
+                          <CommandGroup>
+                            {types.map((type) => (
+                              <CommandItem
+                                key={type._id}
+                                value={type.title}
+                                onSelect={(currentValue) => {
+                                  const selectedType = types.find(
+                                    (t) => t.title === currentValue
+                                  );
+                                  setFormData((prev) => ({
+                                    ...prev,
+                                    type:
+                                      selectedType?._id === formData.type
+                                        ? ""
+                                        : selectedType?._id || "",
+                                  }));
+                                  setTypeOpen(false);
+                                }}
+                              >
+                                {type.title}
+                                <Check
+                                  className={cn(
+                                    "ml-auto h-4 w-4",
+                                    formData.type === type._id
+                                      ? "opacity-100"
+                                      : "opacity-0"
+                                  )}
+                                />
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
                 </div>
 
                 <div className="flex flex-col gap-2">
@@ -181,66 +275,15 @@ export default function EditProductForm() {
                 </div>
 
                 <div className="flex flex-col gap-2">
-                  <Label htmlFor="type">Type</Label>
-                  <Popover open={typeOpen} onOpenChange={setTypeOpen}>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        role="combobox"
-                        aria-expanded={typeOpen}
-                        className="w-full justify-between"
-                      >
-                        {formData.type
-                          ? types.find(
-                            (type) => type._id === formData.type
-                          )?.title
-                          : "Select type..."}
-                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="p-0" align="start">
-                      <Command>
-                        <CommandInput
-                          placeholder="Search type..."
-                          className="h-9"
-                        />
-                        <CommandList>
-                          <CommandEmpty>No type found.</CommandEmpty>
-                          <CommandGroup>
-                            {types.map((type) => (
-                              <CommandItem
-                                key={type._id}
-                                value={type.title}
-                                onSelect={(currentValue) => {
-                                  const selectedType = types.find(
-                                    (t) => t.title === currentValue
-                                  );
-                                  setFormData((prev) => ({
-                                    ...prev,
-                                    type:
-                                      selectedType?._id === formData.type
-                                        ? ""
-                                        : selectedType?._id || "",
-                                  }));
-                                  setTypeOpen(false);
-                                }}
-                              >
-                                {type.title}
-                                <Check
-                                  className={cn(
-                                    "ml-auto h-4 w-4",
-                                    formData.type === type._id
-                                      ? "opacity-100"
-                                      : "opacity-0"
-                                  )}
-                                />
-                              </CommandItem>
-                            ))}
-                          </CommandGroup>
-                        </CommandList>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
+                  <Label htmlFor="downloadUrl">Download URL</Label>
+                  <Input
+                    id="downloadUrl"
+                    name="downloadUrl"
+                    type="text"
+                    value={formData.downloadUrl || ""}
+                    onChange={handleChange}
+                    placeholder="https://example.com/download"
+                  />
                 </div>
               </div>
 
@@ -273,18 +316,6 @@ export default function EditProductForm() {
                 </div>
 
                 <div className="flex flex-col gap-2">
-                  <Label htmlFor="downloadUrl">Download URL</Label>
-                  <Input
-                    id="downloadUrl"
-                    name="downloadUrl"
-                    type="text"
-                    value={formData.downloadUrl || ""}
-                    onChange={handleChange}
-                    placeholder="https://example.com/download"
-                  />
-                </div>
-
-                <div className="flex flex-col gap-2">
                   <Label htmlFor="paymentType">Payment Type *</Label>
                   <Select
                     name="paymentType"
@@ -299,25 +330,6 @@ export default function EditProductForm() {
                     <SelectContent>
                       <SelectItem value="free">Free</SelectItem>
                       <SelectItem value="paid">Paid</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="status">Status *</Label>
-                  <Select
-                    name="status"
-                    value={formData.status}
-                    onValueChange={(value: "publish" | "draft") =>
-                      setFormData((prev) => ({ ...prev, status: value }))
-                    }
-                  >
-                    <SelectTrigger id="status" className="w-full">
-                      <SelectValue placeholder="Select status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="draft">Draft</SelectItem>
-                      <SelectItem value="publish">Publish</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -622,14 +634,28 @@ export default function EditProductForm() {
                   <div className="space-y-4">
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 max-h-60 overflow-y-auto p-2">
                       {formData.images.map((image, index) => (
-                        <div key={index} className="relative group">
+                        <div
+                          key={index}
+                          draggable
+                          onDragStart={() => handleDragStart(index)}
+                          onDragOver={(e) => handleDragOver(e, index)}
+                          onDragEnd={handleDragEnd}
+                          className={`relative group cursor-grab active:cursor-grabbing transition-transform ${draggedIndex === index
+                            ? "opacity-50 scale-95"
+                            : "hover:scale-105"
+                            }`}
+                        >
+                          <div className="absolute top-1 left-1 bg-black/70 text-white text-xs px-1.5 py-0.5 rounded z-10 font-medium">
+                            {index + 1}
+                          </div>
                           <Image
                             src={image}
                             alt={`Product image ${index + 1}`}
                             width={80}
                             height={80}
-                            className="w-full h-20 object-cover rounded border"
+                            className="w-full h-20 object-cover rounded border shadow-sm"
                           />
+                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 rounded transition-colors" />
                           <button
                             type="button"
                             onClick={() =>
@@ -640,7 +666,7 @@ export default function EditProductForm() {
                                 ),
                               }))
                             }
-                            className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                            className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity z-10 hover:bg-destructive/90 shadow-md"
                           >
                             <span className="w-4 h-4 flex items-center justify-center">
                               ×
@@ -649,34 +675,56 @@ export default function EditProductForm() {
                         </div>
                       ))}
                     </div>
-                    <div className="flex flex-col sm:flex-row gap-2">
-                      <div className="relative flex-1">
-                        <Input
-                          type="file"
-                          id="image-upload"
-                          accept="image/*"
-                          onChange={handleFileUpload}
-                          className="hidden"
-                        />
-                        <Button
-                          type="button"
-                          variant="outline"
-                          onClick={() =>
-                            document.getElementById("image-upload")?.click()
-                          }
-                          disabled={isImageUploading}
-                          className="w-full"
-                        >
-                          {isImageUploading ? "Uploading..." : "Choose Image"}
-                        </Button>
-                        {uploadProgress > 0 && (
-                          <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
-                            <div
-                              className="bg-primary h-2 rounded-full transition-all duration-300"
-                              style={{ width: `${uploadProgress}%` }}
-                            ></div>
+                    {formData.images.length > 0 && (
+                      <p className="text-xs text-muted-foreground text-center">
+                        Drag images to reorder them
+                      </p>
+                    )}
+                    <div
+                      ref={dropZoneRef}
+                      onDragOver={handleDragOverUpload}
+                      onDragLeave={handleDragLeaveUpload}
+                      onDrop={handleDropUpload}
+                      className={`border-2 border-dashed rounded-lg p-6 transition-colors ${isDraggingOver
+                        ? "border-primary bg-primary/10"
+                        : "border-gray-300 hover:border-gray-400"
+                        }`}
+                    >
+                      <div className="flex flex-col items-center justify-center gap-2">
+                        <p className="text-sm text-muted-foreground text-center">
+                          Drag and drop images here, or click to select
+                        </p>
+                        <div className="flex flex-col sm:flex-row gap-2 w-full max-w-md">
+                          <div className="relative flex-1">
+                            <Input
+                              type="file"
+                              id="image-upload"
+                              accept="image/*"
+                              onChange={handleFileUpload}
+                              className="hidden"
+                              multiple
+                            />
+                            <Button
+                              type="button"
+                              variant="outline"
+                              onClick={() =>
+                                document.getElementById("image-upload")?.click()
+                              }
+                              disabled={isImageUploading}
+                              className="w-full"
+                            >
+                              {isImageUploading ? "Uploading..." : "Choose Images"}
+                            </Button>
+                            {uploadProgress > 0 && (
+                              <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
+                                <div
+                                  className="bg-primary h-2 rounded-full transition-all duration-300"
+                                  style={{ width: `${uploadProgress}%` }}
+                                ></div>
+                              </div>
+                            )}
                           </div>
-                        )}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -847,6 +895,6 @@ export default function EditProductForm() {
           </form>
         </CardContent>
       </Card>
-    </div>
+    </section>
   );
 }

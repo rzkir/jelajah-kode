@@ -68,11 +68,20 @@ export default function NewProductForm() {
     uploadProgress,
     thumbnailUploadProgress,
     user,
+    draggedIndex,
+    isDraggingOver,
+    dropZoneRef,
     handleFileUpload,
     handleThumbnailUpload,
     handleChange,
     handlePriceChange,
     handleSubmit,
+    handleDragStart,
+    handleDragOver,
+    handleDragEnd,
+    handleDragOverUpload,
+    handleDragLeaveUpload,
+    handleDropUpload,
   } = useStateCreateProducts();
 
   const [categoryOpen, setCategoryOpen] = React.useState(false);
@@ -83,7 +92,7 @@ export default function NewProductForm() {
   }
 
   return (
-    <div className="container">
+    <section>
       <Card>
         <CardHeader>
           <CardTitle>Create Product</CardTitle>
@@ -622,14 +631,28 @@ export default function NewProductForm() {
                   <div className="space-y-4">
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 max-h-60 overflow-y-auto p-2">
                       {formData.images.map((image, index) => (
-                        <div key={index} className="relative group">
+                        <div
+                          key={index}
+                          draggable
+                          onDragStart={() => handleDragStart(index)}
+                          onDragOver={(e) => handleDragOver(e, index)}
+                          onDragEnd={handleDragEnd}
+                          className={`relative group cursor-grab active:cursor-grabbing transition-transform ${draggedIndex === index
+                            ? "opacity-50 scale-95"
+                            : "hover:scale-105"
+                            }`}
+                        >
+                          <div className="absolute top-1 left-1 bg-black/70 text-white text-xs px-1.5 py-0.5 rounded z-10 font-medium">
+                            {index + 1}
+                          </div>
                           <Image
                             src={image}
                             alt={`Product image ${index + 1}`}
                             width={80}
                             height={80}
-                            className="w-full h-20 object-cover rounded border"
+                            className="w-full h-20 object-cover rounded border shadow-sm"
                           />
+                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 rounded transition-colors" />
                           <button
                             type="button"
                             onClick={() =>
@@ -640,7 +663,7 @@ export default function NewProductForm() {
                                 ),
                               }))
                             }
-                            className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                            className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity z-10 hover:bg-destructive/90 shadow-md"
                           >
                             <span className="w-4 h-4 flex items-center justify-center">
                               ×
@@ -649,34 +672,56 @@ export default function NewProductForm() {
                         </div>
                       ))}
                     </div>
-                    <div className="flex flex-col sm:flex-row gap-2">
-                      <div className="relative flex-1">
-                        <Input
-                          type="file"
-                          id="image-upload"
-                          accept="image/*"
-                          onChange={handleFileUpload}
-                          className="hidden"
-                        />
-                        <Button
-                          type="button"
-                          variant="outline"
-                          onClick={() =>
-                            document.getElementById("image-upload")?.click()
-                          }
-                          disabled={isImageUploading}
-                          className="w-full"
-                        >
-                          {isImageUploading ? "Uploading..." : "Choose Image"}
-                        </Button>
-                        {uploadProgress > 0 && (
-                          <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
-                            <div
-                              className="bg-primary h-2 rounded-full transition-all duration-300"
-                              style={{ width: `${uploadProgress}%` }}
-                            ></div>
+                    {formData.images.length > 0 && (
+                      <p className="text-xs text-muted-foreground text-center">
+                        Drag images to reorder them
+                      </p>
+                    )}
+                    <div
+                      ref={dropZoneRef}
+                      onDragOver={handleDragOverUpload}
+                      onDragLeave={handleDragLeaveUpload}
+                      onDrop={handleDropUpload}
+                      className={`border-2 border-dashed rounded-lg p-6 transition-colors ${isDraggingOver
+                        ? "border-primary bg-primary/10"
+                        : "border-gray-300 hover:border-gray-400"
+                        }`}
+                    >
+                      <div className="flex flex-col items-center justify-center gap-2">
+                        <p className="text-sm text-muted-foreground text-center">
+                          Drag and drop images here, or click to select
+                        </p>
+                        <div className="flex flex-col sm:flex-row gap-2 w-full max-w-md">
+                          <div className="relative flex-1">
+                            <Input
+                              type="file"
+                              id="image-upload"
+                              accept="image/*"
+                              onChange={handleFileUpload}
+                              className="hidden"
+                              multiple
+                            />
+                            <Button
+                              type="button"
+                              variant="outline"
+                              onClick={() =>
+                                document.getElementById("image-upload")?.click()
+                              }
+                              disabled={isImageUploading}
+                              className="w-full"
+                            >
+                              {isImageUploading ? "Uploading..." : "Choose Images"}
+                            </Button>
+                            {uploadProgress > 0 && (
+                              <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
+                                <div
+                                  className="bg-primary h-2 rounded-full transition-all duration-300"
+                                  style={{ width: `${uploadProgress}%` }}
+                                ></div>
+                              </div>
+                            )}
                           </div>
-                        )}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -847,6 +892,6 @@ export default function NewProductForm() {
           </form>
         </CardContent>
       </Card>
-    </div>
+    </section>
   );
 }

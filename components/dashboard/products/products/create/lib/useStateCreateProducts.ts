@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 import { useRouter, useSearchParams } from "next/navigation";
 
@@ -50,6 +50,11 @@ export function useStateCreateProducts() {
   const [isThumbnailUploading, setIsThumbnailUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [thumbnailUploadProgress, setThumbnailUploadProgress] = useState(0);
+  
+  // Drag and drop state
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const [isDraggingOver, setIsDraggingOver] = useState(false);
+  const dropZoneRef = useRef<HTMLDivElement | null>(null);
 
   // Auto-generate productsId from title
   useEffect(() => {
@@ -141,72 +146,27 @@ export function useStateCreateProducts() {
   }, [isEdit, router]);
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
 
-    if (!file.type.startsWith("image/")) {
-      toast.error("Please select an image file");
+    const imageFiles = files.filter((file) => file.type.startsWith("image/"));
+
+    if (imageFiles.length === 0) {
+      toast.error("Please select image files");
       return;
     }
 
-    setIsImageUploading(true);
-    setUploadProgress(0);
-
-    try {
-      const formData = new FormData();
-      formData.append("file", file);
-
-      // Simulate upload progress
-      const interval = setInterval(() => {
-        setUploadProgress((prev) => {
-          if (prev >= 90) {
-            clearInterval(interval);
-            return prev;
-          }
-          return prev + 10;
-        });
-      }, 200);
-
-      const apiSecret = API_CONFIG.SECRET;
-      const headers: HeadersInit = {};
-      if (apiSecret) {
-        headers.Authorization = `Bearer ${apiSecret}`;
-      }
-
-      const response = await fetch(API_CONFIG.ENDPOINTS.products.upload, {
-        method: "POST",
-        headers,
-        body: formData,
-      });
-
-      clearInterval(interval);
-      setUploadProgress(100);
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to upload image");
-      }
-
-      const result = await response.json();
-
-      setFormData((prev) => ({
-        ...prev,
-        images: [...prev.images, result.url],
-      }));
-
-      toast.success("Image uploaded successfully!");
-    } catch (error) {
-      console.error("Error uploading image:", error);
-      toast.error(
-        error instanceof Error ? error.message : "Failed to upload image"
+    if (imageFiles.length !== files.length) {
+      toast.warning(
+        `Only ${imageFiles.length} of ${files.length} files are images`
       );
-    } finally {
-      setIsImageUploading(false);
-      setUploadProgress(0);
-      // Reset the file input
-      if (e.target) {
-        e.target.value = "";
-      }
+    }
+
+    await handleMultipleFileUpload(imageFiles);
+
+    // Reset the file input
+    if (e.target) {
+      e.target.value = "";
     }
   };
 
@@ -321,6 +281,117 @@ export function useStateCreateProducts() {
       ...prev,
       price: numericValue,
     }));
+  };
+
+  // Drag and drop handlers for reordering images
+  const handleDragStart = (index: number) => {
+    setDraggedIndex(index);
+  };
+
+  const handleDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    if (draggedIndex === null || draggedIndex === index) return;
+
+    const newImages = [...formData.images];
+    const draggedItem = newImages[draggedIndex];
+    newImages.splice(draggedIndex, 1);
+    newImages.splice(index, 0, draggedItem);
+
+    setFormData((prev) => ({
+      ...prev,
+      images: newImages,
+    }));
+    setDraggedIndex(index);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedIndex(null);
+  };
+
+  // Drag and drop handlers for file upload
+  const handleDragOverUpload = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDraggingOver(true);
+  };
+
+  const handleDragLeaveUpload = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDraggingOver(false);
+  };
+
+  const handleDropUpload = async (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDraggingOver(false);
+
+    const files = Array.from(e.dataTransfer.files);
+    const imageFiles = files.filter((file) => file.type.startsWith("image/"));
+
+    if (imageFiles.length === 0) {
+      toast.error("Please drop image files only");
+      return;
+    }
+
+    if (imageFiles.length !== files.length) {
+      toast.warning(
+        `Only ${imageFiles.length} of ${files.length} files are images`
+      );
+    }
+
+    await handleMultipleFileUpload(imageFiles);
+  };
+
+  const handleMultipleFileUpload = async (files: File[]) => {
+    setIsImageUploading(true);
+    setUploadProgress(0);
+
+    try {
+      const uploadPromises = files.map(async (file) => {
+        const formData = new FormData();
+        formData.append("file", file);
+
+        const apiSecret = API_CONFIG.SECRET;
+        const headers: HeadersInit = {};
+        if (apiSecret) {
+          headers.Authorization = `Bearer ${apiSecret}`;
+        }
+
+        const response = await fetch(API_CONFIG.ENDPOINTS.products.upload, {
+          method: "POST",
+          headers,
+          body: formData,
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || "Failed to upload image");
+        }
+
+        const result = await response.json();
+        return result.url;
+      });
+
+      const uploadedUrls = await Promise.all(uploadPromises);
+
+      setFormData((prev) => ({
+        ...prev,
+        images: [...prev.images, ...uploadedUrls],
+      }));
+
+      toast.success(
+        `${uploadedUrls.length} image${uploadedUrls.length > 1 ? "s" : ""} uploaded successfully!`
+      );
+    } catch (error) {
+      console.error("Error uploading images:", error);
+      toast.error(
+        error instanceof Error ? error.message : "Failed to upload images"
+      );
+    } finally {
+      setIsImageUploading(false);
+      setUploadProgress(0);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -456,11 +527,22 @@ export function useStateCreateProducts() {
     uploadProgress,
     thumbnailUploadProgress,
     user,
+    // Drag and drop state
+    draggedIndex,
+    isDraggingOver,
+    dropZoneRef,
     // Handlers
     handleFileUpload,
     handleThumbnailUpload,
     handleChange,
     handlePriceChange,
     handleSubmit,
+    // Drag and drop handlers
+    handleDragStart,
+    handleDragOver,
+    handleDragEnd,
+    handleDragOverUpload,
+    handleDragLeaveUpload,
+    handleDropUpload,
   };
 }
