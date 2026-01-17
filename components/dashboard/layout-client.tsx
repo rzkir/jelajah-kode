@@ -1,5 +1,8 @@
 "use client";
 
+import React from "react";
+import { usePathname } from "next/navigation";
+
 import { AppSidebar } from "@/components/app-sidebar";
 
 import {
@@ -19,11 +22,16 @@ import {
     SidebarTrigger,
 } from "@/components/ui/sidebar";
 
+import { generateBreadcrumbItems } from "@/helper/breadchumb/generateBreadcrumb";
+
 export default function DashboardLayoutClient({
     children,
 }: {
     children: React.ReactNode;
 }) {
+    const pathname = usePathname();
+    const breadcrumbItems = generateBreadcrumbItems(pathname);
+
     return (
         <SidebarProvider>
             <AppSidebar />
@@ -37,15 +45,25 @@ export default function DashboardLayoutClient({
                         />
                         <Breadcrumb>
                             <BreadcrumbList>
-                                <BreadcrumbItem className="hidden md:block">
-                                    <BreadcrumbLink href="#">
-                                        Building Your Application
-                                    </BreadcrumbLink>
-                                </BreadcrumbItem>
-                                <BreadcrumbSeparator className="hidden md:block" />
-                                <BreadcrumbItem>
-                                    <BreadcrumbPage>Data Fetching</BreadcrumbPage>
-                                </BreadcrumbItem>
+                                {breadcrumbItems.map((item, index) => {
+                                    const isLast = index === breadcrumbItems.length - 1;
+                                    return (
+                                        <React.Fragment key={item.url}>
+                                            {index > 0 && (
+                                                <BreadcrumbSeparator className="hidden md:block" />
+                                            )}
+                                            <BreadcrumbItem className={index === 0 ? "hidden md:block" : ""}>
+                                                {isLast ? (
+                                                    <BreadcrumbPage>{item.name}</BreadcrumbPage>
+                                                ) : (
+                                                    <BreadcrumbLink href={item.url}>
+                                                        {item.name}
+                                                    </BreadcrumbLink>
+                                                )}
+                                            </BreadcrumbItem>
+                                        </React.Fragment>
+                                    );
+                                })}
                             </BreadcrumbList>
                         </Breadcrumb>
                     </div>

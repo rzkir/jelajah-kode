@@ -30,7 +30,9 @@ export function generateBreadcrumbItems(
     let name = segment;
 
     // Handle common route names
-    if (segment === "products") {
+    if (segment === "dashboard") {
+      name = "Dashboard";
+    } else if (segment === "products") {
       name = "Products";
     } else if (segment === "articles") {
       name = "Articles";
@@ -40,6 +42,42 @@ export function generateBreadcrumbItems(
       name = "Tags";
     } else if (segment === "types") {
       name = "Types";
+    } else if (segment === "framework") {
+      name = "Framework";
+    } else if (segment === "transactions") {
+      name = "Transactions";
+    } else if (segment === "management-users") {
+      name = "Management Users";
+    } else if (segment === "laporan") {
+      name = "Laporan";
+    } else if (segment === "subscription") {
+      name = "Subscription";
+    } else if (segment === "rekaputasi") {
+      name = "Rekaputasi";
+    } else if (segment === "penjualan-products") {
+      name = "Penjualan Products";
+    } else if (segment === "pending") {
+      name = "Pending";
+    } else if (segment === "success") {
+      name = "Success";
+    } else if (segment === "canceled") {
+      name = "Canceled";
+    } else if (segment === "expired") {
+      name = "Expired";
+    } else if (segment === "verified") {
+      name = "Verified";
+    } else if (segment === "active") {
+      name = "Active";
+    } else if (segment === "inactive") {
+      name = "Inactive";
+    } else if (segment === "user") {
+      name = "User";
+    } else if (segment === "accounts") {
+      name = "Accounts";
+    } else if (segment === "new") {
+      name = "New";
+    } else if (segment === "edit") {
+      name = "Edit";
     } else if (segment === "about") {
       name = "About";
     } else if (segment === "contact") {

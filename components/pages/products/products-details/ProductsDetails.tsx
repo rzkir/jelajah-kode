@@ -280,11 +280,11 @@ export default function ProductsDetails({ product }: ProductsDetailsProps) {
                                             {t("productsPage.customerReviews")}
                                         </h3>
 
-                                        {product.ratingAverage && product.ratingCount ? (
+                                        {(product.ratingCount && product.ratingCount > 0) ? (
                                             <div className="flex items-center gap-3 flex-wrap justify-between">
                                                 <div className="flex items-center gap-1.5 sm:gap-2">
                                                     <span className="text-3xl sm:text-4xl md:text-5xl font-extrabold bg-linear-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-                                                        {product.ratingAverage?.toFixed(1)}
+                                                        {product.ratingAverage?.toFixed(1) || '0.0'}
                                                     </span>
 
                                                     <div className="flex items-center gap-0.5 sm:gap-1">
@@ -306,14 +306,7 @@ export default function ProductsDetails({ product }: ProductsDetailsProps) {
                                                     </span>
                                                 </div>
                                             </div>
-                                        ) : (
-                                            <div className="text-center py-6 sm:py-8">
-                                                <div className="inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-full bg-muted mb-3 sm:mb-4">
-                                                    <Star className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-muted-foreground" />
-                                                </div>
-                                                <p className="text-muted-foreground text-sm sm:text-base md:text-lg font-medium" suppressHydrationWarning>{t("productsPage.noReviewsYet")}</p>
-                                            </div>
-                                        )}
+                                        ) : null}
                                     </div>
 
                                     {/* Filter Controls */}
