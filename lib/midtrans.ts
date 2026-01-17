@@ -11,7 +11,7 @@ if (!process.env.MIDTRANS_CLIENT_KEY) {
 // Create Snap API instance
 export const snap = new midtransClient.Snap({
   // Set to true if you're using production environment
-  isProduction: false,
+  isProduction: true,
   // Use Server Key for backend operations
   serverKey: process.env.MIDTRANS_SERVER_KEY,
   // Use Client Key for frontend operations
@@ -20,7 +20,7 @@ export const snap = new midtransClient.Snap({
 
 // Create Core API instance for transaction status checking
 export const coreApi = new midtransClient.CoreApi({
-  isProduction: false,
+  isProduction: true,
   serverKey: process.env.MIDTRANS_SERVER_KEY,
   clientKey: process.env.MIDTRANS_CLIENT_KEY,
 });

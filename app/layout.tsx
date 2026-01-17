@@ -21,7 +21,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const midtransClientKey = process.env.MIDTRANS_CLIENT_KEY || "";
+  const midtransClientKey = process.env.MIDTRANS_CLIENT_KEY;
 
   return (
     <html lang="id" suppressHydrationWarning>
@@ -31,7 +31,7 @@ export default function RootLayout({
         <LanguageInitializer />
         {midtransClientKey && (
           <Script
-            src="https://app.sandbox.midtrans.com/snap/snap.js"
+            src="https://app.midtrans.com/snap/snap.js"
             data-client-key={midtransClientKey}
             strategy="afterInteractive"
           />

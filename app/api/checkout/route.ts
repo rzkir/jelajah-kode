@@ -394,14 +394,6 @@ export async function POST(request: NextRequest) {
         transactionObj.updatedAt?.toISOString() || new Date().toISOString(),
     };
 
-    console.log("Transaction created successfully:", {
-      _id: response._id,
-      order_id: response.order_id,
-      paymentMethod: response.paymentMethod,
-      status: response.status,
-      total_amount: response.total_amount,
-    });
-
     return NextResponse.json(response, { status: 201 });
   } catch (error) {
     console.error("Checkout error:", error);
