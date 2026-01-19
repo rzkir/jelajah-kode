@@ -6,6 +6,9 @@ import { API_CONFIG } from "@/lib/config";
 
 //====================================== Home Page Metadata ======================================//
 export const HomePageMetadata: Metadata = {
+  verification: {
+    google: "PPFLRECsv286Qh9u6AsO2sLWattnKN-Z2BsNEMKprsk",
+  },
   title: "Jelajah Kode - Temukan Template yang Sesuai",
   description:
     "Mulai langkah awal pengembangan dengan kode sumber siap pakai, template, dan komponen dari pengembang terbaik. Jelajahi 1000+ kode sumber premium di platform Jelajah Kode untuk proyek Anda.",

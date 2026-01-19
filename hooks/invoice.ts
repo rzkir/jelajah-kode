@@ -257,8 +257,8 @@ export default function useInvoice() {
           transaction.status === "success"
             ? [34, 197, 94]
             : transaction.status === "pending"
-            ? [234, 179, 8]
-            : [239, 68, 68];
+              ? [234, 179, 8]
+              : [239, 68, 68];
 
         doc.setFillColor(statusColor[0], statusColor[1], statusColor[2]);
         doc.roundedRect(
