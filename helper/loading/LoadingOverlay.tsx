@@ -54,7 +54,7 @@ export default function LoadingOverlay() {
                     {/* Text dengan animasi */}
                     <div className="flex flex-col items-center gap-3 text-center">
                         <h2 className="text-2xl font-bold text-foreground">
-                            Jelajah Kode
+                            Kodera
                         </h2>
                         <p className="text-sm text-muted-foreground animate-pulse">
                             Memproses transaksi Anda...

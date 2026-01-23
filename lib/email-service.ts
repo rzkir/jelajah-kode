@@ -23,9 +23,9 @@ class EmailService {
     const { html, text } = generateVerificationEmailTemplate(otp);
 
     await this.transporter.sendMail({
-      from: `"Jelajah Kode" <${process.env.EMAIL_ADMIN}>`,
+      from: `"Kodera" <${process.env.EMAIL_ADMIN}>`,
       to,
-      subject: "Welcome to Jelajah Kode! Email Verification Code",
+      subject: "Welcome to Kodera! Email Verification Code",
       html,
       text,
     });
@@ -35,7 +35,7 @@ class EmailService {
     const { html, text } = generatePasswordResetEmailTemplate(otp);
 
     await this.transporter.sendMail({
-      from: `"Jelajah Kode" <${process.env.EMAIL_ADMIN}>`,
+      from: `"Kodera" <${process.env.EMAIL_ADMIN}>`,
       to,
       subject: "Password Reset Code",
       text,
@@ -58,7 +58,7 @@ class EmailService {
     );
 
     await this.transporter.sendMail({
-      from: `"Jelajah Kode" <${process.env.EMAIL_ADMIN}>`,
+      from: `"Kodera" <${process.env.EMAIL_ADMIN}>`,
       to,
       subject: "Transaksi Pending - Menunggu Pembayaran",
       html,
@@ -70,9 +70,9 @@ class EmailService {
     const { html, text } = generateSubscriptionWelcomeEmailTemplate(to);
 
     await this.transporter.sendMail({
-      from: `"Jelajah Kode" <${process.env.EMAIL_ADMIN}>`,
+      from: `"Kodera" <${process.env.EMAIL_ADMIN}>`,
       to,
-      subject: "Selamat Bergabung dengan Newsletter Jelajah Kode!",
+      subject: "Selamat Bergabung dengan Newsletter Kodera!",
       html,
       text,
     });
@@ -97,7 +97,7 @@ class EmailService {
     );
 
     await this.transporter.sendMail({
-      from: `"Jelajah Kode" <${process.env.EMAIL_ADMIN}>`,
+      from: `"Kodera" <${process.env.EMAIL_ADMIN}>`,
       to,
       subject: `🆕 Produk Baru: ${productTitle}`,
       html,
@@ -120,7 +120,7 @@ class EmailService {
     );
 
     await this.transporter.sendMail({
-      from: `"Jelajah Kode" <${process.env.EMAIL_ADMIN}>`,
+      from: `"Kodera" <${process.env.EMAIL_ADMIN}>`,
       to,
       subject: `📝 Artikel Baru: ${articleTitle}`,
       html,
@@ -135,7 +135,7 @@ class EmailService {
     text?: string
   ): Promise<void> {
     await this.transporter.sendMail({
-      from: `"Jelajah Kode" <${process.env.EMAIL_ADMIN}>`,
+      from: `"Kodera" <${process.env.EMAIL_ADMIN}>`,
       to,
       subject,
       text,

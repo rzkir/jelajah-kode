@@ -41,7 +41,7 @@ export default function Header() {
                 <CodeXml className="size-6 text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" />
               </div>
               <span className="text-xl font-bold text-gray-900 dark:text-white">
-                JelajahKode
+                Kodera
               </span>
             </Link>
 

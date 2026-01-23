@@ -45,7 +45,7 @@ export function OTPForm({ className, email, ...props }: React.ComponentProps<"di
               <div className="flex size-8 items-center justify-center rounded-md">
                 <GalleryVerticalEnd className="size-6" />
               </div>
-              <span className="sr-only">Jelajah Kode.</span>
+              <span className="sr-only">Kodera.</span>
             </a>
             <h1 className="text-xl font-bold" suppressHydrationWarning>{t("auth.enterCodeTitle")}</h1>
             <FieldDescription suppressHydrationWarning>

@@ -6,24 +6,21 @@ import { API_CONFIG } from "@/lib/config";
 
 //====================================== Home Page Metadata ======================================//
 export const HomePageMetadata: Metadata = {
-  verification: {
-    google: "PPFLRECsv286Qh9u6AsO2sLWattnKN-Z2BsNEMKprsk",
-  },
-  title: "Jelajah Kode - Temukan Template yang Sesuai",
+  title: "Kodera - Temukan Template yang Sesuai",
   description:
-    "Mulai langkah awal pengembangan dengan kode sumber siap pakai, template, dan komponen dari pengembang terbaik. Jelajahi 1000+ kode sumber premium di platform Jelajah Kode untuk proyek Anda.",
+    "Mulai langkah awal pengembangan dengan kode sumber siap pakai, template, dan komponen dari pengembang terbaik. Jelajahi 1000+ kode sumber premium di platform Kodera untuk proyek Anda.",
   openGraph: {
-    title: "Jelajah Kode - Temukan Template yang Sesuai untuk Proyek Anda",
+    title: "Kodera - Temukan Template yang Sesuai untuk Proyek Anda",
     description:
-      "Mulai langkah awal pengembangan dengan kode sumber siap pakai, template, dan komponen dari pengembang terbaik. Jelajahi 1000+ kode sumber premium di platform Jelajah Kode.",
+      "Mulai langkah awal pengembangan dengan kode sumber siap pakai, template, dan komponen dari pengembang terbaik. Jelajahi 1000+ kode sumber premium di platform Kodera.",
     url: `${API_CONFIG.ENDPOINTS.base}`,
-    siteName: "Jelajah Kode - Temukan Template yang Sesuai untuk Proyek Anda",
+    siteName: "Kodera - Temukan Template yang Sesuai untuk Proyek Anda",
     images: [
       {
         url: "/desktop.png",
         width: 1200,
         height: 630,
-        alt: "Jelajah Kode - Temukan Template yang Sesuai",
+        alt: "Kodera - Temukan Template yang Sesuai",
       },
     ],
     locale: "en_US",
@@ -31,30 +28,30 @@ export const HomePageMetadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Jelajah Kode - Temukan Template yang Sesuai",
+    title: "Kodera - Temukan Template yang Sesuai",
     description:
-      "Mulai langkah awal pengembangan dengan kode sumber siap pakai, template, dan komponen dari pengembang terbaik. Jelajahi 1000+ kode sumber premium di platform Jelajah Kode.",
+      "Mulai langkah awal pengembangan dengan kode sumber siap pakai, template, dan komponen dari pengembang terbaik. Jelajahi 1000+ kode sumber premium di platform Kodera.",
     images: ["/desktop.png"],
   },
 };
 
 //====================================== Products Page Metadata ======================================//
 export const ProductsPageMetadata: Metadata = {
-  title: "Products - jelajah Code",
+  title: "Products - Kodera",
   description:
-    "Jelajahi 1000+ kode sumber premium di platform Jelajah Kode untuk proyek Anda.",
+    "Jelajahi 1000+ kode sumber premium di platform Kodera untuk proyek Anda.",
   openGraph: {
-    title: "Products - jelajah Code",
+    title: "Products - Kodera",
     description:
-      "Jelajahi 1000+ kode sumber premium di platform Jelajah Kode untuk proyek Anda.",
+      "Jelajahi 1000+ kode sumber premium di platform Kodera untuk proyek Anda.",
     url: `${API_CONFIG.ENDPOINTS.base}/products`,
-    siteName: "Jelajah Kode - Temukan Template yang Sesuai untuk Proyek Anda",
+    siteName: "Kodera - Temukan Template yang Sesuai untuk Proyek Anda",
     images: [
       {
         url: "/products.png",
         width: 1200,
         height: 630,
-        alt: "Jelajah Kode - Temukan Template yang Sesuai untuk Proyek Anda",
+        alt: "Kodera - Temukan Template yang Sesuai untuk Proyek Anda",
       },
     ],
     locale: "en_US",
@@ -62,9 +59,9 @@ export const ProductsPageMetadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Products - jelajah Code",
+    title: "Products - Kodera",
     description:
-      "Jelajahi 1000+ kode sumber premium di platform Jelajah Kode untuk proyek Anda.",
+      "Jelajahi 1000+ kode sumber premium di platform Kodera untuk proyek Anda.",
     images: ["/products.png"],
   },
 };
@@ -170,21 +167,21 @@ export async function generateProductsPageMetadata(
       let description = "";
 
       if (query && filters.length > 0) {
-        title = `Products "${query}" (${filters.join(", ")}) - jelajah Code`;
+        title = `Products "${query}" (${filters.join(", ")}) - Kodera`;
         description = `Found ${resultCount} product${resultCount !== 1 ? "s" : ""
           } for "${query}" with filters: ${filters.join(
             ", "
           )}. Browse and discover products that match your search.`;
       } else if (query) {
-        title = `Products "${query}" - jelajah Code`;
+        title = `Products "${query}" - Kodera`;
         description = `Found ${resultCount} product${resultCount !== 1 ? "s" : ""
-          } for "${query}" on jelajah Code. Browse and discover products that match your search.`;
+          } for "${query}" on Kodera. Browse and discover products that match your search.`;
       } else {
-        title = `Products (${filters.join(", ")}) - jelajah Code`;
+        title = `Products (${filters.join(", ")}) - Kodera`;
         description = `Found ${resultCount} product${resultCount !== 1 ? "s" : ""
           } matching your filters: ${filters.join(
             ", "
-          )}. Browse and discover products on jelajah Code.`;
+          )}. Browse and discover products on Kodera.`;
       }
 
       return {
@@ -194,7 +191,7 @@ export async function generateProductsPageMetadata(
           title,
           description,
           url: productsUrl,
-          siteName: "jelajah Code",
+          siteName: "Kodera",
           images: [
             {
               url: "/products.png",
@@ -221,14 +218,14 @@ export async function generateProductsPageMetadata(
       if (query && filters.length > 0) {
         fallbackTitle = `Products "${query}" (${filters.join(
           ", "
-        )}) - jelajah Code`;
-        fallbackDescription = `Browse products for "${query}" with filters on jelajah Code platform`;
+        )}) - Kodera`;
+        fallbackDescription = `Browse products for "${query}" with filters on Kodera platform`;
       } else if (query) {
-        fallbackTitle = `Products "${query}" - jelajah Code`;
-        fallbackDescription = `Browse products for "${query}" on jelajah Code platform`;
+        fallbackTitle = `Products "${query}" - Kodera`;
+        fallbackDescription = `Browse products for "${query}" on Kodera platform`;
       } else {
-        fallbackTitle = `Products (${filters.join(", ")}) - jelajah Code`;
-        fallbackDescription = `Browse products with filters on jelajah Code platform`;
+        fallbackTitle = `Products (${filters.join(", ")}) - Kodera`;
+        fallbackDescription = `Browse products with filters on Kodera platform`;
       }
 
       return {
@@ -238,7 +235,7 @@ export async function generateProductsPageMetadata(
           title: fallbackTitle,
           description: fallbackDescription,
           url: productsUrl,
-          siteName: "jelajah Code",
+          siteName: "Kodera",
           images: [
             {
               url: "/products.png",
@@ -265,19 +262,19 @@ export async function generateProductsPageMetadata(
 
 //====================================== Products Create Metadata ======================================//
 export const ProductsCreateMetadata: Metadata = {
-  title: "Add New Product - jelajah Code",
-  description: "Create and add new products to your jelajah Code platform",
+  title: "Add New Product - Kodera",
+  description: "Create and add new products to your Kodera platform",
   openGraph: {
-    title: "Add New Product - jelajah Code",
-    description: "Create and add new products to your jelajah Code platform",
+    title: "Add New Product - Kodera",
+    description: "Create and add new products to your Kodera platform",
     url: `${API_CONFIG.ENDPOINTS.base}`,
-    siteName: "jelajah Code",
+    siteName: "Kodera",
     images: [
       {
         url: "/new-product.png",
         width: 1200,
         height: 630,
-        alt: "Add New Product - jelajah Code",
+        alt: "Add New Product - Kodera",
       },
     ],
     locale: "en_US",
@@ -285,28 +282,28 @@ export const ProductsCreateMetadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Add New Product - jelajah Code",
-    description: "Create and add new products to your jelajah Code platform",
+    title: "Add New Product - Kodera",
+    description: "Create and add new products to your Kodera platform",
     images: ["/new-product.png"],
   },
 };
 
 //====================================== Products Edit Metadata ======================================//
 export const ProductsEditMetadata: Metadata = {
-  title: "Edit Product - jelajah Code",
-  description: "Edit and update product details in your jelajah Code platform",
+  title: "Edit Product - Kodera",
+  description: "Edit and update product details in your Kodera platform",
   openGraph: {
-    title: "Edit Product - jelajah Code",
+    title: "Edit Product - Kodera",
     description:
-      "Edit and update product details in your jelajah Code platform",
+      "Edit and update product details in your Kodera platform",
     url: `${API_CONFIG.ENDPOINTS.base}`,
-    siteName: "jelajah Code",
+    siteName: "Kodera",
     images: [
       {
         url: "/edit-product.png",
         width: 1200,
         height: 630,
-        alt: "Edit Product - jelajah Code",
+        alt: "Edit Product - Kodera",
       },
     ],
     locale: "en_US",
@@ -314,9 +311,9 @@ export const ProductsEditMetadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Edit Product - jelajah Code",
+    title: "Edit Product - Kodera",
     description:
-      "Edit and update product details in your jelajah Code platform",
+      "Edit and update product details in your Kodera platform",
     images: ["/edit-product.png"],
   },
 };
@@ -335,13 +332,13 @@ export async function generateProductsDetailsMetadata(
     const url = `${API_CONFIG.ENDPOINTS.base}`;
 
     return {
-      title: `${title} - jelajah Code`,
+      title: `${title} - Kodera`,
       description: description,
       openGraph: {
-        title: `${title} - jelajah Code`,
+        title: `${title} - Kodera`,
         description: description,
         url: url,
-        siteName: "jelajah Code",
+        siteName: "Kodera",
         images: [
           {
             url: thumbnail,
@@ -355,7 +352,7 @@ export async function generateProductsDetailsMetadata(
       },
       twitter: {
         card: "summary_large_image",
-        title: `${title} - jelajah Code`,
+        title: `${title} - Kodera`,
         description: description,
         images: [thumbnail],
       },
@@ -363,13 +360,13 @@ export async function generateProductsDetailsMetadata(
   } catch {
     // Fallback metadata if product fetch fails
     return {
-      title: `Product ${productsId} - jelajah Code`,
-      description: `View product details for ${productsId} on jelajah Code platform`,
+      title: `Product ${productsId} - Kodera`,
+      description: `View product details for ${productsId} on Kodera platform`,
       openGraph: {
-        title: `Product ${productsId} - jelajah Code`,
-        description: `View product details for ${productsId} on jelajah Code platform`,
+        title: `Product ${productsId} - Kodera`,
+        description: `View product details for ${productsId} on Kodera platform`,
         url: `${API_CONFIG.ENDPOINTS.base}`,
-        siteName: "jelajah Code",
+        siteName: "Kodera",
         images: [
           {
             url: "/desktop.png",
@@ -383,8 +380,8 @@ export async function generateProductsDetailsMetadata(
       },
       twitter: {
         card: "summary_large_image",
-        title: `Product ${productsId} - jelajah Code`,
-        description: `View product details for ${productsId} on jelajah Code platform`,
+        title: `Product ${productsId} - Kodera`,
+        description: `View product details for ${productsId} on Kodera platform`,
         images: ["/desktop.png"],
       },
     };
@@ -405,18 +402,18 @@ export async function generateProductsRatingsMetadata(
     const ratingCount = product.ratingCount || 0;
     const url = `${API_CONFIG.ENDPOINTS.base}/products/${productsId}/ratings`;
 
-    const ratingsDescription = `View ratings and reviews for ${title} on jelajah Code. ${ratingCount} review${ratingCount !== 1 ? "s" : ""
+    const ratingsDescription = `View ratings and reviews for ${title} on Kodera. ${ratingCount} review${ratingCount !== 1 ? "s" : ""
       } with an average rating of ${ratingAverage > 0 ? ratingAverage.toFixed(1) : "0"
       }★.`;
 
     return {
-      title: `Ratings & Reviews - ${title} - jelajah Code`,
+      title: `Ratings & Reviews - ${title} - Kodera`,
       description: ratingsDescription,
       openGraph: {
-        title: `Ratings & Reviews - ${title} - jelajah Code`,
+        title: `Ratings & Reviews - ${title} - Kodera`,
         description: ratingsDescription,
         url: url,
-        siteName: "jelajah Code",
+        siteName: "Kodera",
         images: [
           {
             url: thumbnail,
@@ -430,7 +427,7 @@ export async function generateProductsRatingsMetadata(
       },
       twitter: {
         card: "summary_large_image",
-        title: `Ratings & Reviews - ${title} - jelajah Code`,
+        title: `Ratings & Reviews - ${title} - Kodera`,
         description: ratingsDescription,
         images: [thumbnail],
       },
@@ -438,13 +435,13 @@ export async function generateProductsRatingsMetadata(
   } catch {
     // Fallback metadata if product fetch fails
     return {
-      title: `Ratings & Reviews - Product ${productsId} - jelajah Code`,
-      description: `View ratings and reviews for product ${productsId} on jelajah Code platform`,
+      title: `Ratings & Reviews - Product ${productsId} - Kodera`,
+      description: `View ratings and reviews for product ${productsId} on Kodera platform`,
       openGraph: {
-        title: `Ratings & Reviews - Product ${productsId} - jelajah Code`,
-        description: `View ratings and reviews for product ${productsId} on jelajah Code platform`,
+        title: `Ratings & Reviews - Product ${productsId} - Kodera`,
+        description: `View ratings and reviews for product ${productsId} on Kodera platform`,
         url: `${API_CONFIG.ENDPOINTS.base}/products/${productsId}/ratings`,
-        siteName: "jelajah Code",
+        siteName: "Kodera",
         images: [
           {
             url: "/desktop.png",
@@ -458,8 +455,8 @@ export async function generateProductsRatingsMetadata(
       },
       twitter: {
         card: "summary_large_image",
-        title: `Ratings & Reviews - Product ${productsId} - jelajah Code`,
-        description: `View ratings and reviews for product ${productsId} on jelajah Code platform`,
+        title: `Ratings & Reviews - Product ${productsId} - Kodera`,
+        description: `View ratings and reviews for product ${productsId} on Kodera platform`,
         images: ["/desktop.png"],
       },
     };
@@ -468,19 +465,19 @@ export async function generateProductsRatingsMetadata(
 
 //====================================== Checkout Metadata ======================================//
 export const CheckoutMetadata: Metadata = {
-  title: "Checkout - jelajah Code",
-  description: "Review your cart and complete your purchase on jelajah Code",
+  title: "Checkout - Kodera",
+  description: "Review your cart and complete your purchase on Kodera",
   openGraph: {
-    title: "Checkout - jelajah Code",
-    description: "Review your cart and complete your purchase on jelajah Code",
+    title: "Checkout - Kodera",
+    description: "Review your cart and complete your purchase on Kodera",
     url: `${API_CONFIG.ENDPOINTS.base}/checkout`,
-    siteName: "jelajah Code",
+    siteName: "Kodera",
     images: [
       {
         url: "/desktop.png",
         width: 1200,
         height: 630,
-        alt: "Checkout on jelajah Code",
+        alt: "Checkout on Kodera",
       },
     ],
     locale: "en_US",
@@ -488,8 +485,8 @@ export const CheckoutMetadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Checkout - jelajah Code",
-    description: "Review your cart and complete your purchase on jelajah Code",
+    title: "Checkout - Kodera",
+    description: "Review your cart and complete your purchase on Kodera",
     images: ["/desktop.png"],
   },
 };
@@ -504,20 +501,20 @@ export async function generateCheckoutMetadata(
     const productTitle = product?.title ?? title ?? "Checkout";
     const description =
       product?.description ??
-      `Review your cart and complete your purchase on jelajah Code`;
+      `Review your cart and complete your purchase on Kodera`;
     const thumbnail = product?.thumbnail ?? "/desktop.png";
     const url = productId
       ? `${API_CONFIG.ENDPOINTS.base}/checkout?productId=${productId}`
       : `${API_CONFIG.ENDPOINTS.base}/checkout`;
 
     return {
-      title: `${productTitle} - jelajah Code`,
+      title: `${productTitle} - Kodera`,
       description,
       openGraph: {
-        title: `${productTitle} - jelajah Code`,
+        title: `${productTitle} - Kodera`,
         description,
         url,
-        siteName: "jelajah Code",
+        siteName: "Kodera",
         images: [
           {
             url: thumbnail,
@@ -531,7 +528,7 @@ export async function generateCheckoutMetadata(
       },
       twitter: {
         card: "summary_large_image",
-        title: `${productTitle} - jelajah Code`,
+        title: `${productTitle} - Kodera`,
         description,
         images: [thumbnail],
       },
@@ -550,16 +547,16 @@ export async function generateCheckoutStatusMetadata(
     ? `Checkout ${status.charAt(0).toUpperCase()}${status.slice(1)}`
     : "Checkout Status";
   const pageTitle = title ?? statusTitle;
-  const description = `Checkout ${status} on jelajah Code`;
+  const description = `Checkout ${status} on Kodera`;
 
   return {
-    title: `${pageTitle} - jelajah Code`,
+    title: `${pageTitle} - Kodera`,
     description,
     openGraph: {
-      title: `${pageTitle} - jelajah Code`,
+      title: `${pageTitle} - Kodera`,
       description,
       url: `${API_CONFIG.ENDPOINTS.base}/checkout/${status}`,
-      siteName: "jelajah Code",
+      siteName: "Kodera",
       images: [
         {
           url: "/desktop.png",
@@ -573,7 +570,7 @@ export async function generateCheckoutStatusMetadata(
     },
     twitter: {
       card: "summary_large_image",
-      title: `${pageTitle} - jelajah Code`,
+      title: `${pageTitle} - Kodera`,
       description,
       images: ["/desktop.png"],
     },
@@ -582,19 +579,19 @@ export async function generateCheckoutStatusMetadata(
 
 //====================================== Search Page Metadata ======================================//
 export const SearchPageMetadata: Metadata = {
-  title: "Search Products - jelajah Code",
-  description: "Search and discover products on jelajah Code platform",
+  title: "Search Products - Kodera",
+  description: "Search and discover products on Kodera platform",
   openGraph: {
-    title: "Search Products - jelajah Code",
-    description: "Search and discover products on jelajah Code platform",
+    title: "Search Products - Kodera",
+    description: "Search and discover products on Kodera platform",
     url: `${API_CONFIG.ENDPOINTS.base}/search`,
-    siteName: "jelajah Code",
+    siteName: "Kodera",
     images: [
       {
         url: "/desktop.png",
         width: 1200,
         height: 630,
-        alt: "Search Products - jelajah Code",
+        alt: "Search Products - Kodera",
       },
     ],
     locale: "en_US",
@@ -602,8 +599,8 @@ export const SearchPageMetadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Search Products - jelajah Code",
-    description: "Search and discover products on jelajah Code platform",
+    title: "Search Products - Kodera",
+    description: "Search and discover products on Kodera platform",
     images: ["/desktop.png"],
   },
 };
@@ -709,21 +706,21 @@ export async function generateSearchPageMetadata(
       let description = "";
 
       if (query && filters.length > 0) {
-        title = `Search "${query}" (${filters.join(", ")}) - jelajah Code`;
+        title = `Search "${query}" (${filters.join(", ")}) - Kodera`;
         description = `Found ${resultCount} result${resultCount !== 1 ? "s" : ""
           } for "${query}" with filters: ${filters.join(
             ", "
           )}. Browse and discover products that match your search.`;
       } else if (query) {
-        title = `Search Results for "${query}" - jelajah Code`;
+        title = `Search Results for "${query}" - Kodera`;
         description = `Found ${resultCount} result${resultCount !== 1 ? "s" : ""
-          } for "${query}" on jelajah Code. Browse and discover products that match your search.`;
+          } for "${query}" on Kodera. Browse and discover products that match your search.`;
       } else {
-        title = `Search Products (${filters.join(", ")}) - jelajah Code`;
+        title = `Search Products (${filters.join(", ")}) - Kodera`;
         description = `Found ${resultCount} product${resultCount !== 1 ? "s" : ""
           } matching your filters: ${filters.join(
             ", "
-          )}. Browse and discover products on jelajah Code.`;
+          )}. Browse and discover products on Kodera.`;
       }
 
       return {
@@ -733,7 +730,7 @@ export async function generateSearchPageMetadata(
           title,
           description,
           url: searchUrl,
-          siteName: "jelajah Code",
+          siteName: "Kodera",
           images: [
             {
               url: "/desktop.png",
@@ -760,16 +757,16 @@ export async function generateSearchPageMetadata(
       if (query && filters.length > 0) {
         fallbackTitle = `Search "${query}" (${filters.join(
           ", "
-        )}) - jelajah Code`;
-        fallbackDescription = `Search results for "${query}" with filters on jelajah Code platform`;
+        )}) - Kodera`;
+        fallbackDescription = `Search results for "${query}" with filters on Kodera platform`;
       } else if (query) {
-        fallbackTitle = `Search Results for "${query}" - jelajah Code`;
-        fallbackDescription = `Search results for "${query}" on jelajah Code platform`;
+        fallbackTitle = `Search Results for "${query}" - Kodera`;
+        fallbackDescription = `Search results for "${query}" on Kodera platform`;
       } else {
         fallbackTitle = `Search Products (${filters.join(
           ", "
-        )}) - jelajah Code`;
-        fallbackDescription = `Search products with filters on jelajah Code platform`;
+        )}) - Kodera`;
+        fallbackDescription = `Search products with filters on Kodera platform`;
       }
 
       return {
@@ -779,7 +776,7 @@ export async function generateSearchPageMetadata(
           title: fallbackTitle,
           description: fallbackDescription,
           url: searchUrl,
-          siteName: "jelajah Code",
+          siteName: "Kodera",
           images: [
             {
               url: "/desktop.png",
@@ -839,9 +836,9 @@ export async function generateProductsCategoryMetadata(
       }/products/category/${categoryId}${urlParams.toString() ? `?${urlParams.toString()}` : ""
       }`;
 
-    const title = `Products - ${categoryTitle} - jelajah Code`;
+    const title = `Products - ${categoryTitle} - Kodera`;
     const description = `Browse ${resultCount} product${resultCount !== 1 ? "s" : ""
-      } in ${categoryTitle} category on jelajah Code. Discover and explore products that match your interests.`;
+      } in ${categoryTitle} category on Kodera. Discover and explore products that match your interests.`;
 
     return {
       title,
@@ -850,7 +847,7 @@ export async function generateProductsCategoryMetadata(
         title,
         description,
         url: categoryUrl,
-        siteName: "jelajah Code",
+        siteName: "Kodera",
         images: [
           {
             url: "/images/products-og-image.jpg",
@@ -872,8 +869,8 @@ export async function generateProductsCategoryMetadata(
   } catch {
     // Fallback metadata if fetch fails
     const categoryUrl = `${API_CONFIG.ENDPOINTS.base}/products/category/${categoryId}`;
-    const fallbackTitle = `Products - ${categoryId} - jelajah Code`;
-    const fallbackDescription = `Browse products in ${categoryId} category on jelajah Code platform`;
+    const fallbackTitle = `Products - ${categoryId} - Kodera`;
+    const fallbackDescription = `Browse products in ${categoryId} category on Kodera platform`;
 
     return {
       title: fallbackTitle,
@@ -882,7 +879,7 @@ export async function generateProductsCategoryMetadata(
         title: fallbackTitle,
         description: fallbackDescription,
         url: categoryUrl,
-        siteName: "jelajah Code",
+        siteName: "Kodera",
         images: [
           {
             url: "/images/products-og-image.jpg",
@@ -938,9 +935,9 @@ export async function generateProductsTypeMetadata(
     const typeUrl = `${API_CONFIG.ENDPOINTS.base}/products/type/${typeId}${urlParams.toString() ? `?${urlParams.toString()}` : ""
       }`;
 
-    const title = `Products - ${typeTitle} - jelajah Code`;
+    const title = `Products - ${typeTitle} - Kodera`;
     const description = `Browse ${resultCount} product${resultCount !== 1 ? "s" : ""
-      } in ${typeTitle} type on jelajah Code. Discover and explore products that match your interests.`;
+      } in ${typeTitle} type on Kodera. Discover and explore products that match your interests.`;
 
     return {
       title,
@@ -949,7 +946,7 @@ export async function generateProductsTypeMetadata(
         title,
         description,
         url: typeUrl,
-        siteName: "jelajah Code",
+        siteName: "Kodera",
         images: [
           {
             url: "/images/products-og-image.jpg",
@@ -971,8 +968,8 @@ export async function generateProductsTypeMetadata(
   } catch {
     // Fallback metadata if fetch fails
     const typeUrl = `${API_CONFIG.ENDPOINTS.base}/products/type/${typeId}`;
-    const fallbackTitle = `Products - ${typeId} - jelajah Code`;
-    const fallbackDescription = `Browse products in ${typeId} type on jelajah Code platform`;
+    const fallbackTitle = `Products - ${typeId} - Kodera`;
+    const fallbackDescription = `Browse products in ${typeId} type on Kodera platform`;
 
     return {
       title: fallbackTitle,
@@ -981,7 +978,7 @@ export async function generateProductsTypeMetadata(
         title: fallbackTitle,
         description: fallbackDescription,
         url: typeUrl,
-        siteName: "jelajah Code",
+        siteName: "Kodera",
         images: [
           {
             url: "/images/products-og-image.jpg",
@@ -1034,9 +1031,9 @@ export async function generateProductsTagsMetadata(
     const tagsUrl = `${API_CONFIG.ENDPOINTS.base}/products/tags/${tagsId}${urlParams.toString() ? `?${urlParams.toString()}` : ""
       }`;
 
-    const title = `Products - ${tagsId} - jelajah Code`;
+    const title = `Products - ${tagsId} - Kodera`;
     const description = `Browse ${resultCount} product${resultCount !== 1 ? "s" : ""
-      } tagged with ${tagsId} on jelajah Code. Discover and explore products that match your interests.`;
+      } tagged with ${tagsId} on Kodera. Discover and explore products that match your interests.`;
 
     return {
       title,
@@ -1045,7 +1042,7 @@ export async function generateProductsTagsMetadata(
         title,
         description,
         url: tagsUrl,
-        siteName: "jelajah Code",
+        siteName: "Kodera",
         images: [
           {
             url: "/images/products-og-image.jpg",
@@ -1067,8 +1064,8 @@ export async function generateProductsTagsMetadata(
   } catch {
     // Fallback metadata if fetch fails
     const tagsUrl = `${API_CONFIG.ENDPOINTS.base}/products/tags/${tagsId}`;
-    const fallbackTitle = `Products - ${tagsId} - jelajah Code`;
-    const fallbackDescription = `Browse products tagged with ${tagsId} on jelajah Code platform`;
+    const fallbackTitle = `Products - ${tagsId} - Kodera`;
+    const fallbackDescription = `Browse products tagged with ${tagsId} on Kodera platform`;
 
     return {
       title: fallbackTitle,
@@ -1077,7 +1074,7 @@ export async function generateProductsTagsMetadata(
         title: fallbackTitle,
         description: fallbackDescription,
         url: tagsUrl,
-        siteName: "jelajah Code",
+        siteName: "Kodera",
         images: [
           {
             url: "/images/products-og-image.jpg",
@@ -1101,21 +1098,21 @@ export async function generateProductsTagsMetadata(
 
 //====================================== Articles Page Metadata ======================================//
 export const ArticlesPageMetadata: Metadata = {
-  title: "Developer Resources - jelajah Code",
+  title: "Developer Resources - Kodera",
   description:
-    "Learn from detailed guides, tutorials, and best practices for modern web development on jelajah Code",
+    "Learn from detailed guides, tutorials, and best practices for modern web development on Kodera",
   openGraph: {
-    title: "Developer Resources - jelajah Code",
+    title: "Developer Resources - Kodera",
     description:
-      "Learn from detailed guides, tutorials, and best practices for modern web development on jelajah Code",
+      "Learn from detailed guides, tutorials, and best practices for modern web development on Kodera",
     url: `${API_CONFIG.ENDPOINTS.base}/articles`,
-    siteName: "jelajah Code",
+    siteName: "Kodera",
     images: [
       {
         url: "/articles.png",
         width: 1200,
         height: 630,
-        alt: "jelajah Code Developer Resources",
+        alt: "Kodera Developer Resources",
       },
     ],
     locale: "en_US",
@@ -1123,9 +1120,9 @@ export const ArticlesPageMetadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Developer Resources - jelajah Code",
+    title: "Developer Resources - Kodera",
     description:
-      "Learn from detailed guides, tutorials, and best practices for modern web development on jelajah Code",
+      "Learn from detailed guides, tutorials, and best practices for modern web development on Kodera",
     images: ["/articles.png"],
   },
 };
@@ -1183,7 +1180,7 @@ export async function generateArticlesPageMetadata(
         );
       }).length;
 
-      const title = `Developer Resources - ${categoryTitle} - jelajah Code`;
+      const title = `Developer Resources - ${categoryTitle} - Kodera`;
       const description = `Browse ${filteredCount} article${filteredCount !== 1 ? "s" : ""
         } in ${categoryTitle} category. Learn from detailed guides, tutorials, and best practices for modern web development.`;
 
@@ -1194,7 +1191,7 @@ export async function generateArticlesPageMetadata(
           title,
           description,
           url: articlesUrl,
-          siteName: "jelajah Code",
+          siteName: "Kodera",
           images: [
             {
               url: "/articles.png",
@@ -1216,9 +1213,9 @@ export async function generateArticlesPageMetadata(
     } catch {
       // Fallback to default articles metadata if fetch fails
       const fallbackTitle = `Developer Resources - ${category || ""
-        } - jelajah Code`;
+        } - Kodera`;
       const fallbackDescription = `Browse articles${category ? ` in ${category} category` : ""
-        } on jelajah Code platform`;
+        } on Kodera platform`;
 
       return {
         title: fallbackTitle,
@@ -1227,7 +1224,7 @@ export async function generateArticlesPageMetadata(
           title: fallbackTitle,
           description: fallbackDescription,
           url: articlesUrl,
-          siteName: "jelajah Code",
+          siteName: "Kodera",
           images: [
             {
               url: "/articles.png",
@@ -1287,9 +1284,9 @@ export async function generateArticlesCategoryMetadata(
       }/articles/categories/${categoryId}${urlParams.toString() ? `?${urlParams.toString()}` : ""
       }`;
 
-    const title = `Developer Resources - ${categoryTitle} - jelajah Code`;
+    const title = `Developer Resources - ${categoryTitle} - Kodera`;
     const description = `Browse ${resultCount} article${resultCount !== 1 ? "s" : ""
-      } in ${categoryTitle} category on jelajah Code. Learn from detailed guides, tutorials, and best practices for modern web development.`;
+      } in ${categoryTitle} category on Kodera. Learn from detailed guides, tutorials, and best practices for modern web development.`;
 
     return {
       title,
@@ -1298,7 +1295,7 @@ export async function generateArticlesCategoryMetadata(
         title,
         description,
         url: categoryUrl,
-        siteName: "jelajah Code",
+        siteName: "Kodera",
         images: [
           {
             url: "/articles.png",
@@ -1320,8 +1317,8 @@ export async function generateArticlesCategoryMetadata(
   } catch {
     // Fallback metadata if fetch fails
     const categoryUrl = `${API_CONFIG.ENDPOINTS.base}/articles/categories/${categoryId}`;
-    const fallbackTitle = `Developer Resources - ${categoryId} - jelajah Code`;
-    const fallbackDescription = `Browse articles in ${categoryId} category on jelajah Code platform`;
+    const fallbackTitle = `Developer Resources - ${categoryId} - Kodera`;
+    const fallbackDescription = `Browse articles in ${categoryId} category on Kodera platform`;
 
     return {
       title: fallbackTitle,
@@ -1330,7 +1327,7 @@ export async function generateArticlesCategoryMetadata(
         title: fallbackTitle,
         description: fallbackDescription,
         url: categoryUrl,
-        siteName: "jelajah Code",
+        siteName: "Kodera",
         images: [
           {
             url: "/articles.png",
@@ -1370,13 +1367,13 @@ export async function generateArticlesDetailsMetadata(
     const url = `${API_CONFIG.ENDPOINTS.base}/articles/${articlesId}`;
 
     return {
-      title: `${title} - jelajah Code`,
+      title: `${title} - Kodera`,
       description: description,
       openGraph: {
-        title: `${title} - jelajah Code`,
+        title: `${title} - Kodera`,
         description: description,
         url: url,
-        siteName: "jelajah Code",
+        siteName: "Kodera",
         images: [
           {
             url: thumbnail,
@@ -1394,7 +1391,7 @@ export async function generateArticlesDetailsMetadata(
       },
       twitter: {
         card: "summary_large_image",
-        title: `${title} - jelajah Code`,
+        title: `${title} - Kodera`,
         description: description,
         images: [thumbnail],
       },
@@ -1402,13 +1399,13 @@ export async function generateArticlesDetailsMetadata(
   } catch {
     // Fallback metadata if article fetch fails
     return {
-      title: `Article ${articlesId} - jelajah Code`,
-      description: `View article details for ${articlesId} on jelajah Code platform`,
+      title: `Article ${articlesId} - Kodera`,
+      description: `View article details for ${articlesId} on Kodera platform`,
       openGraph: {
-        title: `Article ${articlesId} - jelajah Code`,
-        description: `View article details for ${articlesId} on jelajah Code platform`,
+        title: `Article ${articlesId} - Kodera`,
+        description: `View article details for ${articlesId} on Kodera platform`,
         url: `${API_CONFIG.ENDPOINTS.base}/articles/${articlesId}`,
-        siteName: "jelajah Code",
+        siteName: "Kodera",
         images: [
           {
             url: "/articles.png",
@@ -1422,8 +1419,8 @@ export async function generateArticlesDetailsMetadata(
       },
       twitter: {
         card: "summary_large_image",
-        title: `Article ${articlesId} - jelajah Code`,
-        description: `View article details for ${articlesId} on jelajah Code platform`,
+        title: `Article ${articlesId} - Kodera`,
+        description: `View article details for ${articlesId} on Kodera platform`,
         images: ["/articles.png"],
       },
     };
@@ -1432,21 +1429,21 @@ export async function generateArticlesDetailsMetadata(
 
 //====================================== Profile Page Metadata ======================================//
 export const ProfilePageMetadata: Metadata = {
-  title: "Profile - jelajah Code",
+  title: "Profile - Kodera",
   description:
-    "Manage your profile, view transactions, and update your account settings on jelajah Code",
+    "Manage your profile, view transactions, and update your account settings on Kodera",
   openGraph: {
-    title: "Profile - jelajah Code",
+    title: "Profile - Kodera",
     description:
-      "Manage your profile, view transactions, and update your account settings on jelajah Code",
+      "Manage your profile, view transactions, and update your account settings on Kodera",
     url: `${API_CONFIG.ENDPOINTS.base}/profile`,
-    siteName: "jelajah Code",
+    siteName: "Kodera",
     images: [
       {
         url: "/desktop.png",
         width: 1200,
         height: 630,
-        alt: "Profile - jelajah Code",
+        alt: "Profile - Kodera",
       },
     ],
     locale: "en_US",
@@ -1454,9 +1451,9 @@ export const ProfilePageMetadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Profile - jelajah Code",
+    title: "Profile - Kodera",
     description:
-      "Manage your profile, view transactions, and update your account settings on jelajah Code",
+      "Manage your profile, view transactions, and update your account settings on Kodera",
     images: ["/desktop.png"],
   },
 };
@@ -1484,8 +1481,8 @@ export async function generateProfileMetadata(): Promise<Metadata> {
           const userName = userData.name || "User";
           const userPicture =
             userData.picture || "/desktop.png";
-          const title = `${userName}'s Profile - jelajah Code`;
-          const description = `Manage ${userName}'s profile, view transactions, and update account settings on jelajah Code`;
+          const title = `${userName}'s Profile - Kodera`;
+          const description = `Manage ${userName}'s profile, view transactions, and update account settings on Kodera`;
 
           return {
             title,
@@ -1494,7 +1491,7 @@ export async function generateProfileMetadata(): Promise<Metadata> {
               title,
               description,
               url: `${API_CONFIG.ENDPOINTS.base}/profile`,
-              siteName: "jelajah Code",
+              siteName: "Kodera",
               images: [
                 {
                   url: userPicture,
@@ -1527,21 +1524,21 @@ export async function generateProfileMetadata(): Promise<Metadata> {
 
 //====================================== Order Details Metadata ======================================//
 export const OrderDetailsPageMetadata: Metadata = {
-  title: "Order Details - jelajah Code",
+  title: "Order Details - Kodera",
   description:
-    "View your order details, transaction status, and download purchased products on jelajah Code",
+    "View your order details, transaction status, and download purchased products on Kodera",
   openGraph: {
-    title: "Order Details - jelajah Code",
+    title: "Order Details - Kodera",
     description:
-      "View your order details, transaction status, and download purchased products on jelajah Code",
+      "View your order details, transaction status, and download purchased products on Kodera",
     url: `${API_CONFIG.ENDPOINTS.base}/profile`,
-    siteName: "jelajah Code",
+    siteName: "Kodera",
     images: [
       {
         url: "/desktop.png",
         width: 1200,
         height: 630,
-        alt: "Order Details - jelajah Code",
+        alt: "Order Details - Kodera",
       },
     ],
     locale: "en_US",
@@ -1549,9 +1546,9 @@ export const OrderDetailsPageMetadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Order Details - jelajah Code",
+    title: "Order Details - Kodera",
     description:
-      "View your order details, transaction status, and download purchased products on jelajah Code",
+      "View your order details, transaction status, and download purchased products on Kodera",
     images: ["/desktop.png"],
   },
 };
@@ -1598,7 +1595,7 @@ export async function generateOrderDetailsMetadata(
               transactionData.products[0]?.thumbnail ||
               "/desktop.png";
 
-            const title = `Order ${order_id} - ${statusCapitalized} - jelajah Code`;
+            const title = `Order ${order_id} - ${statusCapitalized} - Kodera`;
             const description = `View order details for ${productCount} product${productCount !== 1 ? "s" : ""
               }: ${productTitles}${productCount > 3 ? "..." : ""
               }. Status: ${statusCapitalized}. Total: Rp ${transactionData.total_amount?.toLocaleString("id-ID") || "0"
@@ -1611,7 +1608,7 @@ export async function generateOrderDetailsMetadata(
                 title,
                 description,
                 url: `${API_CONFIG.ENDPOINTS.base}/profile/${order_id}`,
-                siteName: "jelajah Code",
+                siteName: "Kodera",
                 images: [
                   {
                     url: thumbnail,
@@ -1642,13 +1639,13 @@ export async function generateOrderDetailsMetadata(
 
   // Fallback metadata
   return {
-    title: `Order ${order_id} - jelajah Code`,
-    description: `View order details for order ${order_id} on jelajah Code platform`,
+    title: `Order ${order_id} - Kodera`,
+    description: `View order details for order ${order_id} on Kodera platform`,
     openGraph: {
-      title: `Order ${order_id} - jelajah Code`,
-      description: `View order details for order ${order_id} on jelajah Code platform`,
+      title: `Order ${order_id} - Kodera`,
+      description: `View order details for order ${order_id} on Kodera platform`,
       url: `${API_CONFIG.ENDPOINTS.base}/profile/${order_id}`,
-      siteName: "jelajah Code",
+      siteName: "Kodera",
       images: [
         {
           url: "/desktop.png",
@@ -1662,8 +1659,8 @@ export async function generateOrderDetailsMetadata(
     },
     twitter: {
       card: "summary_large_image",
-      title: `Order ${order_id} - jelajah Code`,
-      description: `View order details for order ${order_id} on jelajah Code platform`,
+      title: `Order ${order_id} - Kodera`,
+      description: `View order details for order ${order_id} on Kodera platform`,
       images: ["/desktop.png"],
     },
   };
@@ -1671,21 +1668,21 @@ export async function generateOrderDetailsMetadata(
 
 //====================================== Privacy Policy Metadata ======================================//
 export const PrivacyPolicyMetadata: Metadata = {
-  title: "Privacy Policy - jelajah Code",
+  title: "Privacy Policy - Kodera",
   description:
-    "Learn about how jelajah Code collects, uses, and protects your personal data. Read our comprehensive privacy policy to understand your rights and our data protection practices.",
+    "Learn about how Kodera collects, uses, and protects your personal data. Read our comprehensive privacy policy to understand your rights and our data protection practices.",
   openGraph: {
-    title: "Privacy Policy - jelajah Code",
+    title: "Privacy Policy - Kodera",
     description:
-      "Learn about how jelajah Code collects, uses, and protects your personal data. Read our comprehensive privacy policy to understand your rights and our data protection practices.",
+      "Learn about how Kodera collects, uses, and protects your personal data. Read our comprehensive privacy policy to understand your rights and our data protection practices.",
     url: `${API_CONFIG.ENDPOINTS.base}/privacy-policy`,
-    siteName: "jelajah Code",
+    siteName: "Kodera",
     images: [
       {
         url: "/desktop.png",
         width: 1200,
         height: 630,
-        alt: "Privacy Policy - jelajah Code",
+        alt: "Privacy Policy - Kodera",
       },
     ],
     locale: "en_US",
@@ -1693,30 +1690,30 @@ export const PrivacyPolicyMetadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Privacy Policy - jelajah Code",
+    title: "Privacy Policy - Kodera",
     description:
-      "Learn about how jelajah Code collects, uses, and protects your personal data. Read our comprehensive privacy policy to understand your rights and our data protection practices.",
+      "Learn about how Kodera collects, uses, and protects your personal data. Read our comprehensive privacy policy to understand your rights and our data protection practices.",
     images: ["/desktop.png"],
   },
 };
 
 //====================================== Refund Policy Metadata ======================================//
 export const RefundPolicyMetadata: Metadata = {
-  title: "Refund Policy - jelajah Code",
+  title: "Refund Policy - Kodera",
   description:
-    "Learn about jelajah Code's refund policy, eligibility requirements, and refund process. Understand your rights when requesting a refund for purchased products.",
+    "Learn about Kodera's refund policy, eligibility requirements, and refund process. Understand your rights when requesting a refund for purchased products.",
   openGraph: {
-    title: "Refund Policy - jelajah Code",
+    title: "Refund Policy - Kodera",
     description:
-      "Learn about jelajah Code's refund policy, eligibility requirements, and refund process. Understand your rights when requesting a refund for purchased products.",
+      "Learn about Kodera's refund policy, eligibility requirements, and refund process. Understand your rights when requesting a refund for purchased products.",
     url: `${API_CONFIG.ENDPOINTS.base}/refund-policy`,
-    siteName: "jelajah Code",
+    siteName: "Kodera",
     images: [
       {
         url: "/desktop.png",
         width: 1200,
         height: 630,
-        alt: "Refund Policy - jelajah Code",
+        alt: "Refund Policy - Kodera",
       },
     ],
     locale: "en_US",
@@ -1724,30 +1721,30 @@ export const RefundPolicyMetadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Refund Policy - jelajah Code",
+    title: "Refund Policy - Kodera",
     description:
-      "Learn about jelajah Code's refund policy, eligibility requirements, and refund process. Understand your rights when requesting a refund for purchased products.",
+      "Learn about Kodera's refund policy, eligibility requirements, and refund process. Understand your rights when requesting a refund for purchased products.",
     images: ["/desktop.png"],
   },
 };
 
 //====================================== Terms of Service Metadata ======================================//
 export const TermsOfServiceMetadata: Metadata = {
-  title: "Terms of Service - jelajah Code",
+  title: "Terms of Service - Kodera",
   description:
-    "Read jelajah Code's terms of service to understand the rules and regulations for using our platform. Learn about your rights and responsibilities as a user.",
+    "Read Kodera's terms of service to understand the rules and regulations for using our platform. Learn about your rights and responsibilities as a user.",
   openGraph: {
-    title: "Terms of Service - jelajah Code",
+    title: "Terms of Service - Kodera",
     description:
-      "Read jelajah Code's terms of service to understand the rules and regulations for using our platform. Learn about your rights and responsibilities as a user.",
+      "Read Kodera's terms of service to understand the rules and regulations for using our platform. Learn about your rights and responsibilities as a user.",
     url: `${API_CONFIG.ENDPOINTS.base}/terms-of-service`,
-    siteName: "jelajah Code",
+    siteName: "Kodera",
     images: [
       {
         url: "/desktop.png",
         width: 1200,
         height: 630,
-        alt: "Terms of Service - jelajah Code",
+        alt: "Terms of Service - Kodera",
       },
     ],
     locale: "en_US",
@@ -1755,30 +1752,30 @@ export const TermsOfServiceMetadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Terms of Service - jelajah Code",
+    title: "Terms of Service - Kodera",
     description:
-      "Read jelajah Code's terms of service to understand the rules and regulations for using our platform. Learn about your rights and responsibilities as a user.",
+      "Read Kodera's terms of service to understand the rules and regulations for using our platform. Learn about your rights and responsibilities as a user.",
     images: ["/desktop.png"],
   },
 };
 
 //====================================== License Agreement Metadata ======================================//
 export const LicenseAgreementMetadata: Metadata = {
-  title: "License Agreement - jelajah Code",
+  title: "License Agreement - Kodera",
   description:
-    "Understand the license agreement for using jelajah Code's source code products. Learn about permitted usage, restrictions, and intellectual property rights.",
+    "Understand the license agreement for using Kodera's source code products. Learn about permitted usage, restrictions, and intellectual property rights.",
   openGraph: {
-    title: "License Agreement - jelajah Code",
+    title: "License Agreement - Kodera",
     description:
-      "Understand the license agreement for using jelajah Code's source code products. Learn about permitted usage, restrictions, and intellectual property rights.",
+      "Understand the license agreement for using Kodera's source code products. Learn about permitted usage, restrictions, and intellectual property rights.",
     url: `${API_CONFIG.ENDPOINTS.base}/license-agreement`,
-    siteName: "jelajah Code",
+    siteName: "Kodera",
     images: [
       {
         url: "/desktop.png",
         width: 1200,
         height: 630,
-        alt: "License Agreement - jelajah Code",
+        alt: "License Agreement - Kodera",
       },
     ],
     locale: "en_US",
@@ -1786,30 +1783,30 @@ export const LicenseAgreementMetadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "License Agreement - jelajah Code",
+    title: "License Agreement - Kodera",
     description:
-      "Understand the license agreement for using jelajah Code's source code products. Learn about permitted usage, restrictions, and intellectual property rights.",
+      "Understand the license agreement for using Kodera's source code products. Learn about permitted usage, restrictions, and intellectual property rights.",
     images: ["/desktop.png"],
   },
 };
 
 //====================================== Admins Page Metadata ======================================//
 export const AdminsPageMetadata: Metadata = {
-  title: "Admin Profile - jelajah Code",
+  title: "Admin Profile - Kodera",
   description:
-    "View admin profile, products, and articles on jelajah Code platform",
+    "View admin profile, products, and articles on Kodera platform",
   openGraph: {
-    title: "Admin Profile - jelajah Code",
+    title: "Admin Profile - Kodera",
     description:
-      "View admin profile, products, and articles on jelajah Code platform",
+      "View admin profile, products, and articles on Kodera platform",
     url: `${API_CONFIG.ENDPOINTS.base}/admins`,
-    siteName: "jelajah Code",
+    siteName: "Kodera",
     images: [
       {
         url: "/desktop.png",
         width: 1200,
         height: 630,
-        alt: "Admin Profile - jelajah Code",
+        alt: "Admin Profile - Kodera",
       },
     ],
     locale: "en_US",
@@ -1817,9 +1814,9 @@ export const AdminsPageMetadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Admin Profile - jelajah Code",
+    title: "Admin Profile - Kodera",
     description:
-      "View admin profile, products, and articles on jelajah Code platform",
+      "View admin profile, products, and articles on Kodera platform",
     images: ["/desktop.png"],
   },
 };
@@ -1841,8 +1838,8 @@ export async function generateAdminsPageMetadata(
       const articlesCount = admin.stats?.articles || 0;
       const rating = admin.stats?.rating || 0;
 
-      const title = `${adminName} - Admin Profile - jelajah Code`;
-      const description = `View ${adminName}'s profile on jelajah Code. ${productsCount} product${productsCount !== 1 ? "s" : ""
+      const title = `${adminName} - Admin Profile - Kodera`;
+      const description = `View ${adminName}'s profile on Kodera. ${productsCount} product${productsCount !== 1 ? "s" : ""
         }, ${articlesCount} article${articlesCount !== 1 ? "s" : ""}, and ${rating > 0 ? `${rating.toFixed(1)}★ rating` : "no rating yet"
         }.`;
 
@@ -1855,7 +1852,7 @@ export async function generateAdminsPageMetadata(
           title,
           description,
           url: adminUrl,
-          siteName: "jelajah Code",
+          siteName: "Kodera",
           images: [
             {
               url: adminPicture,
@@ -1880,8 +1877,8 @@ export async function generateAdminsPageMetadata(
   }
 
   // Fallback metadata
-  const fallbackTitle = `Admin Profile - jelajah Code`;
-  const fallbackDescription = `View admin profile on jelajah Code platform`;
+  const fallbackTitle = `Admin Profile - Kodera`;
+  const fallbackDescription = `View admin profile on Kodera platform`;
   const adminUrl = `${API_CONFIG.ENDPOINTS.base}/admins/${adminId}`;
 
   return {
@@ -1891,7 +1888,7 @@ export async function generateAdminsPageMetadata(
       title: fallbackTitle,
       description: fallbackDescription,
       url: adminUrl,
-      siteName: "jelajah Code",
+      siteName: "Kodera",
       images: [
         {
           url: "/desktop.png",
@@ -1914,21 +1911,21 @@ export async function generateAdminsPageMetadata(
 
 //====================================== Contact Page Metadata ======================================//
 export const ContactPageMetadata: Metadata = {
-  title: "Contact Us - jelajah Code",
+  title: "Contact Us - Kodera",
   description:
-    "Get in touch with jelajah Code. Have questions or feedback? We'd love to hear from you. Contact us via email, phone, or visit our office.",
+    "Get in touch with Kodera. Have questions or feedback? We'd love to hear from you. Contact us via email, phone, or visit our office.",
   openGraph: {
-    title: "Contact Us - jelajah Code",
+    title: "Contact Us - Kodera",
     description:
-      "Get in touch with jelajah Code. Have questions or feedback? We'd love to hear from you. Contact us via email, phone, or visit our office.",
+      "Get in touch with Kodera. Have questions or feedback? We'd love to hear from you. Contact us via email, phone, or visit our office.",
     url: `${API_CONFIG.ENDPOINTS.base}/contact`,
-    siteName: "jelajah Code",
+    siteName: "Kodera",
     images: [
       {
         url: "/contact.png",
         width: 1200,
         height: 630,
-        alt: "Contact Us - jelajah Code",
+        alt: "Contact Us - Kodera",
       },
     ],
     locale: "en_US",
@@ -1936,9 +1933,9 @@ export const ContactPageMetadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Contact Us - jelajah Code",
+    title: "Contact Us - Kodera",
     description:
-      "Get in touch with jelajah Code. Have questions or feedback? We'd love to hear from you. Contact us via email, phone, or visit our office.",
+      "Get in touch with Kodera. Have questions or feedback? We'd love to hear from you. Contact us via email, phone, or visit our office.",
     images: ["/contact.png"],
   },
 };

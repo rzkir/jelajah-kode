@@ -136,7 +136,7 @@ export default function useInvoice() {
         doc.setTextColor(255, 255, 255);
         doc.setFont("helvetica", "bold");
         doc.setFontSize(24);
-        doc.text("Jelajah Kode", margin + logoSize + 25, logoY + 20);
+        doc.text("Kodera", margin + logoSize + 25, logoY + 20);
 
         doc.setFont("helvetica", "normal");
         doc.setFontSize(11);
@@ -453,7 +453,7 @@ export default function useInvoice() {
 
         const terms = [
           "Payment is due immediately after invoice date.",
-          "Please make payment to: Jelajah Kode.",
+          "Please make payment to: Kodera.",
           "For any inquiries, please contact our support team.",
         ];
 

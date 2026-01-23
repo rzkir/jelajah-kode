@@ -171,7 +171,7 @@ export function Footer() {
         {/* Bottom Section */}
         <div className="border-t border-border pt-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
           <div>
-            <h3 className="text-lg font-bold text-foreground mb-2">JelajahKode</h3>
+            <h3 className="text-lg font-bold text-foreground mb-2">Kodera</h3>
             <p className="text-sm text-muted-foreground" suppressHydrationWarning>
               {t("footer.tagline")}
             </p>
@@ -213,7 +213,7 @@ export function Footer() {
         {/* Copyright */}
         <div className="mt-8 pt-8 border-t border-border">
           <p className="text-sm text-muted-foreground text-center" suppressHydrationWarning>
-            &copy; 2026 - {new Date().getFullYear()} Jelajah Code. {t("footer.allRightsReserved")}.
+            &copy; 2026 - {new Date().getFullYear()} Kodera. {t("footer.allRightsReserved")}.
           </p>
         </div>
       </div>

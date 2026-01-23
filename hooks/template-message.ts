@@ -42,15 +42,15 @@ export function generateVerificationEmailTemplate(otp: string): {
                   <table role="presentation" cellpadding="0" cellspacing="0" style="border-collapse:separate; border-spacing:10px;">
                     <tr>
                       ${otp
-                        .split("")
-                        .map(
-                          (d) => `
+      .split("")
+      .map(
+        (d) => `
                             <td align="center" style="height:56px; width:48px; border-radius:12px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.12);">
                               <div style="font-family:Arial, sans-serif; font-size:24px; color:#ffffff; font-weight:700; letter-spacing:1px; line-height:56px;">${d}</div>
                             </td>
                           `
-                        )
-                        .join("")}
+      )
+      .join("")}
                   </tr>
                   </table>
                   
@@ -132,15 +132,15 @@ export function generatePasswordResetEmailTemplate(otp: string): {
                   <table role="presentation" cellpadding="0" cellspacing="0" style="border-collapse:separate; border-spacing:10px;">
                     <tr>
                       ${otp
-                        .split("")
-                        .map(
-                          (d) => `
+      .split("")
+      .map(
+        (d) => `
                             <td align="center" style="height:56px; width:48px; border-radius:12px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.12);">
                               <div style="font-family:Arial, sans-serif; font-size:24px; color:#ffffff; font-weight:700; letter-spacing:1px; line-height:56px;">${d}</div>
                             </td>
                           `
-                        )
-                        .join("")}
+      )
+      .join("")}
                   </tr>
                   </table>
                   
@@ -200,9 +200,8 @@ export function generateTransactionPendingEmailTemplate(
       (product) =>
         `<tr>
           <td style="padding:12px; border-bottom:1px solid rgba(255,255,255,0.08);">
-            <div style="font-family:Arial, sans-serif; font-size:14px; color:#ffffff; font-weight:500;">${
-              product.title
-            }</div>
+            <div style="font-family:Arial, sans-serif; font-size:14px; color:#ffffff; font-weight:500;">${product.title
+        }</div>
             <div style="font-family:Arial, sans-serif; font-size:12px; color:#9aa4c7; margin-top:4px;">
               Qty: ${product.quantity} × ${formatCurrency(product.price)}
             </div>
@@ -268,8 +267,8 @@ export function generateTransactionPendingEmailTemplate(
                         <div style="display:flex; justify-content:space-between; align-items:center; padding-top:16px; border-top:1px solid rgba(255,255,255,0.08);">
                           <div style="font-family:Arial, sans-serif; font-size:16px; color:#ffffff; font-weight:600;">Total</div>
                           <div style="font-family:Arial, sans-serif; font-size:18px; color:#ffffff; font-weight:700;">${formatCurrency(
-                            totalAmount
-                          )}</div>
+    totalAmount
+  )}</div>
                         </div>
                       </td>
                     </tr>
@@ -292,7 +291,7 @@ export function generateTransactionPendingEmailTemplate(
             <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="max-width:600px;">
               <tr>
                 <td align="center" style="padding:20px 8px;">
-                  <p style="margin:0; font-family:Arial, sans-serif; font-size:11px; color:#6b7280;">© ${new Date().getFullYear()} — Jelajah Kode</p>
+                  <p style="margin:0; font-family:Arial, sans-serif; font-size:11px; color:#6b7280;">© ${new Date().getFullYear()} — Kodera</p>
                 </td>
               </tr>
             </table>
@@ -341,7 +340,7 @@ export function generateSubscriptionWelcomeEmailTemplate(email: string): {
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-      <title>Welcome to Jelajah Kode Newsletter</title>
+      <title>Welcome to Kodera Newsletter</title>
       <!--[if mso]>
       <style type="text/css">
         body, table, td {font-family: Arial, sans-serif !important;}
@@ -365,7 +364,7 @@ export function generateSubscriptionWelcomeEmailTemplate(email: string): {
               </tr>
               <tr>
                 <td align="center" style="padding:12px 24px 20px;">
-                  <p style="margin:0; font-family:Arial, sans-serif; font-size:14px; line-height:1.6; color:#c9d2f0;">Terima kasih telah berlangganan newsletter Jelajah Kode!</p>
+                  <p style="margin:0; font-family:Arial, sans-serif; font-size:14px; line-height:1.6; color:#c9d2f0;">Terima kasih telah berlangganan newsletter Kodera!</p>
                 </td>
               </tr>
 
@@ -378,7 +377,7 @@ export function generateSubscriptionWelcomeEmailTemplate(email: string): {
                           Halo <strong style="color:#ffffff;">${email}</strong>,
                         </p>
                         <p style="margin:0 0 12px 0; font-family:Arial, sans-serif; font-size:14px; line-height:1.6; color:#c9d2f0;">
-                          Kami sangat senang Anda telah bergabung dengan komunitas Jelajah Kode! Anda akan menerima update terbaru tentang:
+                          Kami sangat senang Anda telah bergabung dengan komunitas Kodera! Anda akan menerima update terbaru tentang:
                         </p>
                         <ul style="margin:12px 0; padding-left:20px; font-family:Arial, sans-serif; font-size:14px; line-height:1.8; color:#c9d2f0;">
                           <li>Artikel dan tutorial coding terbaru</li>
@@ -405,7 +404,7 @@ export function generateSubscriptionWelcomeEmailTemplate(email: string): {
             <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="max-width:600px;">
               <tr>
                 <td align="center" style="padding:20px 8px;">
-                  <p style="margin:0; font-family:Arial, sans-serif; font-size:11px; color:#6b7280;">© ${new Date().getFullYear()} — Jelajah Kode</p>
+                  <p style="margin:0; font-family:Arial, sans-serif; font-size:11px; color:#6b7280;">© ${new Date().getFullYear()} — Kodera</p>
                 </td>
               </tr>
             </table>
@@ -418,11 +417,11 @@ export function generateSubscriptionWelcomeEmailTemplate(email: string): {
 
   const text = `Selamat Bergabung!
 
-Terima kasih telah berlangganan newsletter Jelajah Kode!
+Terima kasih telah berlangganan newsletter Kodera!
 
 Halo ${email},
 
-Kami sangat senang Anda telah bergabung dengan komunitas Jelajah Kode! Anda akan menerima update terbaru tentang:
+Kami sangat senang Anda telah bergabung dengan komunitas Kodera! Anda akan menerima update terbaru tentang:
 - Artikel dan tutorial coding terbaru
 - Tips dan trik pengembangan web
 - Update produk dan fitur baru
@@ -432,7 +431,7 @@ Kami berkomitmen untuk memberikan konten berkualitas yang membantu perjalanan co
 
 Jika Anda tidak berlangganan newsletter ini, silakan abaikan email ini.
 
-© ${new Date().getFullYear()} — Jelajah Kode`;
+© ${new Date().getFullYear()} — Kodera`;
 
   return { html, text };
 }
@@ -503,15 +502,14 @@ export function generateNewProductEmailTemplate(
                   <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="background:rgba(255,255,255,0.04); border-radius:12px; border:1px solid rgba(255,255,255,0.08);">
                     <tr>
                       <td style="padding:20px;">
-                        ${
-                          productThumbnail
-                            ? `
+                        ${productThumbnail
+      ? `
                         <div style="text-align:center; margin-bottom:20px;">
                           <img src="${productThumbnail}" alt="${productTitle}" style="max-width:100%; height:auto; border-radius:8px; max-height:200px;" />
                         </div>
                         `
-                            : ""
-                        }
+      : ""
+    }
                         <h2 style="margin:0 0 12px 0; font-family:Arial, sans-serif; font-size:18px; line-height:1.3; color:#ffffff;">${productTitle}</h2>
                         <p style="margin:0 0 16px 0; font-family:Arial, sans-serif; font-size:14px; line-height:1.6; color:#c9d2f0;">${descriptionPreview}</p>
                         <div style="display:flex; align-items:center; gap:12px; padding-top:16px; border-top:1px solid rgba(255,255,255,0.08);">
@@ -524,21 +522,20 @@ export function generateNewProductEmailTemplate(
                 </td>
               </tr>
 
-              ${
-                productUrl
-                  ? `
+              ${productUrl
+      ? `
               <tr>
                 <td align="center" style="padding:0 24px 24px;">
                   <a href="${productUrl}" style="display:inline-block; padding:12px 24px; background:#3b82f6; color:#ffffff; text-decoration:none; border-radius:8px; font-family:Arial, sans-serif; font-size:14px; font-weight:600;">Lihat Produk</a>
                 </td>
               </tr>
               `
-                  : ""
-              }
+      : ""
+    }
 
               <tr>
                 <td align="center" style="padding:0 24px 24px;">
-                  <p style="margin:0; font-family:Arial, sans-serif; font-size:12px; color:#7781a5;">Terima kasih telah berlangganan newsletter Jelajah Kode!</p>
+                  <p style="margin:0; font-family:Arial, sans-serif; font-size:12px; color:#7781a5;">Terima kasih telah berlangganan newsletter Kodera!</p>
                 </td>
               </tr>
             </table>
@@ -546,7 +543,7 @@ export function generateNewProductEmailTemplate(
             <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="max-width:600px;">
               <tr>
                 <td align="center" style="padding:20px 8px;">
-                  <p style="margin:0; font-family:Arial, sans-serif; font-size:11px; color:#6b7280;">© ${new Date().getFullYear()} — Jelajah Kode</p>
+                  <p style="margin:0; font-family:Arial, sans-serif; font-size:11px; color:#6b7280;">© ${new Date().getFullYear()} — Kodera</p>
                 </td>
               </tr>
             </table>
@@ -569,9 +566,9 @@ Harga: ${priceDisplay}
 
 ${productUrl ? `Lihat produk: ${productUrl}` : ""}
 
-Terima kasih telah berlangganan newsletter Jelajah Kode!
+Terima kasih telah berlangganan newsletter Kodera!
 
-© ${new Date().getFullYear()} — Jelajah Kode`;
+© ${new Date().getFullYear()} — Kodera`;
 
   return { html, text };
 }
@@ -630,15 +627,14 @@ export function generateNewArticleEmailTemplate(
                   <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="background:rgba(255,255,255,0.04); border-radius:12px; border:1px solid rgba(255,255,255,0.08);">
                     <tr>
                       <td style="padding:20px;">
-                        ${
-                          articleThumbnail
-                            ? `
+                        ${articleThumbnail
+      ? `
                         <div style="text-align:center; margin-bottom:20px;">
                           <img src="${articleThumbnail}" alt="${articleTitle}" style="max-width:100%; height:auto; border-radius:8px; max-height:200px;" />
                         </div>
                         `
-                            : ""
-                        }
+      : ""
+    }
                         <h2 style="margin:0 0 12px 0; font-family:Arial, sans-serif; font-size:18px; line-height:1.3; color:#ffffff;">${articleTitle}</h2>
                         <p style="margin:0; font-family:Arial, sans-serif; font-size:14px; line-height:1.6; color:#c9d2f0;">${descriptionPreview}</p>
                       </td>
@@ -647,21 +643,20 @@ export function generateNewArticleEmailTemplate(
                 </td>
               </tr>
 
-              ${
-                articleUrl
-                  ? `
+              ${articleUrl
+      ? `
               <tr>
                 <td align="center" style="padding:0 24px 24px;">
                   <a href="${articleUrl}" style="display:inline-block; padding:12px 24px; background:#3b82f6; color:#ffffff; text-decoration:none; border-radius:8px; font-family:Arial, sans-serif; font-size:14px; font-weight:600;">Baca Artikel</a>
                 </td>
               </tr>
               `
-                  : ""
-              }
+      : ""
+    }
 
               <tr>
                 <td align="center" style="padding:0 24px 24px;">
-                  <p style="margin:0; font-family:Arial, sans-serif; font-size:12px; color:#7781a5;">Terima kasih telah berlangganan newsletter Jelajah Kode!</p>
+                  <p style="margin:0; font-family:Arial, sans-serif; font-size:12px; color:#7781a5;">Terima kasih telah berlangganan newsletter Kodera!</p>
                 </td>
               </tr>
             </table>
@@ -669,7 +664,7 @@ export function generateNewArticleEmailTemplate(
             <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="max-width:600px;">
               <tr>
                 <td align="center" style="padding:20px 8px;">
-                  <p style="margin:0; font-family:Arial, sans-serif; font-size:11px; color:#6b7280;">© ${new Date().getFullYear()} — Jelajah Kode</p>
+                  <p style="margin:0; font-family:Arial, sans-serif; font-size:11px; color:#6b7280;">© ${new Date().getFullYear()} — Kodera</p>
                 </td>
               </tr>
             </table>
@@ -690,9 +685,9 @@ ${descriptionPreview}
 
 ${articleUrl ? `Baca artikel: ${articleUrl}` : ""}
 
-Terima kasih telah berlangganan newsletter Jelajah Kode!
+Terima kasih telah berlangganan newsletter Kodera!
 
-© ${new Date().getFullYear()} — Jelajah Kode`;
+© ${new Date().getFullYear()} — Kodera`;
 
   return { html, text };
 }

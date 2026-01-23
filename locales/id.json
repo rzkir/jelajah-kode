@@ -38,7 +38,7 @@
     "password": "Kata Sandi",
     "confirmPassword": "Konfirmasi Kata Sandi",
     "rememberMe": "Ingat Saya",
-    "signinTitle": "Selamat datang di Jelajahkode 👾.",
+    "signinTitle": "Selamat datang di Kodera 👾.",
     "signinSubtitle": "Masuk ke akun Anda",
     "noAccount": "Belum punya akun?",
     "forgotPasswordQuestion": "Lupa kata sandi?",
@@ -195,10 +195,10 @@
     }
   },
   "aboutPage": {
-    "title": "Tentang Jelajahkode",
+    "title": "Tentang Kodera",
     "subtitle": "Memberdayakan developer dengan source code dan resource premium",
     "missionTitle": "Misi Kami",
-    "missionP1": "Di Jelajahkode, misi kami adalah mendemokratisasi akses terhadap source code dan resource pengembangan berkualitas tinggi untuk developer di seluruh dunia. Kami percaya bahwa kode yang baik harus dapat diakses, terjangkau, dan menginspirasi inovasi.",
+    "missionP1": "Di Kodera, misi kami adalah mendemokratisasi akses terhadap source code dan resource pengembangan berkualitas tinggi untuk developer di seluruh dunia. Kami percaya bahwa kode yang baik harus dapat diakses, terjangkau, dan menginspirasi inovasi.",
     "missionP2": "Kami bekerja sama dengan developer dan kreator berbakat untuk menghadirkan template, komponen, dan solusi terbaik kepada komunitas kami. Platform kami memudahkan developer menemukan, membeli, dan mengimplementasikan kode siap produksi.",
     "valuesTitle": "Nilai-Nilai Kami",
     "valueQualityTitle": "Kualitas Utama",
@@ -208,13 +208,13 @@
     "valueCommunityTitle": "Berbasis Komunitas",
     "valueCommunityDesc": "Kami percaya pada kekuatan komunitas. Platform kami menghubungkan kreator dengan developer yang menghargai karya mereka.",
     "ctaTitle": "Ada Pertanyaan?",
-    "ctaSubtitle": "Kami dengan senang hati ingin mendengar dari Anda. Hubungi tim kami untuk mengetahui lebih lanjut tentang Jelajahkode.",
+    "ctaSubtitle": "Kami dengan senang hati ingin mendengar dari Anda. Hubungi tim kami untuk mengetahui lebih lanjut tentang Kodera.",
     "ctaButton": "Hubungi Kami"
   },
   "documentationPage": {
     "badge": "Dokumentasi",
     "title": "Dokumentasi Developer",
-    "subtitle": "Semua yang Anda butuhkan untuk mengintegrasikan Jelajahkode ke aplikasi Anda.",
+    "subtitle": "Semua yang Anda butuhkan untuk mengintegrasikan Kodera ke aplikasi Anda.",
     "searchPlaceholder": "Cari dokumentasi...",
     "categories": {
       "gettingStarted": "Mulai Cepat",
@@ -225,7 +225,7 @@
     },
     "docs": {
       "installationTitle": "Instalasi",
-      "installationDesc": "Cara memasang dan menyiapkan Jelajahkode SDK",
+      "installationDesc": "Cara memasang dan menyiapkan Kodera SDK",
       "quickStartTitle": "Quick Start",
       "quickStartDesc": "Mulai dan berjalan dalam 5 menit",
       "authenticationTitle": "Autentikasi",
@@ -245,13 +245,13 @@
       "analyticsTitle": "Analytics Endpoint",
       "analyticsDesc": "Mendapatkan analitik penjualan dan penggunaan",
       "nextTitle": "Membangun dengan Next.js",
-      "nextDesc": "Mengintegrasikan Jelajahkode dengan Next.js",
+      "nextDesc": "Mengintegrasikan Kodera dengan Next.js",
       "reactTitle": "Integrasi React",
-      "reactDesc": "Menggunakan Jelajahkode di aplikasi React",
+      "reactDesc": "Menggunakan Kodera di aplikasi React",
       "paymentTitle": "Integrasi Pembayaran",
       "paymentDesc": "Integrasi pembayaran Midtrans",
       "webhookTitle": "Pengaturan Webhook",
-      "webhookDesc": "Mendengarkan event Jelajahkode",
+      "webhookDesc": "Mendengarkan event Kodera",
       "securityTitle": "Keamanan",
       "securityDesc": "Menjaga keamanan API key Anda",
       "rateLimitTitle": "Rate Limiting",
@@ -279,7 +279,7 @@
         "warranty": "Penafian Garansi",
         "liability": "Batasan Tanggung Jawab"
       },
-      "grantText": "Jelajah Kode memberikan Anda lisensi terbatas, non-eksklusif, tidak dapat dipindahtangankan untuk menggunakan source code yang dibeli untuk proyek pribadi atau komersial Anda. Lisensi ini tidak memberikan hak untuk menjual, mendistribusikan ulang, atau mensublisensikan source code.",
+      "grantText": "Kodera memberikan Anda lisensi terbatas, non-eksklusif, tidak dapat dipindahtangankan untuk menggunakan source code yang dibeli untuk proyek pribadi atau komersial Anda. Lisensi ini tidak memberikan hak untuk menjual, mendistribusikan ulang, atau mensublisensikan source code.",
       "restrictionsIntro": "Anda tidak boleh:",
       "restrictionsList": {
         "item1": "Menjual kembali atau mendistribusikan ulang source code tanpa izin tertulis sebelumnya",
@@ -288,7 +288,7 @@
         "item4": "Melakukan reverse engineer atau dekompilasi source code",
         "item5": "Memindahkan lisensi kepada orang atau entitas lain"
       },
-      "ownershipText": "Seluruh hak kekayaan intelektual atas source code, termasuk namun tidak terbatas pada hak cipta, paten, dan merek dagang, tetap dimiliki oleh pembuat asli atau Jelajah Kode. Anda mengakui bahwa tidak ada kepemilikan hak kekayaan intelektual yang dialihkan kepada Anda.",
+      "ownershipText": "Seluruh hak kekayaan intelektual atas source code, termasuk namun tidak terbatas pada hak cipta, paten, dan merek dagang, tetap dimiliki oleh pembuat asli atau Kodera. Anda mengakui bahwa tidak ada kepemilikan hak kekayaan intelektual yang dialihkan kepada Anda.",
       "usageIntro": "Anda diizinkan untuk:",
       "usageList": {
         "item1": "Menggunakan source code dalam proyek pribadi Anda",
@@ -297,9 +297,9 @@
         "item4": "Membuat salinan untuk keperluan backup"
       },
       "prohibitedText": "Anda setuju untuk tidak melakukan aktivitas apa pun yang melanggar Perjanjian Lisensi ini atau hukum dan peraturan yang berlaku. Termasuk namun tidak terbatas pada menjual, melisensikan, atau mendistribusikan source code tanpa otorisasi.",
-      "terminationText": "Jelajah Kode berhak mengakhiri lisensi ini jika Anda melanggar salah satu ketentuan perjanjian ini. Setelah pengakhiran, Anda harus menghapus semua salinan source code yang Anda miliki.",
-      "warrantyText": "Source code disediakan \"apa adanya\" tanpa jaminan apa pun, baik tersurat maupun tersirat. Jelajah Kode tidak menjamin bahwa source code bebas dari error atau akan berfungsi tanpa gangguan.",
-      "liabilityText": "Dalam keadaan apa pun Jelajah Kode tidak bertanggung jawab atas kerugian tidak langsung, insidental, khusus, konsekuensial, atau hukuman yang timbul dari penggunaan atau ketidakmampuan menggunakan source code, bahkan jika Jelajah Kode telah diberitahu tentang kemungkinan kerugian tersebut."
+      "terminationText": "Kodera berhak mengakhiri lisensi ini jika Anda melanggar salah satu ketentuan perjanjian ini. Setelah pengakhiran, Anda harus menghapus semua salinan source code yang Anda miliki.",
+      "warrantyText": "Source code disediakan \"apa adanya\" tanpa jaminan apa pun, baik tersurat maupun tersirat. Kodera tidak menjamin bahwa source code bebas dari error atau akan berfungsi tanpa gangguan.",
+      "liabilityText": "Dalam keadaan apa pun Kodera tidak bertanggung jawab atas kerugian tidak langsung, insidental, khusus, konsekuensial, atau hukuman yang timbul dari penggunaan atau ketidakmampuan menggunakan source code, bahkan jika Kodera telah diberitahu tentang kemungkinan kerugian tersebut."
     },
     "privacy": {
       "title": "Kebijakan Privasi",
@@ -315,7 +315,7 @@
         "userRights": "Hak Anda",
         "contact": "Hubungi Kami"
       },
-      "introductionText": "Jelajah Kode (\"kami\") mengoperasikan website Jelajah Kode. Halaman ini menjelaskan kebijakan kami terkait pengumpulan, penggunaan, dan pengungkapan data pribadi ketika Anda menggunakan Layanan kami serta pilihan yang Anda miliki terkait data tersebut.",
+      "introductionText": "Kodera (\"kami\") mengoperasikan website Kodera. Halaman ini menjelaskan kebijakan kami terkait pengumpulan, penggunaan, dan pengungkapan data pribadi ketika Anda menggunakan Layanan kami serta pilihan yang Anda miliki terkait data tersebut.",
       "dataCollectionIntro": "Kami mengumpulkan beberapa jenis informasi untuk berbagai keperluan guna menyediakan dan meningkatkan Layanan kami kepada Anda.",
       "dataCollectionList": {
         "item1": "Alamat email dan kredensial akun",
@@ -324,7 +324,7 @@
         "item4": "Data penggunaan dan analitik",
         "item5": "Informasi perangkat dan browser"
       },
-      "dataUsageIntro": "Jelajah Kode menggunakan data yang dikumpulkan untuk berbagai tujuan:",
+      "dataUsageIntro": "Kodera menggunakan data yang dikumpulkan untuk berbagai tujuan:",
       "dataUsageList": {
         "item1": "Untuk menyediakan dan memelihara Layanan kami",
         "item2": "Untuk memberi tahu Anda tentang perubahan pada Layanan kami",
@@ -351,7 +351,7 @@
         "disputes": "Penyelesaian Sengketa",
         "contact": "Hubungi Dukungan"
       },
-      "eligibilityText": "Di Jelajah Kode, kami ingin Anda puas dengan pembelian Anda. Jika Anda tidak sepenuhnya puas dengan suatu produk, Anda mungkin berhak mendapatkan refund dalam 14 hari sejak tanggal pembelian.",
+      "eligibilityText": "Di Kodera, kami ingin Anda puas dengan pembelian Anda. Jika Anda tidak sepenuhnya puas dengan suatu produk, Anda mungkin berhak mendapatkan refund dalam 14 hari sejak tanggal pembelian.",
       "processIntro": "Untuk mengajukan permintaan refund, silakan ikuti langkah-langkah berikut:",
       "processList": {
         "item1": "Hubungi tim dukungan kami di",
@@ -394,20 +394,20 @@
         "governingLaw": "Hukum yang Berlaku"
       },
       "agreementText": "Dengan mengakses dan menggunakan website ini, Anda menerima dan setuju untuk terikat oleh syarat dan ketentuan dalam perjanjian ini. Jika Anda tidak setuju untuk mematuhi hal tersebut, mohon untuk tidak menggunakan layanan ini.",
-      "useLicenseIntro": "Izin diberikan untuk mengunduh sementara satu salinan materi (informasi atau software) di website Jelajah Kode untuk keperluan tampilan sementara pribadi dan non-komersial. Ini adalah pemberian lisensi, bukan pengalihan hak kepemilikan, dan berdasarkan lisensi ini Anda tidak boleh:",
+      "useLicenseIntro": "Izin diberikan untuk mengunduh sementara satu salinan materi (informasi atau software) di website Kodera untuk keperluan tampilan sementara pribadi dan non-komersial. Ini adalah pemberian lisensi, bukan pengalihan hak kepemilikan, dan berdasarkan lisensi ini Anda tidak boleh:",
       "useLicenseList": {
         "item1": "Memodifikasi atau menyalin materi",
         "item2": "Menggunakan materi untuk tujuan komersial atau tampilan publik",
-        "item3": "Mencoba dekompilasi atau reverse engineer software apa pun di website Jelajahkode",
+        "item3": "Mencoba dekompilasi atau reverse engineer software apa pun di website Kodera",
         "item4": "Memindahkan materi ke orang lain atau \"mirror\" materi di server lain",
         "item5": "Menghapus pemberitahuan hak cipta atau kepemilikan lainnya dari materi"
       },
-      "disclaimerText": "Materi di website Jelajah Kode disediakan apa adanya. Jelajahkode tidak memberikan jaminan apa pun, baik tersurat maupun tersirat, dan dengan ini menafikan semua jaminan lainnya termasuk, tanpa batasan, jaminan tersirat atau kondisi kelayakan jual, kesesuaian untuk tujuan tertentu, atau tidak melanggar hak kekayaan intelektual atau pelanggaran hak lainnya.",
-      "limitationsText": "Dalam keadaan apa pun Jelajahkode atau pemasoknya tidak bertanggung jawab atas kerugian apa pun (termasuk, tanpa batasan, kerugian karena kehilangan data atau keuntungan, atau karena gangguan bisnis) yang timbul dari penggunaan atau ketidakmampuan menggunakan materi di website Jelajah Kode.",
-      "accuracyText": "Materi yang muncul di website Jelajah Kode dapat mencakup kesalahan teknis, tipografi, atau fotografi. Jelajahkode tidak menjamin bahwa materi di website ini akurat, lengkap, atau terkini. Jelajahkode dapat membuat perubahan pada materi di website kapan saja tanpa pemberitahuan.",
-      "materialsText": "Materi di website Jelajah Kode dilindungi hak cipta. Jelajahkode memiliki hak cipta atas semua materi asli, teks, gambar, grafik, logo, ikon tombol, dan software di website ini. Penggunaan materi tanpa izin dilarang keras.",
-      "linksText": "Jelajahkode tidak meninjau semua situs yang tertaut ke website-nya dan tidak bertanggung jawab atas konten situs tertaut tersebut. Penyertaan tautan apa pun tidak menyiratkan dukungan oleh Jelajahkode terhadap situs tersebut. Penggunaan situs tertaut tersebut sepenuhnya menjadi risiko pengguna.",
-      "modificationsText": "Jelajahkode dapat merevisi syarat layanan ini kapan saja tanpa pemberitahuan. Dengan menggunakan website ini, Anda setuju untuk terikat oleh versi terkini dari syarat layanan ini.",
+      "disclaimerText": "Materi di website Kodera disediakan apa adanya. Kodera tidak memberikan jaminan apa pun, baik tersurat maupun tersirat, dan dengan ini menafikan semua jaminan lainnya termasuk, tanpa batasan, jaminan tersirat atau kondisi kelayakan jual, kesesuaian untuk tujuan tertentu, atau tidak melanggar hak kekayaan intelektual atau pelanggaran hak lainnya.",
+      "limitationsText": "Dalam keadaan apa pun Kodera atau pemasoknya tidak bertanggung jawab atas kerugian apa pun (termasuk, tanpa batasan, kerugian karena kehilangan data atau keuntungan, atau karena gangguan bisnis) yang timbul dari penggunaan atau ketidakmampuan menggunakan materi di website Kodera.",
+      "accuracyText": "Materi yang muncul di website Kodera dapat mencakup kesalahan teknis, tipografi, atau fotografi. Kodera tidak menjamin bahwa materi di website ini akurat, lengkap, atau terkini. Kodera dapat membuat perubahan pada materi di website kapan saja tanpa pemberitahuan.",
+      "materialsText": "Materi di website Kodera dilindungi hak cipta. Kodera memiliki hak cipta atas semua materi asli, teks, gambar, grafik, logo, ikon tombol, dan software di website ini. Penggunaan materi tanpa izin dilarang keras.",
+      "linksText": "Kodera tidak meninjau semua situs yang tertaut ke website-nya dan tidak bertanggung jawab atas konten situs tertaut tersebut. Penyertaan tautan apa pun tidak menyiratkan dukungan oleh Kodera terhadap situs tersebut. Penggunaan situs tertaut tersebut sepenuhnya menjadi risiko pengguna.",
+      "modificationsText": "Kodera dapat merevisi syarat layanan ini kapan saja tanpa pemberitahuan. Dengan menggunakan website ini, Anda setuju untuk terikat oleh versi terkini dari syarat layanan ini.",
       "governingLawText": "Syarat dan ketentuan ini diatur dan ditafsirkan sesuai dengan hukum negara setempat yang berlaku, dan Anda tidak dapat ditarik kembali untuk tunduk pada yurisdiksi eksklusif pengadilan di lokasi tersebut."
     }
   },

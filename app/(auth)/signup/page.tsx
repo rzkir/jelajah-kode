@@ -15,7 +15,7 @@ export default function SignupPage() {
             <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md">
               <Code className="size-4" />
             </div>
-            Jelajah Kode.
+            Kodera.
           </a>
         </div>
         <div className="flex flex-1 items-center justify-center">
