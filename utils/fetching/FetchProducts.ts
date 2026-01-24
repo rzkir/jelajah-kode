@@ -1,79 +1,53 @@
+import { cache } from "react";
+
 import { API_CONFIG } from "@/lib/config";
 
-export const fetchProducts = async (): Promise<Products[]> => {
+import { apiFetch } from "@/lib/apiFetch";
+
+export const fetchProducts = cache(async (): Promise<Products[]> => {
   try {
-    const apiSecret = API_CONFIG.SECRET;
-    const url = API_CONFIG.ENDPOINTS.products.base;
+    const data = await apiFetch<any>(
+      API_CONFIG.ENDPOINTS.products.base,
+      {
+        revalidate: 3600,
+        tags: ["products"],
+      }
+    );
 
-    const headers: HeadersInit = {
-      "Content-Type": "application/json",
-    };
-
-    // Always add Authorization header with API_SECRET
-    if (apiSecret) {
-      headers.Authorization = `Bearer ${apiSecret}`;
-    }
-
-    const response = await fetch(url, {
-      next: { revalidate: 0 },
-      headers,
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch products: ${response.statusText}`);
-    }
-
-    const data = await response.json();
-    return Array.isArray(data) ? data : data?.data || [];
+    return Array.isArray(data) ? data : data?.data ?? [];
   } catch (error) {
     if (process.env.NODE_ENV !== "production") {
       console.error("Error fetching products:", error);
     }
-    return [] as unknown as Products[];
+    return [];
   }
-};
+});
 
-export const fetchProductsById = async (
-  productsId: string
-): Promise<ProductsDetails> => {
-  try {
-    const apiSecret = API_CONFIG.SECRET;
-    const headers: HeadersInit = {
-      "Content-Type": "application/json",
-    };
+export const fetchProductsById = cache(
+  async (productsId: string): Promise<ProductsDetails> => {
+    try {
+      const data = await apiFetch<ProductsDetails>(
+        API_CONFIG.ENDPOINTS.products.byProductsId(productsId),
+        {
+          revalidate: 3600,
+          tags: ["products", `product-${productsId}`],
+        }
+      );
 
-    // Always add Authorization header with API_SECRET
-    if (apiSecret) {
-      headers.Authorization = `Bearer ${apiSecret}`;
-    }
-
-    const response = await fetch(
-      API_CONFIG.ENDPOINTS.products.byProductsId(productsId),
-      {
-        next: { revalidate: 0 },
-        headers,
+      return data;
+    } catch (error) {
+      if (process.env.NODE_ENV !== "production") {
+        console.error("Error fetching product by id:", error);
       }
-    );
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch product by id: ${response.statusText}`);
+      return {} as unknown as ProductsDetails;
     }
-
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error("Error fetching product by id:", error);
-    }
-    return {} as unknown as ProductsDetails;
   }
-};
+);
 
 export const fetchProductsBySearch = async (
   searchParams: Record<string, string | string[] | undefined>
 ): Promise<ProductsSearchResponse> => {
   try {
-    const apiSecret = API_CONFIG.SECRET;
     const params = new URLSearchParams();
 
     // Add all search params to URLSearchParams
@@ -87,25 +61,14 @@ export const fetchProductsBySearch = async (
       }
     });
 
-    const headers: HeadersInit = {
-      "Content-Type": "application/json",
-    };
+    const data = await apiFetch<ProductsSearchResponse>(
+      API_CONFIG.ENDPOINTS.products.search(params),
+      {
+        revalidate: 3600,
+        tags: ["products", "products-search"],
+      }
+    );
 
-    // Always add Authorization header with API_SECRET
-    if (apiSecret) {
-      headers.Authorization = `Bearer ${apiSecret}`;
-    }
-
-    const response = await fetch(API_CONFIG.ENDPOINTS.products.search(params), {
-      next: { revalidate: 0 },
-      headers,
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to search products: ${response.statusText}`);
-    }
-
-    const data = await response.json();
     return data;
   } catch (error) {
     if (process.env.NODE_ENV !== "production") {
@@ -124,395 +87,263 @@ export const fetchProductsBySearch = async (
   }
 };
 
-export const fetchProductCategories = async (): Promise<Category[]> => {
+export const fetchProductCategories = cache(async (): Promise<Category[]> => {
   try {
-    const apiSecret = API_CONFIG.SECRET;
-    const url = API_CONFIG.ENDPOINTS.products.categories;
+    const data = await apiFetch<any>(
+      API_CONFIG.ENDPOINTS.products.categories,
+      {
+        revalidate: 3600,
+        tags: ["products", "categories"],
+      }
+    );
 
-    const headers: HeadersInit = {
-      "Content-Type": "application/json",
-    };
-
-    // Always add Authorization header with API_SECRET
-    if (apiSecret) {
-      headers.Authorization = `Bearer ${apiSecret}`;
-    }
-
-    const response = await fetch(url, {
-      cache: "no-store",
-      headers,
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch categories: ${response.statusText}`);
-    }
-
-    const data = await response.json();
-    return Array.isArray(data) ? data : data?.data || [];
+    return Array.isArray(data) ? data : data?.data ?? [];
   } catch (error) {
     if (process.env.NODE_ENV !== "production") {
       console.error("Error fetching categories:", error);
     }
     return [];
   }
-};
+});
 
-export const fetchProductType = async (): Promise<Type[]> => {
+export const fetchProductType = cache(async (): Promise<Type[]> => {
   try {
-    const apiSecret = API_CONFIG.SECRET;
-    const url = API_CONFIG.ENDPOINTS.products.type;
+    const data = await apiFetch<any>(
+      API_CONFIG.ENDPOINTS.products.type,
+      {
+        revalidate: 3600,
+        tags: ["products", "types"],
+      }
+    );
 
-    const headers: HeadersInit = {
-      "Content-Type": "application/json",
-    };
-
-    // Always add Authorization header with API_SECRET
-    if (apiSecret) {
-      headers.Authorization = `Bearer ${apiSecret}`;
-    }
-
-    const response = await fetch(url, {
-      cache: "no-store",
-      headers,
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch types: ${response.statusText}`);
-    }
-
-    const data = await response.json();
-    return Array.isArray(data) ? data : data?.data || [];
+    return Array.isArray(data) ? data : data?.data ?? [];
   } catch (error) {
     if (process.env.NODE_ENV !== "production") {
       console.error("Error fetching types:", error);
     }
     return [];
   }
-};
+});
 
-export const fetchProductsDiscount = async (
-  page: number = 1,
-  limit: number = 10
-): Promise<ProductsDiscountResponse> => {
-  try {
-    const apiSecret = API_CONFIG.SECRET;
-    const headers: HeadersInit = {
-      "Content-Type": "application/json",
-    };
+export const fetchProductsDiscount = cache(
+  async (
+    page: number = 1,
+    limit: number = 10
+  ): Promise<ProductsDiscountResponse> => {
+    try {
+      const data = await apiFetch<ProductsDiscountResponse>(
+        API_CONFIG.ENDPOINTS.products.discount(page, limit),
+        {
+          revalidate: 3600,
+          tags: ["products", "products-discount"],
+        }
+      );
 
-    // Always add Authorization header with API_SECRET
-    if (apiSecret) {
-      headers.Authorization = `Bearer ${apiSecret}`;
-    }
-
-    const response = await fetch(
-      API_CONFIG.ENDPOINTS.products.discount(page, limit),
-      {
-        next: { revalidate: 0 },
-        headers,
+      return data;
+    } catch (error) {
+      if (process.env.NODE_ENV !== "production") {
+        console.error("Error fetching products discount:", error);
       }
-    );
-
-    if (!response.ok) {
-      throw new Error(
-        `Failed to fetch products discount: ${response.statusText}`
-      );
+      return {
+        data: [],
+        pagination: {
+          page: 1,
+          limit: 10,
+          total: 0,
+          pages: 0,
+        },
+      };
     }
-
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error("Error fetching products discount:", error);
-    }
-    return {
-      data: [],
-      pagination: {
-        page: 1,
-        limit: 10,
-        total: 0,
-        pages: 0,
-      },
-    };
   }
-};
+);
 
-export const fetchProductsMostSaled = async (
-  page: number = 1,
-  limit: number = 10
-): Promise<ProductsMostSaledResponse> => {
-  try {
-    const apiSecret = API_CONFIG.SECRET;
-    const headers: HeadersInit = {
-      "Content-Type": "application/json",
-    };
+export const fetchProductsMostSaled = cache(
+  async (
+    page: number = 1,
+    limit: number = 10
+  ): Promise<ProductsMostSaledResponse> => {
+    try {
+      const data = await apiFetch<ProductsMostSaledResponse>(
+        API_CONFIG.ENDPOINTS.products.mostSaled(page, limit),
+        {
+          revalidate: 3600,
+          tags: ["products", "products-most-saled"],
+        }
+      );
 
-    // Always add Authorization header with API_SECRET
-    if (apiSecret) {
-      headers.Authorization = `Bearer ${apiSecret}`;
-    }
-
-    const response = await fetch(
-      API_CONFIG.ENDPOINTS.products.mostSaled(page, limit),
-      {
-        next: { revalidate: 0 },
-        headers,
+      return data;
+    } catch (error) {
+      if (process.env.NODE_ENV !== "production") {
+        console.error("Error fetching most saled products:", error);
       }
-    );
-
-    if (!response.ok) {
-      throw new Error(
-        `Failed to fetch most saled products: ${response.statusText}`
-      );
+      return {
+        data: [],
+        pagination: {
+          page: 1,
+          limit: 10,
+          total: 0,
+          pages: 0,
+        },
+      };
     }
-
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error("Error fetching most saled products:", error);
-    }
-    return {
-      data: [],
-      pagination: {
-        page: 1,
-        limit: 10,
-        total: 0,
-        pages: 0,
-      },
-    };
   }
-};
+);
 
-export const fetchProductsPopular = async (
-  page: number = 1,
-  limit: number = 10
-): Promise<ProductsPopularResponse> => {
-  try {
-    const apiSecret = API_CONFIG.SECRET;
-    const headers: HeadersInit = {
-      "Content-Type": "application/json",
-    };
+export const fetchProductsPopular = cache(
+  async (
+    page: number = 1,
+    limit: number = 10
+  ): Promise<ProductsPopularResponse> => {
+    try {
+      const data = await apiFetch<ProductsPopularResponse>(
+        API_CONFIG.ENDPOINTS.products.popular(page, limit),
+        {
+          revalidate: 3600,
+          tags: ["products", "products-popular"],
+        }
+      );
 
-    // Always add Authorization header with API_SECRET
-    if (apiSecret) {
-      headers.Authorization = `Bearer ${apiSecret}`;
-    }
-
-    const response = await fetch(
-      API_CONFIG.ENDPOINTS.products.popular(page, limit),
-      {
-        next: { revalidate: 0 },
-        headers,
+      return data;
+    } catch (error) {
+      if (process.env.NODE_ENV !== "production") {
+        console.error("Error fetching popular products:", error);
       }
-    );
-
-    if (!response.ok) {
-      throw new Error(
-        `Failed to fetch popular products: ${response.statusText}`
-      );
+      return {
+        data: [],
+        pagination: {
+          page: 1,
+          limit: 10,
+          total: 0,
+          pages: 0,
+        },
+      };
     }
-
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error("Error fetching popular products:", error);
-    }
-    return {
-      data: [],
-      pagination: {
-        page: 1,
-        limit: 10,
-        total: 0,
-        pages: 0,
-      },
-    };
   }
-};
+);
 
-export const fetchProductsRatings = async (
-  productsId: string,
-  page: number = 1,
-  limit: number = 10
-): Promise<Ratings[]> => {
-  try {
-    const apiSecret = API_CONFIG.SECRET;
-    const url = API_CONFIG.ENDPOINTS.products.ratings(productsId, page, limit);
-
-    const headers: HeadersInit = {
-      "Content-Type": "application/json",
-    };
-
-    // Always add Authorization header with API_SECRET
-    if (apiSecret) {
-      headers.Authorization = `Bearer ${apiSecret}`;
-    }
-
-    const response = await fetch(url, {
-      next: { revalidate: 0 },
-      headers,
-    });
-
-    if (!response.ok) {
-      throw new Error(
-        `Failed to fetch products ratings: ${response.statusText}`
+export const fetchProductsRatings = cache(
+  async (
+    productsId: string,
+    page: number = 1,
+    limit: number = 10
+  ): Promise<Ratings[]> => {
+    try {
+      const data = await apiFetch<any>(
+        API_CONFIG.ENDPOINTS.products.ratings(productsId, page, limit),
+        {
+          revalidate: 3600,
+          tags: ["products", "ratings", `product-${productsId}`],
+        }
       );
-    }
 
-    const data = await response.json();
-    return data.ratings;
-  } catch (error) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error("Error fetching products ratings:", error);
-    }
-    return [] as unknown as Ratings[];
-  }
-};
-
-export const fetchProductsByCategory = async (
-  categoryId: string,
-  page: number = 1,
-  limit: number = 10,
-  sort: string = "newest"
-): Promise<ProductsByCategoryResponse> => {
-  try {
-    const apiSecret = API_CONFIG.SECRET;
-    const headers: HeadersInit = {
-      "Content-Type": "application/json",
-    };
-
-    // Always add Authorization header with API_SECRET
-    if (apiSecret) {
-      headers.Authorization = `Bearer ${apiSecret}`;
-    }
-
-    const response = await fetch(
-      API_CONFIG.ENDPOINTS.products.byCategory(categoryId, page, limit, sort),
-      {
-        next: { revalidate: 0 },
-        headers,
+      return data.ratings;
+    } catch (error) {
+      if (process.env.NODE_ENV !== "production") {
+        console.error("Error fetching products ratings:", error);
       }
-    );
-
-    if (!response.ok) {
-      throw new Error(
-        `Failed to fetch products by category: ${response.statusText}`
-      );
+      return [];
     }
-
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error("Error fetching products by category:", error);
-    }
-    return {
-      data: [],
-      pagination: {
-        page: 1,
-        limit: 10,
-        total: 0,
-        pages: 0,
-      },
-    };
   }
-};
+);
 
-export const fetchProductsByType = async (
-  typeId: string,
-  page: number = 1,
-  limit: number = 10,
-  sort: string = "newest"
-): Promise<ProductsByTypeResponse> => {
-  try {
-    const apiSecret = API_CONFIG.SECRET;
-    const headers: HeadersInit = {
-      "Content-Type": "application/json",
-    };
+export const fetchProductsByCategory = cache(
+  async (
+    categoryId: string,
+    page: number = 1,
+    limit: number = 10,
+    sort: string = "newest"
+  ): Promise<ProductsByCategoryResponse> => {
+    try {
+      const data = await apiFetch<ProductsByCategoryResponse>(
+        API_CONFIG.ENDPOINTS.products.byCategory(categoryId, page, limit, sort),
+        {
+          revalidate: 3600,
+          tags: ["products", "products-by-category", `category-${categoryId}`],
+        }
+      );
 
-    // Always add Authorization header with API_SECRET
-    if (apiSecret) {
-      headers.Authorization = `Bearer ${apiSecret}`;
-    }
-
-    const response = await fetch(
-      API_CONFIG.ENDPOINTS.products.byType(typeId, page, limit, sort),
-      {
-        next: { revalidate: 0 },
-        headers,
+      return data;
+    } catch (error) {
+      if (process.env.NODE_ENV !== "production") {
+        console.error("Error fetching products by category:", error);
       }
-    );
-
-    if (!response.ok) {
-      throw new Error(
-        `Failed to fetch products by type: ${response.statusText}`
-      );
+      return {
+        data: [],
+        pagination: {
+          page: 1,
+          limit: 10,
+          total: 0,
+          pages: 0,
+        },
+      };
     }
-
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error("Error fetching products by type:", error);
-    }
-    return {
-      data: [],
-      pagination: {
-        page: 1,
-        limit: 10,
-        total: 0,
-        pages: 0,
-      },
-    };
   }
-};
+);
 
-export const fetchProductsByTags = async (
-  tagsId: string,
-  page: number = 1,
-  limit: number = 10,
-  sort: string = "newest"
-): Promise<ProductsByTagsResponse> => {
-  try {
-    const apiSecret = API_CONFIG.SECRET;
-    const headers: HeadersInit = {
-      "Content-Type": "application/json",
-    };
+export const fetchProductsByType = cache(
+  async (
+    typeId: string,
+    page: number = 1,
+    limit: number = 10,
+    sort: string = "newest"
+  ): Promise<ProductsByTypeResponse> => {
+    try {
+      const data = await apiFetch<ProductsByTypeResponse>(
+        API_CONFIG.ENDPOINTS.products.byType(typeId, page, limit, sort),
+        {
+          revalidate: 3600,
+          tags: ["products", "products-by-type", `type-${typeId}`],
+        }
+      );
 
-    // Always add Authorization header with API_SECRET
-    if (apiSecret) {
-      headers.Authorization = `Bearer ${apiSecret}`;
-    }
-
-    const response = await fetch(
-      API_CONFIG.ENDPOINTS.products.byTags(tagsId, page, limit, sort),
-      {
-        next: { revalidate: 0 },
-        headers,
+      return data;
+    } catch (error) {
+      if (process.env.NODE_ENV !== "production") {
+        console.error("Error fetching products by type:", error);
       }
-    );
-
-    if (!response.ok) {
-      throw new Error(
-        `Failed to fetch products by tags: ${response.statusText}`
-      );
+      return {
+        data: [],
+        pagination: {
+          page: 1,
+          limit: 10,
+          total: 0,
+          pages: 0,
+        },
+      };
     }
-
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error("Error fetching products by tags:", error);
-    }
-    return {
-      data: [],
-      pagination: {
-        page: 1,
-        limit: 10,
-        total: 0,
-        pages: 0,
-      },
-    };
   }
-};
+);
+
+export const fetchProductsByTags = cache(
+  async (
+    tagsId: string,
+    page: number = 1,
+    limit: number = 10,
+    sort: string = "newest"
+  ): Promise<ProductsByTagsResponse> => {
+    try {
+      const data = await apiFetch<ProductsByTagsResponse>(
+        API_CONFIG.ENDPOINTS.products.byTags(tagsId, page, limit, sort),
+        {
+          revalidate: 3600,
+          tags: ["products", "products-by-tags", `tags-${tagsId}`],
+        }
+      );
+
+      return data;
+    } catch (error) {
+      if (process.env.NODE_ENV !== "production") {
+        console.error("Error fetching products by tags:", error);
+      }
+      return {
+        data: [],
+        pagination: {
+          page: 1,
+          limit: 10,
+          total: 0,
+          pages: 0,
+        },
+      };
+    }
+  }
+);
